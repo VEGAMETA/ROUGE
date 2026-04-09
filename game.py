@@ -2,9 +2,9 @@
 
 import sys
 
-from display.notification import Notification, NotificationType
-from display.window import Window
-from game.globals import Globals
+from application.globals import Globals
+from presentation.curses_app import Window
+from presentation.views.notification import Notification, NotificationType
 
 
 def main_loop() -> None:
