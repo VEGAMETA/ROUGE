@@ -3,8 +3,8 @@
 import sys
 
 from application.globals import Globals
-from presentation.curses_app import Window
-from presentation.views.notification import Notification, NotificationType
+from presentation.curses.app import Window
+from presentation.curses.notification import Notification, NotificationType
 
 
 def main_loop() -> None:

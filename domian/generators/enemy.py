@@ -1,4 +1,3 @@
-from copy import deepcopy
 from random import choice
 
 from domian.entities.enemy import Enemy
@@ -15,11 +14,17 @@ class EnemyFactory:
     @staticmethod
     def create(enemy_type: EnemyType, position: Position, level: int = 0) -> Enemy:
         template = ENEMY_TEMPLATES[enemy_type]
-        enemy = deepcopy(template)
-        enemy.position = position
-        enemy.level = template.level
-        enemy.health, enemy.dexterity, enemy.strength = map(
-            lambda x: int(x * (1 + enemy.level * LEVEL_FACTOR)),
+        health, dexterity, strength = map(
+            lambda x: int(x * (1 + level * LEVEL_FACTOR)),
             (template.health, template.dexterity, template.strength),
         )
-        return enemy
+        return Enemy(
+            type=enemy_type,
+            position=position,
+            hostility=template.hostility,
+            ai=template.ai,
+            level=level,
+            health=health,
+            dexterity=dexterity,
+            strength=strength,
+        )

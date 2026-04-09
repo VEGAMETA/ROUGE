@@ -1,4 +1,13 @@
+from dataclasses import dataclass
+
+
+@dataclass
+class Size:
+    width: int = 0
+    height: int = 0
+
+
+@dataclass
 class Position:
-    def __init__(self, x: float = 0, y: float = 0) -> None:
-        self.x = x
-        self.y = y
+    x: int = 0
+    y: int = 0

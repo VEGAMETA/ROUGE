@@ -1,48 +1,58 @@
-from enum import Enum, auto
+from enum import IntEnum, auto
 
 
-class ItemType(Enum):
-    UNDEFINED = 0
-    CONSUMABLE = 1
-    WEAPON = 2
-    TREASURE = 3
-    AMULET = 4
+class ItemType(IntEnum):
+    UNDEFINED: int = auto()
+    CONSUMABLE: int = auto()
+    WEAPON: int = auto()
+    TREASURE: int = auto()
+    AMULET: int = auto()
 
 
-class ConsumableType(Enum):
-    UNDEFINED = 0
-    HEALTH = 1
-    DEXTRISITY = 2
-    STRENGTH = 3
-    MAX_HEALTH = 4
-    MAX_DEXTRISITY = 5
-    MAX_STRENGTH = 6
+class ConsumableType(IntEnum):
+    UNDEFINED: int = auto()
+    HEALTH: int = auto()
+    DEXTRISITY: int = auto()
+    STRENGTH: int = auto()
+    MAX_HEALTH: int = auto()
+    MAX_DEXTRISITY: int = auto()
+    MAX_STRENGTH: int = auto()
 
 
-class WeaponType(Enum):
-    SWORD = 0
-    AXE = 1
-    BOW = 2
-    STAFF = 3
+class WeaponType(IntEnum):
+    SWORD: int = auto()
+    AXE: int = auto()
+    BOW: int = auto()
+    STAFF: int = auto()
 
 
-class Hostility(Enum):
-    NEUTRAL = 0
-    HOSTILE = 1
-    FRIENDLY = 2
+class Hostility(IntEnum):
+    NEUTRAL: int = auto()
+    HOSTILE: int = auto()
+    FRIENDLY: int = auto()
 
 
-class EnemyType(Enum):
-    ZOMBIE = auto()
-    VAMPIRE = auto()
-    GHOST = auto()
-    OGRE = auto()
-    SNAKE_MAGE = auto()
+class EnemyType(IntEnum):
+    ZOMBIE: int = auto()
+    VAMPIRE: int = auto()
+    GHOST: int = auto()
+    OGRE: int = auto()
+    SNAKE_MAGE: int = auto()
 
 
-class NotificationType(Enum):
-    DEBUG = -1
-    INFO = 0
-    WARN = 1
-    ERROR = 2
-    OK = 3
+class NotificationType(IntEnum):
+    DEBUG: int = auto()
+    INFO: int = auto()
+    WARN: int = auto()
+    ERROR: int = auto()
+    OK: int = auto()
+
+
+class TileType(IntEnum):
+    VOID: int = auto()
+    FLOOR: int = auto()
+    CORRIDOR: int = auto()
+    WALL: int = auto()
+    DOOR: int = auto()
+    STAIRS_UP: int = auto()
+    STAIRS_DOWN: int = auto()

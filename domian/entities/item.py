@@ -1,15 +1,14 @@
-import abc
+from dataclasses import dataclass
 
 from domian.value_objects.enums import ItemType
+from domian.value_objects.position import Position
 
 
-class Item(abc.ABC):
-    def __init__(
-        self,
-        type_: ItemType = ItemType.UNDEFINED,
-        subtype: int = 0,
-        value: int = 0,
-    ) -> None:
-        self.type: ItemType = type_
-        self.subtype: int = subtype
-        self.value: int = value
+@dataclass
+class Item:
+    type: ItemType = ItemType.UNDEFINED
+    position: Position = Position()
+    is_owned: bool = False
+    name: str = ""
+    description: str = ""
+    value: int = 0
