@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 
+from domian.rules.progression import Level
 from domian.services.ai import EnemyAI
-from domian.value_objects.enums import EnemyType, Hostility, Level
+from domian.value_objects.enums import EnemyType, Hostility
 from domian.value_objects.position import Position
 
 

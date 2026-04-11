@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 from domian.entities.backpack import Backpack
 from domian.entities.weapon import Weapon
-from domian.value_objects.enums import Level
+from domian.rules.progression import Level
 from domian.value_objects.position import Position
 
 

@@ -2,8 +2,6 @@ from domian.entities.enemy import Enemy
 from domian.services.ai import VampireAI, ZombieAI
 from domian.value_objects.enums import EnemyType, Hostility
 
-LEVEL_FACTOR = 0.5
-
 ENEMY_TEMPLATES = {
     EnemyType.ZOMBIE: Enemy(
         type=EnemyType.ZOMBIE,

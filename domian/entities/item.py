@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 
-from domian.value_objects.enums import ItemRarityType, ItemType, Level
+from domian.rules.progression import Level
+from domian.value_objects.enums import ItemRarityType, ItemType
 from domian.value_objects.position import Position
 
 
