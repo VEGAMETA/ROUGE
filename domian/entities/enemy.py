@@ -9,10 +9,10 @@ from domian.value_objects.position import Position
 @dataclass
 class Enemy:
     type: EnemyType
-    position: Position = Position()
-    hostility: Hostility = Hostility.HOSTILE
     ai: EnemyAI
     health: int
     dextrisity: int
     strength: int
+    position: Position = Position()
+    hostility: Hostility = Hostility.HOSTILE
     level: Level = Level.LEVEL_1

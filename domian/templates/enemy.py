@@ -1,5 +1,5 @@
 from domian.entities.enemy import Enemy
-from domian.services.ai import VampireAI, ZombieAI
+from domian.services.ai import GhostAI, OgreAI, SnakeMageAI, VampireAI, ZombieAI
 from domian.value_objects.enums import EnemyType, Hostility
 
 ENEMY_TEMPLATES = {
@@ -22,7 +22,7 @@ ENEMY_TEMPLATES = {
     EnemyType.GHOST: Enemy(
         type=EnemyType.GHOST,
         hostility=Hostility.NEUTRAL,
-        ai=None,
+        ai=GhostAI(),
         health=10,
         dexterity=10,
         strength=5,
@@ -30,7 +30,7 @@ ENEMY_TEMPLATES = {
     EnemyType.OGRE: Enemy(
         type=EnemyType.OGRE,
         hostility=Hostility.HOSTILE,
-        ai=None,
+        ai=OgreAI(),
         health=65,
         dexterity=2,
         strength=10,
@@ -38,7 +38,7 @@ ENEMY_TEMPLATES = {
     EnemyType.SNAKE_MAGE: Enemy(
         type=EnemyType.SNAKE_MAGE,
         hostility=Hostility.HOSTILE,
-        ai=None,
+        ai=SnakeMageAI(),
         health=50,
         dexterity=15,
         strength=1,

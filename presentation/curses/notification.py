@@ -1,31 +1,29 @@
 import curses
-from curses import window as CursesWindow
 
-from domian.value_objects.enums import NotificationType
 from infrastructure.timers import Timer
+from presentation.curses.renderer import CursesRenderer2D
+from presentation.views.notification import Notification, NotificationType
 
 
-class Notification:
-    @staticmethod
+class CursesNotification(Notification):
+    def __init__(self, renderer: CursesRenderer2D) -> None:
+        super().__init__()
+        self.window = renderer.window
+
     def show(
-        stdscr: CursesWindow,
+        self,
         message: str,
         title: str = "Notification",
         duration: float = 0.0,
         style: NotificationType = NotificationType.INFO,
     ) -> None:
-        if not stdscr:
+        if not self.window:
             return
 
         curses.curs_set(0)
         curses.start_color()
         curses.use_default_colors()
 
-        curses.init_pair
-        curses.init_pair
-        curses.init_pair
-        curses.init_pair
-        curses.init_pair
         map(
             curses.init_pair,
             [
@@ -65,7 +63,7 @@ class Notification:
         win_h = inner_h + 2
         win_w = inner_w + 2
 
-        screen_h, screen_w = stdscr.getmaxyx()
+        screen_h, screen_w = self.window.getmaxyx()
 
         start_y = max(0, (screen_h - win_h) // 2)
         start_x = max(0, (screen_w - win_w) // 2)

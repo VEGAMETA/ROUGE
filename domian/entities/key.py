@@ -5,8 +5,6 @@ from domian.value_objects.position import Position
 
 
 @dataclass
-class Room:
+class Key:
     position: Position
-    width: int
-    height: int
-    doors: list[Door]
+    door: Door = None

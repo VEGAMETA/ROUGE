@@ -13,37 +13,37 @@ from domian.value_objects.enums import EnemyType, ItemRarityType, ItemType, Tile
 
 
 @dataclass
-class CursesRenderMap:
+class CursesRenderData:
     character: str = "?"
     color1: int = COLOR_WHITE
     color2: int = COLOR_BLACK
 
 
-class RenderMap:
+class CursesRenderMap:
     TILE_RENDER_MAP = {
-        TileType.VOID: CursesRenderMap(" "),
-        TileType.CORRIDOR: CursesRenderMap("•"),
-        TileType.FLOOR: CursesRenderMap("░"),
-        TileType.WALL: CursesRenderMap("█"),
-        TileType.STAIRS_UP: CursesRenderMap("▲"),
-        TileType.STAIRS_DOWN: CursesRenderMap("▼"),
-        TileType.DOOR: CursesRenderMap("╬"),
+        TileType.VOID: CursesRenderData(" "),
+        TileType.CORRIDOR: CursesRenderData("•"),
+        TileType.FLOOR: CursesRenderData("░"),
+        TileType.WALL: CursesRenderData("█"),
+        TileType.STAIRS_UP: CursesRenderData("▲"),
+        TileType.STAIRS_DOWN: CursesRenderData("▼"),
+        TileType.DOOR: CursesRenderData("╬"),
     }
 
     ENEMY_RENDER_MAP = {
-        EnemyType.ZOMBIE: CursesRenderMap("z", COLOR_GREEN),
-        EnemyType.VAMPIRE: CursesRenderMap("v", COLOR_RED),
-        EnemyType.GHOST: CursesRenderMap("g", COLOR_WHITE),
-        EnemyType.OGRE: CursesRenderMap("o", COLOR_YELLOW),
-        EnemyType.SNAKE_MAGE: CursesRenderMap("s", COLOR_WHITE),
+        EnemyType.ZOMBIE: CursesRenderData("z", COLOR_GREEN),
+        EnemyType.VAMPIRE: CursesRenderData("v", COLOR_RED),
+        EnemyType.GHOST: CursesRenderData("g", COLOR_WHITE),
+        EnemyType.OGRE: CursesRenderData("o", COLOR_YELLOW),
+        EnemyType.SNAKE_MAGE: CursesRenderData("s", COLOR_WHITE),
     }
 
     ITEM_RENDER_MAP = {
-        ItemType.CONSUMABLE: CursesRenderMap("c"),
-        ItemType.WEAPON: CursesRenderMap("w"),
-        ItemType.TREASURE: CursesRenderMap("t"),
-        ItemType.AMULET: CursesRenderMap("a"),
-        ItemType.UNDEFINED: CursesRenderMap("?"),
+        ItemType.CONSUMABLE: CursesRenderData("c"),
+        ItemType.WEAPON: CursesRenderData("w"),
+        ItemType.TREASURE: CursesRenderData("t"),
+        ItemType.AMULET: CursesRenderData("a"),
+        ItemType.UNDEFINED: CursesRenderData("?"),
     }
 
     RARITY_MAP = {

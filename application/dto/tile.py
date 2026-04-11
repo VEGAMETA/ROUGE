@@ -9,6 +9,7 @@ class TileDTO:
     x: int
     y: int
     type: TileType
+    visible: bool
     explored: bool
 
 

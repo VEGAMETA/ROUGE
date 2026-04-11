@@ -1,15 +1,8 @@
 from enum import IntEnum, auto
 
 
-class NotificationType(IntEnum):
-    DEBUG: int = auto()
-    INFO: int = auto()
-    WARN: int = auto()
-    ERROR: int = auto()
-    OK: int = auto()
-
-
 class TileType(IntEnum):
+    UNDEFINED: int = auto()
     VOID: int = auto()
     FLOOR: int = auto()
     CORRIDOR: int = auto()
@@ -38,6 +31,7 @@ class ConsumableType(IntEnum):
 
 
 class WeaponType(IntEnum):
+    UNDEFINED: int = auto()
     SWORD: int = auto()
     AXE: int = auto()
     BOW: int = auto()
@@ -45,12 +39,14 @@ class WeaponType(IntEnum):
 
 
 class Hostility(IntEnum):
+    UNDEFINED: int = auto()
     NEUTRAL: int = auto()
     HOSTILE: int = auto()
     FRIENDLY: int = auto()
 
 
 class EnemyType(IntEnum):
+    UNDEFINED: int = auto()
     ZOMBIE: int = auto()
     VAMPIRE: int = auto()
     GHOST: int = auto()
@@ -59,6 +55,7 @@ class EnemyType(IntEnum):
 
 
 class ItemRarityType(IntEnum):
+    UNDEFINED: int = auto()
     COMMON: int = auto()
     RARE: int = auto()
     EPIC: int = auto()

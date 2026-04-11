@@ -2,31 +2,31 @@
 
 import sys
 
-from application.globals import Globals
-from presentation.curses.app import Window
-from presentation.curses.notification import Notification, NotificationType
+from presentation.curses.input_handler import CursesInputHandler
+from presentation.curses.notification import CursesNotification
+from presentation.curses.renderer import CursesRenderer2D
+from presentation.views.notification import NotificationType
 
 
 def main_loop() -> None:
-    screen = Globals.window.window
-    screen.clear()
+    renderer = CursesRenderer2D()
+    notificator = CursesNotification(renderer)
+    input_handler = CursesInputHandler(renderer)
 
-    Notification.show(screen, "abiba", style=NotificationType.WARN)
+    while True:
+        # screen.addstr(0, 0, "abobus")
 
-    while Globals.process:
-        screen.addstr(0, 0, f"abobus {Globals.process}")
+        notificator.show("abiba", style=NotificationType.WARN)
+        key = renderer.window.getkey()
+        if key == "q":
+            break
 
-        screen.refresh()
-        screen.getkey()
-    Notification.show(screen, "abiaba", style=NotificationType.WARN)
+    notificator.show("abiaba", style=NotificationType.WARN)
+    renderer.window.refresh()
 
 
 def main() -> None:
-    try:
-        Window()
-        main_loop()
-    except KeyboardInterrupt:
-        Globals.window.close()
+    main_loop()
 
 
 if __name__ == "__main__":
