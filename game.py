@@ -2,31 +2,16 @@
 
 import sys
 
-from presentation.curses.input_handler import CursesInputHandler
-from presentation.curses.notification import CursesNotification
-from presentation.curses.renderer import CursesRenderer2D
-from presentation.views.notification import NotificationType
-
-
-def main_loop() -> None:
-    renderer = CursesRenderer2D()
-    notificator = CursesNotification(renderer)
-    input_handler = CursesInputHandler(renderer)
-
-    while True:
-        # screen.addstr(0, 0, "abobus")
-
-        notificator.show("abiba", style=NotificationType.WARN)
-        key = renderer.window.getkey()
-        if key == "q":
-            break
-
-    notificator.show("abiaba", style=NotificationType.WARN)
-    renderer.window.refresh()
+from application.game_loop import GameLoop
+from config.settings import DefaultInputHandler, DefaultRenderer
 
 
 def main() -> None:
-    main_loop()
+    loop = GameLoop(
+        renderer=DefaultRenderer,
+        input_handler=DefaultInputHandler,
+    )
+    loop.run()
 
 
 if __name__ == "__main__":

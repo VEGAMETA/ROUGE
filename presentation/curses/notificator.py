@@ -1,23 +1,26 @@
 import curses
 
 from infrastructure.timers import Timer
-from presentation.curses.renderer import CursesRenderer2D
-from presentation.views.notification import Notification, NotificationType
+from presentation.views.notificator import NotificationType, Notificator
 
 
-class CursesNotification(Notification):
-    def __init__(self, renderer: CursesRenderer2D) -> None:
-        super().__init__()
-        self.window = renderer.window
+class CursesNotificator(Notificator):
+    ICON_MAP = {
+        NotificationType.INFO: "ℹ",
+        NotificationType.OK: "✔",
+        NotificationType.WARN: "⚠",
+        NotificationType.ERROR: "✖",
+    }
 
+    @staticmethod
     def show(
-        self,
+        window: curses.window,
         message: str,
-        title: str = "Notification",
+        title: str = "",
         duration: float = 0.0,
         style: NotificationType = NotificationType.INFO,
     ) -> None:
-        if not self.window:
+        if isinstance(window, curses.window):
             return
 
         curses.curs_set(0)
@@ -36,13 +39,7 @@ class CursesNotification(Notification):
         )
         color_pair = curses.color_pair(style.value)
 
-        icon_map = {
-            NotificationType.INFO: "ℹ",
-            NotificationType.OK: "✔",
-            NotificationType.WARN: "⚠",
-            NotificationType.ERROR: "✖",
-        }
-        icon = icon_map.get(style, "•")
+        icon = CursesNotificator.ICON_MAP.get(style, "•")
 
         max_msg_width = 50
         words = message.split()
@@ -63,7 +60,7 @@ class CursesNotification(Notification):
         win_h = inner_h + 2
         win_w = inner_w + 2
 
-        screen_h, screen_w = self.window.getmaxyx()
+        screen_h, screen_w = window.getmaxyx()
 
         start_y = max(0, (screen_h - win_h) // 2)
         start_x = max(0, (screen_w - win_w) // 2)

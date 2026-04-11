@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from enum import IntEnum, auto
-
-from presentation.renderer import Renderer
+from typing import Any
 
 
 class NotificationType(IntEnum):
@@ -12,10 +11,11 @@ class NotificationType(IntEnum):
     OK: int = auto()
 
 
-class Notification(ABC):
+class Notificator(ABC):
+    @staticmethod
     @abstractmethod
     def show(
-        renderer: Renderer,
+        window: Any,
         message: str,
         title: str = "Notification",
         duration: float = 0.0,

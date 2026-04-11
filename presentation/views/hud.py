@@ -1,8 +1,7 @@
 from abc import ABC, abstractmethod
-
-from presentation.renderer import Renderer
+from typing import Any
 
 
 class HUD(ABC):
     @abstractmethod
-    def show(renderer: Renderer) -> None: ...
+    def show(window: Any) -> None: ...

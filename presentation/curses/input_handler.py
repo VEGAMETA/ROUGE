@@ -1,36 +1,32 @@
-from presentation.curses.renderer import CursesRenderer2D
+import curses
+from typing import Any
+
 from presentation.input_handler import InputAction, InputHandler
 
 
-class CursesInputHandler(InputHandler):
-    def __init__(self, renderer: CursesRenderer2D) -> None:
-        super().__init__(renderer)
-        self.window = renderer.window
+class CursesKeymap:
+    ACTIONS: dict[str, InputAction] = {
+        "q": InputAction.QUIT,
+        "w": InputAction.MOVE_UP,
+        "s": InputAction.MOVE_DOWN,
+        "a": InputAction.MOVE_LEFT,
+        "d": InputAction.MOVE_RIGHT,
+        " ": InputAction.ATTACK,
+        "e": InputAction.INTERRACT,
+        "\n": InputAction.INTERRACT,
+        "\011": InputAction.INVENTORY,
+        "\033": InputAction.MENU,
+    }
 
-    def get(self) -> InputAction:
-        key = self.window.getkey()
-        match key:
-            case "q":
-                return InputAction.QUIT
-            case "w":
-                return InputAction.MOVE_UP
-            case "s":
-                return InputAction.MOVE_DOWN
-            case "a":
-                return InputAction.MOVE_LEFT
-            case "d":
-                return InputAction.MOVE_RIGHT
-            case "e":
-                return InputAction.ATTACK
-            case "m":
-                return InputAction.MENU
-            case "i":
-                return InputAction.INVENTORY
-            case "r":
-                return InputAction.INTERRACT
-            case "p":
-                return InputAction.PICKUP
-            case "o":
-                return InputAction.DROP
-            case _:
-                return InputAction.UNDEFINED
+
+class CursesInputHandler(InputHandler):
+    @staticmethod
+    def get(window: Any) -> InputAction:
+        if not isinstance(window, curses.window):
+            return InputAction.UNDEFINED
+
+        try:
+            key = window.getkey()
+        except KeyboardInterrupt:
+            return InputAction.QUIT
+        return CursesKeymap.ACTIONS.get(key, InputAction.UNDEFINED)
