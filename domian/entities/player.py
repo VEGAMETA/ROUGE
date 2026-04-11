@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 from domian.entities.backpack import Backpack
 from domian.entities.weapon import Weapon
+from domian.value_objects.enums import Level
 from domian.value_objects.position import Position
 
 
@@ -14,4 +15,4 @@ class Player:
     strength: int = 1
     weapon: Weapon | None = None
     inventory: Backpack = Backpack()
-    level: int = 0
+    level: Level = Level.LEVEL_1

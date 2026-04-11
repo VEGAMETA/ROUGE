@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from domian.value_objects.enums import ItemType
+from domian.value_objects.enums import ItemRarityType, ItemType, Level
 from domian.value_objects.position import Position
 
 
@@ -12,3 +12,5 @@ class Item:
     name: str = ""
     description: str = ""
     value: int = 0
+    level: Level = Level.LEVEL_1
+    rarity: ItemRarityType = ItemRarityType.COMMON

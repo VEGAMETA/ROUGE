@@ -4,6 +4,7 @@ from application.dto.enemy import EnemyDTO, EnemyMaper
 from application.dto.item import ItemDTO, ItemMapper
 from application.dto.player import PlayerDTO, PlayerMapper
 from application.dto.tile import TileDTO, TitleMapper
+from domian.entities.game_session import GameSession
 
 
 @dataclass
@@ -15,7 +16,7 @@ class GameStateDTO:
 
 
 class GameMapper:
-    def to_dto(session):
+    def to_dto(session: GameSession):
         player: PlayerDTO = PlayerMapper.to_dto(session.player)
         enemies: list[EnemyDTO] = list(map(EnemyMaper.to_dto, session.enemies))
         tiles: list[TileDTO] = list(map(TitleMapper.to_dto, session.tiles))
