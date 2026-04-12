@@ -14,6 +14,7 @@ class StageFactory:
         graph = StageFactory.create_room_graph(stage)
         StageFactory.create_doors(stage, graph)
         StageFactory.create_corridors(stage, graph)
+        return stage
 
     @staticmethod
     def create_rooms(stage: Stage) -> None:
@@ -69,87 +70,102 @@ class StageFactory:
         rooms = stage.rooms
         for room in rooms:
             for neighbor in graph[room.idx]:
-                if (neighbor == room.idx + 1) and (room.idx % 3 != 2):
-                    door = [door for door in room.doors if door.side == 'right']
-                    matching_door = [door for door in rooms[neighbor].doors if door.side == 'left']
-                    StageFactory.create_horizontal_corridor(stage, door, *matching_door)
-                elif neighbor == (room.idx + 3):
-                    door = [door for door in room.doors if door.side == 'bot']
-                    matching_door = [door for door in rooms[neighbor].doors if door.side == 'top']
-                    StageFactory.create_vertical_corridor(stage, door, *matching_door)
+                if neighbor == room.idx + 1 and room.idx % 3 != 2:
+                    src = [d for d in room.doors if d.side == 'right']
+                    dst = [d for d in rooms[neighbor].doors if d.side == 'left']
+                    StageFactory.create_horizontal_corridor(stage, *src, *dst)
+                elif neighbor == room.idx + 3:
+                    src = [d for d in room.doors if d.side == 'bot']
+                    dst = [d for d in rooms[neighbor].doors if d.side == 'top']
+                    StageFactory.create_vertical_corridor(stage, *src, *dst)
 
     @staticmethod
-    def create_horizontal_corridor(stage: Stage, door: Door, matching_door: Door):
-        if door.position.y == matching_door.position.y:
-            path = [(door.position.x + i, door.position.y) for i in range(matching_door.position.x - door.position.x)]
-            corridor = Corridor([Position(x_y[0], x_y[1]) for x_y in path])
+    def create_horizontal_corridor(stage: Stage, door: Door, matching_door: Door) -> None:
+        ax, ay = door.position.x, door.position.y
+        bx, by = matching_door.position.x, matching_door.position.y
+
+        if ay == by:
+            path = [(ax + i, ay) for i in range(bx - ax)]
+            corridor = Corridor([Position(x, y) for x, y in path])
             stage.corridors.append(corridor)
-        else:
-            turn = randint(door.position.x+1, matching_door.position.x-1)
-            path = []
-            x_on_turn = 0
-            for i in range(matching_door.position.x - door.position.x):
-                if door.position.x + i != turn:
-                    path.append((door.position.x + i, door.position.y))
-                else:
-                    x_on_turn = i
-                    break
-            if matching_door.position.y < door.position.y:
-                for i in range(door.position.y, matching_door.position.y):
-                    path.append((door.position.x+x_on_turn, door.position.y + i))
+            return
+
+        turn = randint(ax + 1, bx - 1)
+        path = []
+        x_on_turn = 0
+
+        for i in range(bx - ax):
+            if ax + i != turn:
+                path.append((ax + i, ay))
             else:
-                for i in range(matching_door.position.y, door.position.y):
-                    path.append((door.position.x+x_on_turn, door.position.y - i))
-            path.extend([(door.position.x + x_on_turn + 1 + i, door.position.y) for i in range(matching_door.position.x - turn)])
-            corridor = Corridor([Position(x_y[0], x_y[1]) for x_y in path])
-            stage.corridors.append(corridor)
+                path.append((ax + i, ay))
+                x_on_turn = i
+                break
+
+        if by < ay:
+            for i in range(ay - by + 1):
+                path.append((ax + x_on_turn, ay - i))
+        else:
+            for i in range(by - ay + 1):
+                path.append((ax + x_on_turn, ay + i))
+
+        path.extend([(ax + x_on_turn + 1 + i, by) for i in range(bx - turn - 1)])
+
+        corridor = Corridor([Position(x, y) for x, y in path])
+        stage.corridors.append(corridor)
 
     @staticmethod
-    def create_vertical_corridor(stage: Stage, door: Door, matching_door: Door):
-        if door.position.x == matching_door.position.x:
-            path = [(door.position.x, door.position.y + i) for i in range(matching_door.position.y - door.position.y)]
-            corridor = Corridor([Position(x_y[0], x_y[1]) for x_y in path])
+    def create_vertical_corridor(stage: Stage, door: Door, matching_door: Door) -> None:
+        ax, ay = door.position.x, door.position.y
+        bx, by = matching_door.position.x, matching_door.position.y
+
+        if ax == bx:
+            path = [(ax, ay + i) for i in range(by - ay)]
+            corridor = Corridor([Position(x, y) for x, y in path])
             stage.corridors.append(corridor)
-        else:
-            turn = randint(door.position.y + 1, matching_door.position.y - 1)
-            path = []
-            y_on_turn = 0
-            for i in range(matching_door.position.y - door.position.y):
-                if door.position.y + i != turn:
-                    path.append((door.position.x, door.position.y + i))
-                else:
-                    y_on_turn = i
-                    break
-            if matching_door.position.x < door.position.x:
-                for i in range(matching_door.position.x, door.position.x):
-                    path.append((door.position.x - i, door.position.y + y_on_turn))
+            return
+
+        turn = randint(ay + 1, by - 1)
+        path = []
+        y_on_turn = 0
+
+        for i in range(by - ay):
+            if ay + i != turn:
+                path.append((ax, ay + i))
             else:
-                for i in range(matching_door.position.y, door.position.y):
-                    path.append((door.position.x + i, door.position.y + y_on_turn))
-            path.extend([(door.position.x, door.position.y + y_on_turn + 1 + i) for i in
-                         range(matching_door.position.y - turn)])
-            corridor = Corridor([Position(x_y[0], x_y[1]) for x_y in path])
-            stage.corridors.append(corridor)
+                path.append((ax, ay + i))
+                y_on_turn = i
+                break
+
+        if bx < ax:
+            for i in range(ax - bx + 1):
+                path.append((ax - i, ay + y_on_turn))
+        else:
+            for i in range(bx - ax + 1):
+                path.append((ax + i, ay + y_on_turn))
+
+        path.extend([(bx, ay + y_on_turn + 1 + i) for i in range(by - turn - 1)])
+
+        corridor = Corridor([Position(x, y) for x, y in path])
+        stage.corridors.append(corridor)
 
     @staticmethod
     def create_doors(stage: Stage, graph) -> None:
-        rooms = stage.rooms
-        for room in rooms:
+        for room in stage.rooms:
             x, y = room.position.x, room.position.y
-            top_side = [(x+i, y) for i in range(room.width)]
-            left_side = [(x, y+i) for i in range(room.height)]
-            bot_side = [(x+i, y+room.height) for i in range(room.width)]
-            right_side = [(x + room.width, y + i) for i in range(room.height)]
+            width, height = room.width, room.height
+
+            top = [(x + i, y) for i in range(1, width - 1)]
+            left = [(x, y + i) for i in range(1, height - 1)]
+            bottom = [(x + i, y + height) for i in range(1, width - 1)]
+            right = [(x + width, y + i) for i in range(1, height - 1)]
+
             for neighbor in graph[room.idx]:
-                if (neighbor == room.idx + 1) and (room.idx % 3 != 2):
-                    door = Door(Position(*choice(right_side)), 'right')
-                    room.doors.append(door)
-                elif (neighbor == room.idx - 1) and (room.idx % 3 != 0):
-                    door = Door(Position(*choice(left_side)), 'left')
-                    room.doors.append(door)
-                elif neighbor == (room.idx + 3):
-                    door = Door(Position(*choice(bot_side)), 'bot')
-                    room.doors.append(door)
-                elif neighbor == (room.idx - 3):
-                    door = Door(Position(*choice(top_side)), 'top')
-                    room.doors.append(door)
+                if neighbor == room.idx + 1 and room.idx % 3 != 2:
+                    room.doors.append(Door(Position(*choice(right)), 'right'))
+                elif neighbor == room.idx - 1 and room.idx % 3 != 0:
+                    room.doors.append(Door(Position(*choice(left)), 'left'))
+                elif neighbor == room.idx + 3:
+                    room.doors.append(Door(Position(*choice(bottom)), 'bot'))
+                elif neighbor == room.idx - 3:
+                    room.doors.append(Door(Position(*choice(top)), 'top'))
