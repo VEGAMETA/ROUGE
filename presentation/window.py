@@ -24,7 +24,7 @@ class Window:
         message: str,
         title: str = "",
         duration: float = 0.0,
-        style: NotificationType = NotificationType.INFO,
+        style: NotificationType = NotificationType.UNDEFINED,
     ) -> None:
         self.notificator.show(self.window, message, title, duration, style)
         self.input_handler.flush()
