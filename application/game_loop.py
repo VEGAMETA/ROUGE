@@ -19,4 +19,4 @@ class GameLoop:
                 case InputAction.QUIT:
                     return Exit.OK
                 case InputAction.MENU:
-                    self.window._notify("NA", duration=2.0)
+                    self.window._notify("NA", "Menu", duration=2.0)

@@ -6,6 +6,7 @@ from presentation.views.notificator import NotificationType, Notificator
 
 class CursesNotificator(Notificator):
     ICON_MAP = {
+        NotificationType.UNDEFINED: "",
         NotificationType.INFO: "!",
         NotificationType.OK: "√",
         NotificationType.WARN: "☼",
@@ -30,7 +31,7 @@ class CursesNotificator(Notificator):
         message: str,
         title: str = "",
         duration: float = 0.0,
-        style: NotificationType = NotificationType.INFO,
+        style: NotificationType = NotificationType.UNDEFINED,
     ) -> None:
 
         if not isinstance(window, curses.window):
@@ -88,16 +89,17 @@ class CursesNotificator(Notificator):
 
             win.box()
 
-            title_text = f" {icon} {title} "
-            title_x = max(1, (inner_w - len(title_text)) // 2)
-            win.addstr(0, title_x, title_text)
+            title_text = " ".join([icon, title]).strip()
+            title_x = max(1, (inner_w - len(title_text) + 1) // 2)
+            if title_text:
+                win.addstr(0, title_x, f" {title_text} ")
 
             for i, line in enumerate(lines):
                 win.addstr(1 + i, 3, line, color_pair)
 
             if not duration:
-                hint = "[ Press any key ]"
-                hint_x = max(inner_h, (inner_w - len(hint)) // 2)
+                hint = "[ Press any key... ]"
+                hint_x = max(inner_h, (inner_w - len(hint) + 2) // 2)
                 win.addstr(inner_h + 1, hint_x, hint)
 
             win.attroff(color_pair)

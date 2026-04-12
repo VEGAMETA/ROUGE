@@ -20,5 +20,5 @@ class Notificator(ABC):
         message: str,
         title: str = "Notification",
         duration: float = 0.0,
-        style: NotificationType = NotificationType.INFO,
+        style: NotificationType = NotificationType.UNDEFINED,
     ) -> None: ...
