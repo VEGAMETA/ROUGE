@@ -1,25 +1,22 @@
 # TODO: Autosave, spawn, map generation, sound mixer
 
 from config.exit import Exit
-from presentation.input_handler import InputAction, InputHandler
-from presentation.renderer import Renderer
+from presentation.input_handler import InputAction
+from presentation.window import Window
 
 
 class GameLoop:
-    def __init__(self, renderer: Renderer, input_handler: InputHandler) -> None:
-        self.renderer: Renderer = renderer
-        self.input_handler: InputHandler = input_handler
+    def __init__(self, window: Window) -> None:
+        self.window: Window = window
 
     def run(self) -> int:
         while True:
-            # self.renderer.render()
+            # self.window._draw()
 
-            action: InputAction = self.input_handler.get(self.renderer.window)
+            action: InputAction = self.window._input()
 
             match action:
                 case InputAction.QUIT:
                     return Exit.OK
-                case InputAction.MOVE_UP:
-                    self.renderer.notify("up", duration=2.0)
-                case InputAction.MOVE_DOWN:
-                    pass
+                case InputAction.MENU:
+                    self.window._notify("NA", duration=2.0)

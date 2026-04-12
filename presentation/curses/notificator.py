@@ -6,11 +6,23 @@ from presentation.views.notificator import NotificationType, Notificator
 
 class CursesNotificator(Notificator):
     ICON_MAP = {
-        NotificationType.INFO: "ℹ",
-        NotificationType.OK: "✔",
-        NotificationType.WARN: "⚠",
-        NotificationType.ERROR: "✖",
+        NotificationType.INFO: "!",
+        NotificationType.OK: "√",
+        NotificationType.WARN: "☼",
+        NotificationType.ERROR: "X",
     }
+
+    @staticmethod
+    def _init_colors() -> None:
+        for v, c1, c2 in [
+            (NotificationType.UNDEFINED.value, curses.COLOR_WHITE, curses.COLOR_BLACK),
+            (NotificationType.INFO.value, curses.COLOR_WHITE, curses.COLOR_BLUE),
+            (NotificationType.OK.value, curses.COLOR_WHITE, curses.COLOR_GREEN),
+            (NotificationType.WARN.value, curses.COLOR_BLACK, curses.COLOR_YELLOW),
+            (NotificationType.ERROR.value, curses.COLOR_WHITE, curses.COLOR_RED),
+            (NotificationType.DEBUG.value, curses.COLOR_BLACK, curses.COLOR_WHITE),
+        ]:
+            curses.init_pair(v, c1, c2)
 
     @staticmethod
     def show(
@@ -20,23 +32,16 @@ class CursesNotificator(Notificator):
         duration: float = 0.0,
         style: NotificationType = NotificationType.INFO,
     ) -> None:
-        if isinstance(window, curses.window):
+
+        if not isinstance(window, curses.window):
             return
 
         curses.curs_set(0)
         curses.start_color()
         curses.use_default_colors()
 
-        map(
-            curses.init_pair,
-            [
-                (NotificationType.INFO.value, curses.COLOR_WHITE, curses.COLOR_BLUE),
-                (NotificationType.OK.value, curses.COLOR_WHITE, curses.COLOR_GREEN),
-                (NotificationType.WARN.value, curses.COLOR_BLACK, curses.COLOR_YELLOW),
-                (NotificationType.ERROR.value, curses.COLOR_WHITE, curses.COLOR_RED),
-                (NotificationType.DEBUG.value, curses.COLOR_BLACK, curses.COLOR_WHITE),
-            ],
-        )
+        CursesNotificator._init_colors()
+
         color_pair = curses.color_pair(style.value)
 
         icon = CursesNotificator.ICON_MAP.get(style, "•")
@@ -66,14 +71,18 @@ class CursesNotificator(Notificator):
         start_x = max(0, (screen_w - win_w) // 2)
 
         try:
-            shadow = curses.newwin(inner_h, inner_w, start_y + 2, start_x + 2)
-            shadow.bkgd(" ", curses.color_pair(5) | curses.A_DIM)
+            shadow = curses.newwin(win_h, win_w, start_y + 2, start_x + 2)
+            shadow.bkgd(
+                " ",
+                curses.color_pair(NotificationType.DEBUG.value) | curses.A_DIM,
+            )
             shadow.refresh()
+
         except curses.error:
             pass
 
         try:
-            win = curses.newwin(inner_h, inner_w, start_y, start_x)
+            win = curses.newwin(win_h, win_w, start_y, start_x)
             win.bkgd(" ", color_pair)
             win.attron(color_pair)
 
@@ -81,33 +90,34 @@ class CursesNotificator(Notificator):
 
             title_text = f" {icon} {title} "
             title_x = max(1, (inner_w - len(title_text)) // 2)
-            win.addstr(0, title_x, title_text, color_pair | curses.A_BOLD)
-
-            win.addstr(2, 1, "─" * (inner_w - 2), color_pair)
+            win.addstr(0, title_x, title_text)
 
             for i, line in enumerate(lines):
-                win.addstr(3 + i, 3, line, color_pair)
+                win.addstr(1 + i, 3, line, color_pair)
 
-            if duration == 0:
+            if not duration:
                 hint = "[ Press any key ]"
-                hint_x = max(1, (inner_w - len(hint)) // 2)
-                win.addstr(inner_h - 1, hint_x, hint, color_pair | curses.A_DIM)
+                hint_x = max(inner_h, (inner_w - len(hint)) // 2)
+                win.addstr(inner_h + 1, hint_x, hint)
 
             win.attroff(color_pair)
             win.refresh()
         except curses.error:
             return
 
-        if duration > 0:
-            Timer.sleep_timer(duration)
+        if duration:
+            Timer.sleep_for(duration)
+
         else:
             win.nodelay(False)
             win.getch()
 
         win.clear()
+        win.bkgd(" ")
         win.refresh()
         try:
             shadow.clear()
+            shadow.bkgd(" ")
             shadow.refresh()
         except Exception:
             pass

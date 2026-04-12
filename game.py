@@ -3,14 +3,11 @@
 import sys
 
 from application.game_loop import GameLoop
-from config.settings import DefaultInputHandler, DefaultRenderer
+from config.settings import DefaultWindow
 
 
 def main() -> None:
-    loop = GameLoop(
-        renderer=DefaultRenderer,
-        input_handler=DefaultInputHandler,
-    )
+    loop = GameLoop(DefaultWindow)
     loop.run()
 
 

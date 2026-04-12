@@ -17,6 +17,12 @@ class InputAction(IntEnum):
 
 
 class InputHandler(ABC):
+    LOCK: bool = False
+
     @staticmethod
     @abstractmethod
     def get(window: Any) -> InputAction: ...
+
+    @staticmethod
+    @abstractmethod
+    def flush(self) -> None: ...

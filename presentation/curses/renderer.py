@@ -2,14 +2,12 @@ import curses
 
 from application.dto.game_state import GameStateDTO
 from domian.value_objects.enums import TileType
-from presentation.curses.notificator import CursesNotificator
 from presentation.curses.render_map import CursesRenderMap
 from presentation.renderer import Renderer
-from presentation.views.notificator import NotificationType
 
 
 class CursesRenderer2D(Renderer):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.window: curses.window = curses.initscr()
         self.window.clear()
@@ -17,16 +15,6 @@ class CursesRenderer2D(Renderer):
         curses.noecho()
         curses.cbreak()
         self.window.keypad(True)
-        self.notificator = CursesNotificator()
-
-    def notify(
-        self,
-        message: str,
-        title: str = "Notification",
-        duration: float = 0.0,
-        style: NotificationType = NotificationType.INFO,
-    ) -> None:
-        self.notificator.show(self.window, message, title, duration, style)
 
     def render(self, game_state: GameStateDTO) -> None:
         visible: set[tuple[int, int]] = set()

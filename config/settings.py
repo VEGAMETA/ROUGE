@@ -1,7 +1,4 @@
-from presentation.curses.input_handler import CursesInputHandler
-from presentation.curses.renderer import CursesRenderer2D
-from presentation.input_handler import InputHandler
-from presentation.renderer import Renderer
+from presentation.curses.window import CursesWindow
+from presentation.window import Window
 
-DefaultRenderer: Renderer = CursesRenderer2D()
-DefaultInputHandler: InputHandler = CursesInputHandler()
+DefaultWindow: Window = CursesWindow()

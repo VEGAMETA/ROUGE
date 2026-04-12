@@ -4,6 +4,7 @@ from typing import Any
 
 
 class NotificationType(IntEnum):
+    UNDEFINED: int = auto()
     DEBUG: int = auto()
     INFO: int = auto()
     WARN: int = auto()

@@ -30,3 +30,7 @@ class CursesInputHandler(InputHandler):
         except KeyboardInterrupt:
             return InputAction.QUIT
         return CursesKeymap.ACTIONS.get(key, InputAction.UNDEFINED)
+
+    @staticmethod
+    def flush() -> None:
+        curses.flushinp()
