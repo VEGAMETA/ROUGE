@@ -5,6 +5,9 @@ from domian.entities.room import Room
 
 
 @dataclass
-class Level:
-    rooms: rooms = list[Room]
-    corridors: corridors = list[Corridor]
+class Stage:
+    rooms: list[Room]
+    corridors: list[Corridor]
+    width: int
+    height: int
+    MAX_ROOMS: int = 9
