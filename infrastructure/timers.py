@@ -54,4 +54,7 @@ class Timer:
     def sleep_for(duration: float) -> None:
         if duration <= 0:
             return
-        sleep(duration)
+        try:
+            sleep(duration)
+        except KeyboardInterrupt:
+            pass
