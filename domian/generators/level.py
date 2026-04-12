@@ -13,6 +13,7 @@ class LevelFactory:
         LevelFactory.create_rooms(level.rooms)
         graph = LevelFactory.create_room_graph()
         LevelFactory.create_doors(level.rooms, graph)
+
     @staticmethod
     def create_rooms(rooms: list[Room]):
         for i in range(9):
