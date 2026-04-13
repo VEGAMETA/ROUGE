@@ -112,10 +112,6 @@ class StageFactory:
     def create_doors(stage: Stage) -> None:
         for idx, room in enumerate(stage.rooms):
             x, y, w, h = room.position.x, room.position.y, room.width, room.height
-
-            position: Position
-            side: DoorSide
-
             for neighbor in stage.graph[idx]:
                 if neighbor == idx + 1 and idx % 3 != 2:
                     position = Position(x + w, randint(y + 1, y + h - 1))
