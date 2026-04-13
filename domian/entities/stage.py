@@ -10,4 +10,5 @@ class Stage:
     corridors: list[Corridor]
     width: int
     height: int
+    graph: list[set[int]]
     MAX_ROOMS: int = 9

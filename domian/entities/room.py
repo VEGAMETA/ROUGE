@@ -9,5 +9,4 @@ class Room:
     position: Position
     width: int
     height: int
-    idx: int
     doors: list[Door]

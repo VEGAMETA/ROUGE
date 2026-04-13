@@ -56,7 +56,7 @@ def render_stage(stage):
 
 
 def test():
-    stage = Stage([], [], 90, 20)
+    stage = Stage([], [], 90, 20, [])
     StageFactory.create_level(stage)
 
     render_stage(stage)
