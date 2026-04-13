@@ -68,4 +68,23 @@ class CursesRenderer2D(Renderer):
         curses.endwin()
 
 
-class CursesRenderer3D(Renderer): ...
+class CursesRenderer3D(Renderer):
+    def __init__(self) -> None:
+        super().__init__()
+        self.window: curses.window = curses.initscr()
+        self.window.clear()
+        self.window.refresh()
+        curses.noecho()
+        curses.cbreak()
+        self.window.keypad(True)
+
+    def render(self, game_state: GameStateDTO) -> None:
+        pass
+
+    def close(self) -> None:
+        curses.echo()
+        self.window.clear()
+        self.window.refresh()
+        curses.nocbreak()
+        self.window.keypad(False)
+        curses.endwin()

@@ -7,4 +7,4 @@ from domian.value_objects.position import Direction
 class Move(Command):
     @staticmethod
     def execute(player: Player, direction: Direction):
-        MovementService.move(player, Direction)
+        MovementService.move(player, direction)

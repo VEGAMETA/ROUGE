@@ -1,6 +1,21 @@
 from enum import IntEnum, auto
 
 
+class DefaultRotation(IntEnum):
+    SOUTH: int = 0
+    EAST: int = 90
+    NORTH: int = 180
+    WEST: int = 270
+
+
+class DoorSide(IntEnum):
+    UNDEFINED: int = auto()
+    TOP: int = auto()
+    BOTTOM: int = auto()
+    LEFT: int = auto()
+    RIGHT: int = auto()
+
+
 class TileType(IntEnum):
     UNDEFINED: int = auto()
     VOID: int = auto()
