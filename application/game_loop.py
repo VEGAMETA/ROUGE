@@ -1,14 +1,11 @@
 # TODO: Autosave, spawn, map generation, sound mixer
-
+from application.commands.service import CommandService
 from application.dto.game_state import GameMapper
-from config.exit import Exit
 from domian.entities.game_session import GameSession
 from domian.rules.progression import Level
 from domian.value_objects.size import Size
 from presentation.input_handler import InputAction
 from presentation.window import Window
-from domian.services.movement import MovementService
-from domian.value_objects.position import Direction
 
 class GameLoop:
     def __init__(self, window: Window) -> None:
@@ -18,23 +15,11 @@ class GameLoop:
         self.game_session.new_stage()
         self.stage: int = 0
 
-    def run(self) -> int:
-        while self.stage < len(Level):
+    def run(self) -> None:
+        while self.stage < len(Level) and self.game_session.process:
             game_state = GameMapper.to_dto(self.game_session)
             self.window._draw(game_state)
 
             action: InputAction = self.window._input()
 
-            match action:
-                case InputAction.QUIT:
-                    return Exit.OK
-                case InputAction.MENU:
-                    self.window._notify("NA", "Menu", duration=2.0)
-                case InputAction.MOVE_UP:
-                    MovementService.move(self.game_session.player, Direction.UP)
-                case InputAction.MOVE_DOWN:
-                    MovementService.move(self.game_session.player, Direction.DOWN)
-                case InputAction.MOVE_LEFT:
-                    MovementService.move(self.game_session.player, Direction.LEFT)
-                case InputAction.MOVE_RIGHT:
-                    MovementService.move(self.game_session.player, Direction.RIGHT)
+            CommandService(action, self.game_session, self.window)

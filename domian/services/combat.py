@@ -1,4 +1,5 @@
 class CombatService:
+
     def attack(attacker, defender) -> None:
         if (
             not hasattr(defender, "health")

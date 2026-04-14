@@ -21,6 +21,7 @@ class GameSession:
     tiles: list[Tile]
     items: list[Item]
     tile_map: list[list[Tile]]
+    process: bool = True
 
     def __init__(self, size: Size) -> None:
         self.size: Size = size
