@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from domian.value_objects.vector import Vector2i
+from infrastructure.vector import Vector2i
 
 
 @dataclass

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import overload
+from typing import Generator
 
 
 @dataclass
@@ -24,3 +24,7 @@ class Vector2i:
 
     def __truediv__(self, other: int) -> "Vector2i":
         return type(self)(self.x // other, self.y // other)
+
+    def __iter__(self) -> Generator[int, None, None]:
+        yield self.x
+        yield self.y

@@ -3,7 +3,7 @@
 import sys
 
 from application.game_loop import GameLoop
-from config.settings import DefaultWindow
+from config.options import DefaultWindow
 
 
 def main() -> None:
