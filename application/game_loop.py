@@ -7,7 +7,8 @@ from domian.rules.progression import Level
 from domian.value_objects.size import Size
 from presentation.input_handler import InputAction
 from presentation.window import Window
-
+from domian.services.movement import MovementService
+from domian.value_objects.position import Direction
 
 class GameLoop:
     def __init__(self, window: Window) -> None:
@@ -29,3 +30,11 @@ class GameLoop:
                     return Exit.OK
                 case InputAction.MENU:
                     self.window._notify("NA", "Menu", duration=2.0)
+                case InputAction.MOVE_UP:
+                    MovementService.move(self.game_session.player, Direction.UP)
+                case InputAction.MOVE_DOWN:
+                    MovementService.move(self.game_session.player, Direction.DOWN)
+                case InputAction.MOVE_LEFT:
+                    MovementService.move(self.game_session.player, Direction.LEFT)
+                case InputAction.MOVE_RIGHT:
+                    MovementService.move(self.game_session.player, Direction.RIGHT)

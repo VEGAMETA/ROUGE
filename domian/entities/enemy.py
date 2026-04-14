@@ -11,7 +11,7 @@ class Enemy:
     type: EnemyType
     ai: EnemyAI
     health: int
-    dextrisity: int
+    dexterity: int
     strength: int
     position: Position = Position()
     hostility: Hostility = Hostility.HOSTILE

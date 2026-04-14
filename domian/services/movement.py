@@ -1,15 +1,14 @@
 from typing import overload
-
+from functools import singledispatch
 from domian.entities.enemy import Enemy
 from domian.entities.player import Player
-from domian.value_objects.position import Direction
+from domian.value_objects.position import Position
 
 
 class MovementService:
-    @overload
-    def move(self, player: Player, direction: Direction) -> None:
-        player.position += direction
-
-    @overload
-    def move(self, enemy: Enemy) -> None:
-        enemy.position += enemy.ai.next_direction()
+    @staticmethod
+    def move(entity, position: Position) -> None:
+        if isinstance(entity, Player):
+            entity.position += position
+        elif isinstance(entity, Enemy):
+            entity.position += entity.ai.next_direction()

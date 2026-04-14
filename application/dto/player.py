@@ -9,7 +9,7 @@ class PlayerDTO:
     y: int
     health: int
     max_health: int
-    dextrisity: int
+    dexterity: int
     strength: int
     level: int
 
@@ -22,7 +22,7 @@ class PlayerMapper:
             y=player.position.y,
             health=player.health,
             max_health=player.max_health,
-            dextrisity=player.dextrisity,
+            dexterity=player.dexterity,
             strength=player.strength,
             level=player.level,
         )

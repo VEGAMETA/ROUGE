@@ -10,5 +10,5 @@ class Consumable(Item):
     subtype: ConsumableType = ConsumableType.UNDEFINED
     health: int = 0
     max_health: int = 0
-    dextrisity: int = 0
+    dexterity: int = 0
     strength: int = 0

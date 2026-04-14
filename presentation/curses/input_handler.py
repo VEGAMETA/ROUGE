@@ -12,8 +12,8 @@ class CursesKeymap:
         "a": InputAction.MOVE_LEFT,
         "d": InputAction.MOVE_RIGHT,
         " ": InputAction.ATTACK,
-        "e": InputAction.INTERRACT,
-        "\n": InputAction.INTERRACT,
+        "e": InputAction.INTERACT,
+        "\n": InputAction.INTERACT,
         "\011": InputAction.INVENTORY,
         "\033": InputAction.MENU,
     }

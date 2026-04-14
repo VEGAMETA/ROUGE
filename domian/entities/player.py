@@ -13,7 +13,7 @@ class Player:
     rotation: Rotation
     health: int = 5
     max_health: int = 5
-    dextrisity: int = 1
+    dexterity: int = 1
     strength: int = 1
     weapon: Weapon | None = None
     inventory: Backpack = Backpack()

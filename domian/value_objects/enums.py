@@ -38,10 +38,10 @@ class ItemType(IntEnum):
 class ConsumableType(IntEnum):
     UNDEFINED: int = auto()
     HEALTH: int = auto()
-    DEXTRISITY: int = auto()
+    DEXTERITY: int = auto()
     STRENGTH: int = auto()
     MAX_HEALTH: int = auto()
-    MAX_DEXTRISITY: int = auto()
+    MAX_DEXTERITY: int = auto()
     MAX_STRENGTH: int = auto()
 
 
