@@ -10,9 +10,3 @@ class Renderer(ABC):
 
     @abstractmethod
     def render(self, game_state: GameStateDTO) -> None: ...
-
-    @abstractmethod
-    def close(self) -> None: ...
-
-    def __del__(self) -> None:
-        self.close()

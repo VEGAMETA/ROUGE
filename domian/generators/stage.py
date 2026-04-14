@@ -6,13 +6,14 @@ from domian.entities.room import Room
 from domian.entities.stage import Stage
 from domian.value_objects.enums import DoorSide
 from domian.value_objects.position import Position
+from domian.value_objects.size import Size
 from infrastructure.math import build_grid_graph
 
 
 class StageFactory:
     @staticmethod
-    def create_stage(width: int, height: int) -> Stage:
-        stage: Stage = Stage(width, height, [], [], [])
+    def create_stage(size: Size) -> Stage:
+        stage: Stage = Stage(size, [], [], [])
         StageFactory._create_rooms(stage)
         StageFactory._create_room_graph(stage)
         StageFactory._create_doors(stage)
@@ -21,18 +22,17 @@ class StageFactory:
 
     @staticmethod
     def _create_rooms(stage: Stage) -> None:
-        room_width = stage.width // 3
-        room_height = stage.height // 3
-        if room_width < 6 or room_height < 6:
+        room_size: Size = stage.size / 3
+        if room_size.width < 6 or room_size.height < 6:
             return
 
         for i in range(stage.MAX_ROOMS):
-            width = randint(3, room_width - 3)
-            height = randint(3, room_height - 3)
-            min_x = (i % 3) * room_width + 1
-            max_x = (i % 3 + 1) * room_width - width - 1
-            min_y = (i // 3) * room_height + 1
-            max_y = (i // 3 + 1) * room_height - height - 1
+            width = randint(3, room_size.width - 3)
+            height = randint(3, room_size.height - 3)
+            min_x = (i % 3) * room_size.width + 1
+            max_x = (i % 3 + 1) * room_size.width - width - 1
+            min_y = (i // 3) * room_size.height + 1
+            max_y = (i // 3 + 1) * room_size.height - height - 1
 
             pos = Position(randint(min_x, max_x), randint(min_y, max_y))
             stage.rooms.append(Room(pos, width, height, []))

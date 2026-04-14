@@ -1,20 +1,14 @@
 import curses
 
 from application.dto.game_state import GameStateDTO
-from domian.value_objects.enums import TileType
 from presentation.curses.render_map import CursesRenderMap
 from presentation.renderer import Renderer
 
 
 class CursesRenderer2D(Renderer):
-    def __init__(self) -> None:
+    def __init__(self):
         super().__init__()
-        self.window: curses.window = curses.initscr()
-        self.window.clear()
-        self.window.refresh()
-        curses.noecho()
-        curses.cbreak()
-        self.window.keypad(True)
+        self.window: curses.window
 
     def render(self, game_state: GameStateDTO) -> None:
         visible: set[tuple[int, int]] = set()
@@ -29,7 +23,9 @@ class CursesRenderer2D(Renderer):
                 visible.add((tile.x, tile.y))
             # else:
             #     data = CursesRenderMap.TILE_RENDER_MAP[TileType.VOID]
-            self.window.addstr(tile.y, tile.x, data.character, data.color1)
+            self.window.addstr(
+                tile.y, tile.x, data.character, data.color1 | data.color2
+            )
 
         for enemy in game_state.enemies:
             if (enemy.position.x, enemy.position.y) not in visible:
@@ -55,32 +51,7 @@ class CursesRenderer2D(Renderer):
         curses.curs_set(0)
         self.window.refresh()
 
-    def close(self) -> None:
-        curses.echo()
-        self.window.clear()
-        self.window.refresh()
-        curses.nocbreak()
-        self.window.keypad(False)
-        curses.endwin()
-
 
 class CursesRenderer3D(Renderer):
-    def __init__(self) -> None:
-        super().__init__()
-        self.window: curses.window = curses.initscr()
-        self.window.clear()
-        self.window.refresh()
-        curses.noecho()
-        curses.cbreak()
-        self.window.keypad(True)
-
     def render(self, game_state: GameStateDTO) -> None:
         pass
-
-    def close(self) -> None:
-        curses.echo()
-        self.window.clear()
-        self.window.refresh()
-        curses.nocbreak()
-        self.window.keypad(False)
-        curses.endwin()

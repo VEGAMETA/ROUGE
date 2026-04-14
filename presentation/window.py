@@ -9,9 +9,10 @@ class Window:
         self, renderer: Renderer, input_handler: InputHandler, notificator: Notificator
     ) -> None:
         self.renderer: Renderer = renderer
-        self.window = renderer.window
         self.input_handler: InputHandler = input_handler
         self.notificator: Notificator = notificator
+
+    def get_size(self) -> tuple[int, int]: ...
 
     def _input(self) -> InputAction:
         return self.input_handler.get(self.window)
@@ -28,3 +29,8 @@ class Window:
     ) -> None:
         self.notificator.show(self.window, message, title, duration, style)
         self.input_handler.flush()
+
+    def close(self) -> None: ...
+
+    def __del__(self) -> None:
+        self.close()

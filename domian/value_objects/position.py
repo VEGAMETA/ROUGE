@@ -1,5 +1,7 @@
 from dataclasses import dataclass
 
+from domian.value_objects.vector import Vector2i
+
 
 @dataclass
 class Size:
@@ -8,27 +10,7 @@ class Size:
 
 
 @dataclass
-class Position:
-    x: int = 0
-    y: int = 0
-
-    def __hash__(self) -> int:
-        return hash(hash(self.x) + (self.y))
-
-    def __eq__(self, other: "Position") -> bool:
-        return other.x == self.x and other.y == self.y
-
-    def __add__(self, other: "Position") -> "Position":
-        return Position(self.x + other.x, self.y + other.y)
-
-    def __sub__(self, other: "Position") -> "Position":
-        return Position(self.x - other.x, self.y - other.y)
-
-    def __mul__(self, other: "Position") -> "Position":
-        return Position(self.x * other.x, self.y * other.y)
-
-    def __truediv__(self, other: "Position") -> "Position":
-        return Position(self.x // other.x, self.y // other.y)
+class Position(Vector2i): ...
 
 
 @dataclass(frozen=True)
