@@ -24,16 +24,12 @@ class CursesRenderer2D(Renderer):
         for tile in game_state.tiles:
             if not tile.explored:
                 continue
-            render_data = CursesRenderMap.TILE_RENDER_MAP[tile.type]
-            char = render_data.character
-            color = render_data.color1
-
+            data = CursesRenderMap.TILE_RENDER_MAP[tile.type]
             if tile.visible:
                 visible.add((tile.x, tile.y))
-            elif tile.type == TileType.FLOOR:
-                char = CursesRenderMap.TILE_RENDER_MAP[TileType.VOID].character
-
-            self.window.addstr(tile.x, tile.y, char, color)
+            # else:
+            #     data = CursesRenderMap.TILE_RENDER_MAP[TileType.VOID]
+            self.window.addstr(tile.y, tile.x, data.character, data.color1)
 
         for enemy in game_state.enemies:
             if (enemy.position.x, enemy.position.y) not in visible:
@@ -56,7 +52,7 @@ class CursesRenderer2D(Renderer):
                 item.character,
                 CursesRenderMap.RARITY_MAP[item.rarity],
             )
-
+        curses.curs_set(0)
         self.window.refresh()
 
     def close(self) -> None:

@@ -22,12 +22,12 @@ class CursesRenderData:
 class CursesRenderMap:
     TILE_RENDER_MAP = {
         TileType.VOID: CursesRenderData(" "),
-        TileType.CORRIDOR: CursesRenderData("•"),
+        TileType.CORRIDOR: CursesRenderData("▒"),
         TileType.FLOOR: CursesRenderData("░"),
-        TileType.WALL: CursesRenderData("█"),
+        TileType.WALL: CursesRenderData("▓"),
         TileType.STAIRS_UP: CursesRenderData("▲"),
         TileType.STAIRS_DOWN: CursesRenderData("▼"),
-        TileType.DOOR: CursesRenderData("╬"),
+        TileType.DOOR: CursesRenderData("╫"),  # ╬
     }
 
     ENEMY_RENDER_MAP = {

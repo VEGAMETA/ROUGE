@@ -66,3 +66,15 @@ def exponent_saturation(x: float, m: float) -> float:
 #  \0    m
 def exponent(x: float, m: float) -> float:
     return m * pow(x / m, Constant.E)
+
+
+def build_grid_graph(n: int) -> list[list[int]]:
+    return [
+        [
+            j
+            for j in (i - 1, i + 1, i - n, i + n)
+            if 0 <= j < n * n
+            and (j // n == i // n if abs(j - i) == 1 else abs(j - i) == n)
+        ]
+        for i in range(n * n)
+    ]

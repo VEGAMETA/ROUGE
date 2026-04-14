@@ -8,5 +8,5 @@ from domian.value_objects.position import Position
 class Tile:
     type: TileType
     position: Position
+    explored: bool = True
     visible: bool = False
-    explored: bool = False

@@ -6,18 +6,21 @@ from domian.entities.room import Room
 from domian.entities.stage import Stage
 from domian.value_objects.enums import DoorSide
 from domian.value_objects.position import Position
+from infrastructure.math import build_grid_graph
 
 
 class StageFactory:
     @staticmethod
-    def create_level(stage: Stage) -> None:
-        StageFactory.create_rooms(stage)
-        StageFactory.create_room_graph(stage)
-        StageFactory.create_doors(stage)
-        StageFactory.create_corridors(stage)
+    def create_stage(width: int, height: int) -> Stage:
+        stage: Stage = Stage(width, height, [], [], [])
+        StageFactory._create_rooms(stage)
+        StageFactory._create_room_graph(stage)
+        StageFactory._create_doors(stage)
+        StageFactory._create_corridors(stage)
+        return stage
 
     @staticmethod
-    def create_rooms(stage: Stage) -> None:
+    def _create_rooms(stage: Stage) -> None:
         room_width = stage.width // 3
         room_height = stage.height // 3
         if room_width < 6 or room_height < 6:
@@ -35,18 +38,8 @@ class StageFactory:
             stage.rooms.append(Room(pos, width, height, []))
 
     @staticmethod
-    def create_room_graph(stage: Stage) -> None:
-        neighbors = [
-            [1, 3],
-            [0, 2, 4],
-            [1, 5],
-            [0, 4, 6],
-            [1, 3, 5, 7],
-            [2, 4, 8],
-            [3, 7],
-            [4, 6, 8],
-            [5, 7],
-        ]
+    def _create_room_graph(stage: Stage) -> None:
+        neighbors = build_grid_graph(int(stage.MAX_ROOMS**0.5))
 
         graph: list[set[int]] = [set() for _ in range(stage.MAX_ROOMS)]
 
@@ -63,11 +56,11 @@ class StageFactory:
         stage.graph = graph
 
     @staticmethod
-    def create_corridors(stage: Stage) -> None:
+    def _create_corridors(stage: Stage) -> None:
         rooms = stage.rooms
         for idx, room1 in enumerate(rooms):
             for room2 in stage.graph[idx]:
-                if room2 == idx + 1 and idx % 3 != 2:
+                if room2 == idx + 1 and idx % 3 != stage.MAX_ROOMS - 1:
                     src = next(d for d in room1.doors if d.side == DoorSide.RIGHT)
                     dst = next(d for d in rooms[room2].doors if d.side == DoorSide.LEFT)
                 elif room2 == idx + 3:
@@ -75,10 +68,10 @@ class StageFactory:
                     dst = next(d for d in rooms[room2].doors if d.side == DoorSide.TOP)
                 else:
                     continue
-                StageFactory.create_corridor(stage, src, dst)
+                StageFactory._create_corridor(stage, src, dst)
 
     @staticmethod
-    def create_corridor(stage: Stage, door: Door, matching_door: Door) -> None:
+    def _create_corridor(stage: Stage, door: Door, matching_door: Door) -> None:
         ax, ay, bx, by = (
             door.position.x,
             door.position.y,
@@ -86,7 +79,7 @@ class StageFactory:
             matching_door.position.y,
         )
         path: list[Position] = []
-        horizontal = door.side in (DoorSide.LEFT, DoorSide.RIGHT)
+        horizontal: bool = door.side in (DoorSide.LEFT, DoorSide.RIGHT)
 
         if not horizontal:
             ax, ay, bx, by = ay, ax, by, bx
@@ -109,11 +102,11 @@ class StageFactory:
         stage.corridors.append(Corridor(path))
 
     @staticmethod
-    def create_doors(stage: Stage) -> None:
+    def _create_doors(stage: Stage) -> None:
         for idx, room in enumerate(stage.rooms):
             x, y, w, h = room.position.x, room.position.y, room.width, room.height
             for neighbor in stage.graph[idx]:
-                if neighbor == idx + 1 and idx % 3 != 2:
+                if neighbor == idx + 1 and idx % 3 != stage.MAX_ROOMS - 1:
                     position = Position(x + w, randint(y + 1, y + h - 1))
                     side = DoorSide.RIGHT
                 elif neighbor == idx - 1 and idx % 3 != 0:
