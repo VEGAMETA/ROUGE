@@ -1,4 +1,6 @@
-from presentation.curses.window import CursesWindow
-from presentation.window import Window
+from dataclasses import dataclass
 
-DefaultWindow: Window = CursesWindow()
+
+@dataclass(frozen=True)
+class Visuals:
+    GLIMP_DENSITY: float = 0.02

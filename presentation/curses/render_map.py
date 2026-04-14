@@ -21,9 +21,10 @@ class CursesRenderData:
 
 class CursesRenderMap:
     TILE_RENDER_MAP = {
+        TileType.UNDEFINED: CursesRenderData("☼"),
         TileType.VOID: CursesRenderData(" "),
         TileType.CORRIDOR: CursesRenderData("▒"),
-        TileType.FLOOR: CursesRenderData("░"),
+        TileType.FLOOR: CursesRenderData("·"),  # ░
         TileType.WALL: CursesRenderData("▓"),
         TileType.STAIRS_UP: CursesRenderData("▲"),
         TileType.STAIRS_DOWN: CursesRenderData("▼"),

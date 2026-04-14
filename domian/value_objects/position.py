@@ -1,12 +1,6 @@
 from dataclasses import dataclass
 
-from domian.value_objects.vector import Vector2i
-
-
-@dataclass
-class Size:
-    width: int = 0
-    height: int = 0
+from infrastructure.vector import Vector2i
 
 
 @dataclass

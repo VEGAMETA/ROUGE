@@ -1,6 +1,9 @@
 import curses
+from random import random
 
 from application.dto.game_state import GameStateDTO
+from config.settings import Visuals
+from domian.value_objects.enums import TileType
 from presentation.curses.render_map import CursesRenderMap
 from presentation.renderer import Renderer
 
@@ -17,17 +20,23 @@ class CursesRenderer2D(CursesRenderer):
 
         self.window.clear()
 
-        for tile in game_state.tiles:
-            if not tile.explored:
-                continue
-            data = CursesRenderMap.TILE_RENDER_MAP[tile.type]
-            if tile.visible:
-                visible.add((tile.x, tile.y))
-            # else:
-            #     data = CursesRenderMap.TILE_RENDER_MAP[TileType.VOID]
-            self.window.addstr(
-                tile.y, tile.x, data.character, data.color1 | data.color2
-            )
+        for i in range(len(game_state.tile_map)):
+            for j in range(len(game_state.tile_map[i])):
+                tile = game_state.tile_map[i][j]
+                if not tile.explored:
+                    continue
+                data = CursesRenderMap.TILE_RENDER_MAP[tile.type]
+                if tile.type == TileType.VOID:
+                    if random() < Visuals.GLIMP_DENSITY:
+                        data = CursesRenderMap.TILE_RENDER_MAP[TileType.UNDEFINED]
+                if tile.visible:
+                    visible.add((tile.x, tile.y))
+                    # elif tile.type == TileType.FLOOR or (
+                    #     tile.type in (TileType.WALL, TileType.DOOR, TileType.CORRIDOR)
+                    #     and tile.explored
+                    # ):
+                    # data = CursesRenderMap.TILE_RENDER_MAP[TileType.VOID]
+                self.window.insstr(i, j, data.character, data.color1 | data.color2)
 
         for enemy in game_state.enemies:
             if (enemy.position.x, enemy.position.y) not in visible:
@@ -50,6 +59,12 @@ class CursesRenderer2D(CursesRenderer):
                 item.character,
                 CursesRenderMap.RARITY_MAP[item.rarity],
             )
+
+        self.window.addstr(
+            game_state.player.y,
+            game_state.player.x,
+            "@",
+        )
         curses.curs_set(0)
         self.window.refresh()
 

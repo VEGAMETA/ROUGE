@@ -35,7 +35,7 @@ class StageFactory:
             max_y = (i // 3 + 1) * room_size.height - height - 1
 
             pos = Position(randint(min_x, max_x), randint(min_y, max_y))
-            stage.rooms.append(Room(pos, width, height, []))
+            stage.rooms.append(Room(pos, Size(width, height), []))
 
     @staticmethod
     def _create_room_graph(stage: Stage) -> None:
@@ -72,12 +72,7 @@ class StageFactory:
 
     @staticmethod
     def _create_corridor(stage: Stage, door: Door, matching_door: Door) -> None:
-        ax, ay, bx, by = (
-            door.position.x,
-            door.position.y,
-            matching_door.position.x,
-            matching_door.position.y,
-        )
+        ax, ay, bx, by = (*door.position, *matching_door.position)
         path: list[Position] = []
         horizontal: bool = door.side in (DoorSide.LEFT, DoorSide.RIGHT)
 
@@ -104,7 +99,7 @@ class StageFactory:
     @staticmethod
     def _create_doors(stage: Stage) -> None:
         for idx, room in enumerate(stage.rooms):
-            x, y, w, h = room.position.x, room.position.y, room.width, room.height
+            x, y, w, h = (*room.position, *room.size)
             for neighbor in stage.graph[idx]:
                 if neighbor == idx + 1 and idx % 3 != stage.MAX_ROOMS - 1:
                     position = Position(x + w, randint(y + 1, y + h - 1))
