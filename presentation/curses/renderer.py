@@ -5,11 +5,13 @@ from presentation.curses.render_map import CursesRenderMap
 from presentation.renderer import Renderer
 
 
-class CursesRenderer2D(Renderer):
+class CursesRenderer(Renderer):
     def __init__(self):
         super().__init__()
         self.window: curses.window
 
+
+class CursesRenderer2D(CursesRenderer):
     def render(self, game_state: GameStateDTO) -> None:
         visible: set[tuple[int, int]] = set()
 
@@ -52,6 +54,5 @@ class CursesRenderer2D(Renderer):
         self.window.refresh()
 
 
-class CursesRenderer3D(Renderer):
-    def render(self, game_state: GameStateDTO) -> None:
-        pass
+class CursesRenderer3D(CursesRenderer):
+    def render(self, game_state: GameStateDTO) -> None: ...
