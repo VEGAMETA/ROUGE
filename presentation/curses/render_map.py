@@ -9,7 +9,7 @@ from curses import (
 )
 from dataclasses import dataclass
 
-from domian.value_objects.enums import EnemyType, ItemRarityType, ItemType, TileType
+from domain.value_objects.enums import EnemyType, ItemRarityType, ItemType, TileType
 
 
 @dataclass
@@ -20,6 +20,8 @@ class CursesRenderData:
 
 
 class CursesRenderMap:
+    PLAYER_RENDER_DATA = CursesRenderData("@", COLOR_WHITE)
+
     TILE_RENDER_MAP = {
         TileType.UNDEFINED: CursesRenderData("☼"),
         TileType.VOID: CursesRenderData(" "),

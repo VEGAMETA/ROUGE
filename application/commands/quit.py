@@ -1,8 +1,7 @@
 from application.commands.command import Command
 from domain.entities.game_session import GameSession
-from domain.services.combat import CombatService
 
 
-class Attack(Command):
+class Quit(Command):
     def execute(self, session: GameSession, *args, **kwargs):
-        CombatService.attack(session)
+        session.process = False

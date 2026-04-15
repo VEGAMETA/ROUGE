@@ -14,13 +14,13 @@ class Window:
 
     def get_size(self) -> tuple[int, int]: ...
 
-    def _input(self) -> InputAction:
+    def action(self) -> InputAction:
         return self.input_handler.get(self.window)
 
-    def _draw(self, game_state: GameStateDTO) -> None:
+    def draw(self, game_state: GameStateDTO) -> None:
         self.renderer.render(game_state)
 
-    def _notify(
+    def notify(
         self,
         message: str,
         title: str = "",

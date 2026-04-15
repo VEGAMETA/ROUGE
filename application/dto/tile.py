@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from domian.entities.tile import Tile
-from domian.value_objects.enums import TileType
+from domain.entities.tile import Tile
+from domain.value_objects.enums import TileType
 
 
 @dataclass

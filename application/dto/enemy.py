@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
-from domian.entities.enemy import Enemy
-from domian.value_objects.enums import EnemyType
+from domain.entities.enemy import Enemy
+from domain.value_objects.enums import EnemyType
 
 
 @dataclass

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 
-from domian.entities.player import Player
+from domain.entities.player import Player
 
 
 @dataclass

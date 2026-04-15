@@ -4,7 +4,7 @@ from application.dto.enemy import EnemyDTO, EnemyMaper
 from application.dto.item import ItemDTO, ItemMapper
 from application.dto.player import PlayerDTO, PlayerMapper
 from application.dto.tile import TileDTO, TileMapMapper
-from domian.entities.game_session import GameSession
+from domain.entities.game_session import GameSession
 
 
 @dataclass

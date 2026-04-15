@@ -1,10 +1,14 @@
+from typing import Optional
+
 from application.commands.command import Command
-from domian.entities.player import Player
-from domian.services.movement import MovementService
-from domian.value_objects.position import Direction
+from domain.entities.game_session import GameSession
+from domain.services.movement import MovementService
+from domain.value_objects.position import Direction
 
 
 class Move(Command):
-    @staticmethod
-    def execute(player: Player, direction: Direction):
-        MovementService.move(player, direction)
+    def __init__(self, direction: Optional[Direction] = None) -> None:
+        self.direction = direction
+
+    def execute(self, session: GameSession, *args, **kwargs):
+        MovementService.move(session, self.direction)

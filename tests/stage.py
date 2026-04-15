@@ -1,7 +1,7 @@
 from application.dto.game_state import GameStateDTO
 from application.dto.tile import TileMapper
-from domian.generators.stage import StageFactory
-from domian.generators.tiles import TileFactory
+from domain.generators.stage import StageFactory
+from domain.generators.tiles import TileFactory
 from presentation.window import Window
 
 

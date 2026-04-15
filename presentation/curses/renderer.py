@@ -3,8 +3,8 @@ from random import random
 
 from application.dto.game_state import GameStateDTO
 from config.settings import Visuals
-from domian.value_objects.enums import TileType
-from presentation.curses.render_map import CursesRenderMap
+from domain.value_objects.enums import TileType
+from presentation.curses.render_map import CursesRenderData, CursesRenderMap
 from presentation.renderer import Renderer
 
 
@@ -15,6 +15,12 @@ class CursesRenderer(Renderer):
 
 
 class CursesRenderer2D(CursesRenderer):
+    def add_data(self, x: int, y: int, data: CursesRenderData):
+        self.window.addstr(y, x, data.character, data.color1 | data.color2)
+
+    def insert_data(self, x: int, y: int, data: CursesRenderData):
+        self.window.insstr(y, x, data.character, data.color1 | data.color2)
+
     def render(self, game_state: GameStateDTO) -> None:
         visible: set[tuple[int, int]] = set()
 
@@ -36,35 +42,26 @@ class CursesRenderer2D(CursesRenderer):
                     #     and tile.explored
                     # ):
                     # data = CursesRenderMap.TILE_RENDER_MAP[TileType.VOID]
-                self.window.insstr(i, j, data.character, data.color1 | data.color2)
+                self.insert_data(j, i, data)
 
         for enemy in game_state.enemies:
-            if (enemy.position.x, enemy.position.y) not in visible:
-                continue
-            self.window.addstr(
-                enemy.position.y,
-                enemy.position.x,
-                CursesRenderMap.ENEMY_RENDER_MAP[enemy.type].character,
-                CursesRenderMap.ENEMY_RENDER_MAP[enemy.type].color,
-            )
+            # if (enemy.x, enemy.y) not in visible:
+            #     continue
+            data = CursesRenderMap.ENEMY_RENDER_MAP[enemy.type]
+            self.add_data(enemy.x, enemy.y, data)
 
         for item in game_state.items:
-            if (item.position.x, item.position.y) not in visible:
+            if (item.x, item.y) not in visible:
                 continue
             if not item.is_owned:
                 continue
-            self.window.addstr(
-                item.position.y,
-                item.position.x,
-                item.character,
-                CursesRenderMap.RARITY_MAP[item.rarity],
-            )
+            data = CursesRenderMap.ITEM_RENDER_MAP[item.type]
+            data.color1 |= CursesRenderMap.RARITY_MAP[item.rarity]
+            self.add_data(item.x, item.y, data)
 
-        self.window.addstr(
-            game_state.player.y,
-            game_state.player.x,
-            "@",
-        )
+        data = CursesRenderMap.PLAYER_RENDER_DATA
+        self.add_data(game_state.player.x, game_state.player.y, data)
+
         curses.curs_set(0)
         self.window.refresh()
 
