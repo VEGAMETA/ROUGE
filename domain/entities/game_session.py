@@ -12,6 +12,7 @@ from domain.generators.enemy import EnemyFactory
 from domain.generators.stage import StageFactory
 from domain.generators.tiles import TileFactory
 from domain.rules.progression import Level
+from domain.value_objects.enums import SoundType
 from domain.value_objects.position import Position
 from domain.value_objects.rotation import Rotation
 from domain.value_objects.size import Size
@@ -24,6 +25,7 @@ class GameSession(Entity):
     enemies: list[Enemy]
     tiles: list[Tile]
     items: list[Item]
+    sounds: list[SoundType]
     tile_map: list[list[Tile]]
     process: bool = True
     player_turn: bool = True
@@ -52,6 +54,7 @@ class GameSession(Entity):
             if room != player_room
         }
         self.items = []
+        self.sounds = []
 
     def find_enemy(self) -> Optional[Enemy]:
         enemy_position = self.player.position + self.player.direction

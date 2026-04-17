@@ -75,3 +75,8 @@ class ItemRarityType(IntEnum):
     RARE: int = auto()
     EPIC: int = auto()
     LEGENDARY: int = auto()
+
+
+class SoundType(IntEnum):
+    MOVE: int = auto()
+    SWING: int = auto()
