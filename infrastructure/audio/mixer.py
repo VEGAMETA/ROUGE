@@ -1,6 +1,7 @@
-from threading import Thread
 from queue import Queue
+from threading import Thread
 from typing import Dict
+
 from simpleaudio import WaveObject
 
 from domain.value_objects.enums import SoundType
@@ -10,7 +11,7 @@ class Mixer(Thread):
     def __init__(self) -> None:
         super().__init__(daemon=True)
         self.sounds: Dict[SoundType, WaveObject] = {}
-        self.q = Queue()
+        self.q: Queue = Queue()
         self.running: bool = False
 
     def register(self, effect: SoundType, path: str) -> None:

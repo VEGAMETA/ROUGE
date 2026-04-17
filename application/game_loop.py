@@ -27,8 +27,8 @@ class GameLoop:
         while self.stage < len(Level) and self.game_session.process:
             game_state = GameMapper.to_dto(self.game_session)
             self.window.draw(game_state)
-            action: InputAction = self.window.action()
             self.game_session.player_turn = True
+            action: InputAction = self.window.action()
             CommandService(action, self.game_session, self.window).execute()
             self.mixer.play(self.game_session)
             self.game_session.player_turn = False
