@@ -27,6 +27,5 @@ class EnemyFactory:
             strength=strength,
             level=level,
             type=enemy_type,
-            ai=template.ai,
             hostility=template.hostility,
         )

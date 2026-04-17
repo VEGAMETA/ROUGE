@@ -1,50 +1,52 @@
-from abc import ABC, abstractmethod
-
-# circular import
-from typing import TYPE_CHECKING
-
-from domain.value_objects.position import Direction
-
-if TYPE_CHECKING:
-    from domain.entities.game_session import GameSession
+from domain.entities.enemy import Enemy
+from domain.entities.game_session import GameSession
+from domain.services.combat import CombatService
+from domain.services.movement import MovementService
+from domain.services.pathfinding import astar
+from domain.value_objects.enums import EnemyAction
 
 
-class EnemyAI(ABC):
+class EnemyAI:
     @staticmethod
-    @abstractmethod
-    def next_direction(self, context: "GameSession") -> Direction: ...
+    def action(enemy: "Enemy", context: "GameSession") -> EnemyAction:
+        if context.player_turn:
+            return EnemyAction.UNDEFINED
+        if context.player.position.is_adjacent(enemy.position):
+            return EnemyAI.attack(enemy, context)
+        return EnemyAI.move(enemy, context)
 
-
-class ZombieAI(EnemyAI):
     @staticmethod
-    def next_direction(self, context: "GameSession") -> Direction:
-        # Implement ZOMBIE AI logic here
-        pass
+    def attack(enemy: "Enemy", context: "GameSession") -> EnemyAction:
+        CombatService.hit(enemy, context.player)
+        return EnemyAction.ATTACK
 
-
-class VampireAI(EnemyAI):
     @staticmethod
-    def next_direction(self, context: "GameSession") -> Direction:
-        # Implement VAMPIRE AI logic here
-        pass
+    def move(enemy: "Enemy", context: "GameSession") -> EnemyAction:
+        if (
+            path := astar(
+                *enemy.position,
+                *context.player.position,
+                context.get_obstacle_map(),
+            )
+            is None
+        ):
+            return EnemyAction.UNDEFINED
+
+        if path and len(path):
+            MovementService.move_ai(enemy, path[1], context)
+        return EnemyAction.UNDEFINED
 
 
-class GhostAI(EnemyAI):
-    @staticmethod
-    def next_direction(self, context: "GameSession") -> Direction:
-        # Implement GHOST AI logic here
-        pass
+class ZombieAI(EnemyAI): ...
 
 
-class OgreAI(EnemyAI):
-    @staticmethod
-    def next_direction(self, context: "GameSession") -> Direction:
-        # Implement OGRE AI logic here
-        pass
+class VampireAI(EnemyAI): ...
 
 
-class SnakeMageAI(EnemyAI):
-    @staticmethod
-    def next_direction(self, context: "GameSession") -> Direction:
-        # Implement SNAKE MAGE AI logic here
-        pass
+class GhostAI(EnemyAI): ...
+
+
+class OgreAI(EnemyAI): ...
+
+
+class SnakeMageAI(EnemyAI): ...

@@ -4,6 +4,7 @@ from application.commands.command import CommandService
 from application.dto.game_state import GameMapper
 from domain.entities.game_session import GameSession
 from domain.rules.progression import Level
+from domain.services.ai import EnemyAI
 from domain.value_objects.size import Size
 from presentation.input_handler import InputAction
 from presentation.window import Window
@@ -26,3 +27,5 @@ class GameLoop:
             self.game_session.player_turn = True
             CommandService(action, self.game_session, self.window).execute()
             self.game_session.player_turn = False
+            for enemy in self.game_session.enemies:
+                EnemyAI.action(enemy, self.game_session)

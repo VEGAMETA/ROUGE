@@ -1,23 +1,20 @@
-from typing import Optional
-
+from domain.entities.enemy import Enemy
 from domain.entities.game_session import GameSession
-from domain.value_objects.enums import TileType
-from domain.value_objects.position import Direction
+from domain.entities.tile import OBSTACLES
+from domain.value_objects.position import Direction, Position
 
 
 class MovementService:
     @staticmethod
-    def move(session: GameSession, direction: Optional[Direction] = None) -> None:
-        if direction:
-            new_position = session.player.position + direction
-            if session.tile_map[new_position.y][new_position.x].type not in (
-                TileType.FLOOR,
-                TileType.DOOR,
-                TileType.CORRIDOR,
-            ):
-                return
-            session.player.position = new_position
-            session.player.direction = direction
+    def move(context: GameSession, direction: Direction) -> None:
+        new_position = context.player.position + direction
+        if context.tile_map[new_position.y][new_position.x].type in OBSTACLES:
             return
-        for enemy in session.enemies:
-            enemy.position += enemy.ai.next_direction(session)
+        context.player.position = new_position
+        context.player.direction = direction
+
+    @staticmethod
+    def move_ai(enemy: Enemy, next_position: Position, context: GameSession) -> None:
+        # if context.tile_map[next_position.y][next_position.x].type in OBSTACLES:
+        #     return
+        enemy.position = next_position

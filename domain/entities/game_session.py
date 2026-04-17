@@ -7,7 +7,7 @@ from domain.entities.entity import Entity
 from domain.entities.item import Item
 from domain.entities.player import Player
 from domain.entities.stage import Stage
-from domain.entities.tile import Tile
+from domain.entities.tile import OBSTACLES, Tile
 from domain.generators.enemy import EnemyFactory
 from domain.generators.stage import StageFactory
 from domain.generators.tiles import TileFactory
@@ -59,3 +59,12 @@ class GameSession(Entity):
             if enemy.position == enemy_position:
                 return enemy
         return None
+
+    def get_obstacle_map(self) -> list[list[bool]]:
+        obstacle_map = [
+            [False for _ in range(self.size.width)] for _ in range(self.size.height)
+        ]
+        for tile in self.tiles:
+            if tile.type in OBSTACLES:
+                obstacle_map[tile.position.y][tile.position.x] = True
+        return obstacle_map
