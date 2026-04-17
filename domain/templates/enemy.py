@@ -1,7 +1,6 @@
 from functools import partial
 
 from domain.entities.enemy import Enemy
-from domain.services.ai import GhostAI, OgreAI, SnakeMageAI, VampireAI, ZombieAI
 from domain.value_objects.enums import EnemyType, Hostility
 
 ENEMY_TEMPLATES = {
@@ -9,7 +8,6 @@ ENEMY_TEMPLATES = {
         Enemy,
         type=EnemyType.ZOMBIE,
         hostility=Hostility.HOSTILE,
-        ai=ZombieAI(),
         health=25,
         max_health=25,
         dexterity=3,
@@ -19,7 +17,6 @@ ENEMY_TEMPLATES = {
         Enemy,
         type=EnemyType.VAMPIRE,
         hostility=Hostility.HOSTILE,
-        ai=VampireAI(),
         health=20,
         max_health=20,
         dexterity=15,
@@ -29,7 +26,6 @@ ENEMY_TEMPLATES = {
         Enemy,
         type=EnemyType.GHOST,
         hostility=Hostility.NEUTRAL,
-        ai=GhostAI(),
         health=10,
         max_health=10,
         dexterity=10,
@@ -39,7 +35,6 @@ ENEMY_TEMPLATES = {
         Enemy,
         type=EnemyType.OGRE,
         hostility=Hostility.HOSTILE,
-        ai=OgreAI(),
         health=65,
         max_health=65,
         dexterity=2,
@@ -49,7 +44,6 @@ ENEMY_TEMPLATES = {
         Enemy,
         type=EnemyType.SNAKE_MAGE,
         hostility=Hostility.HOSTILE,
-        ai=SnakeMageAI(),
         health=50,
         max_health=50,
         dexterity=15,

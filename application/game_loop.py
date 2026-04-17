@@ -5,6 +5,7 @@ from application.dto.game_state import GameMapper
 from application.sounds.assembler import SoundAssembler
 from domain.entities.game_session import GameSession
 from domain.rules.progression import Level
+from domain.services.ai import EnemyAI
 from domain.value_objects.size import Size
 from infrastructure.audio.mixer import Mixer
 from presentation.input_handler import InputAction
@@ -32,4 +33,6 @@ class GameLoop:
             CommandService(action, self.game_session, self.window).execute()
             self.mixer.play(self.game_session)
             self.game_session.player_turn = False
+            for enemy in self.game_session.enemies:
+                EnemyAI.action(enemy, self.game_session)
         self.mixer.stop()

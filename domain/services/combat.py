@@ -16,7 +16,3 @@ class CombatService:
             if not defender:
                 return
             return CombatService.hit(context.player, defender)
-
-        for enemy in context.enemies:
-            if enemy.position.is_adjacent(context.player.position):
-                CombatService.hit(enemy, context.player)

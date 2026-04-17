@@ -69,6 +69,13 @@ class EnemyType(IntEnum):
     SNAKE_MAGE: int = auto()
 
 
+class EnemyAction(IntEnum):
+    UNDEFINED: int = auto()
+    MOVE: int = auto()
+    ATTACK: int = auto()
+    FLEE: int = auto()
+
+
 class ItemRarityType(IntEnum):
     UNDEFINED: int = auto()
     COMMON: int = auto()
