@@ -35,4 +35,3 @@ class GameLoop:
             self.game_session.player_turn = False
             for enemy in self.game_session.enemies:
                 EnemyAI.action(enemy, self.game_session)
-        self.mixer.stop()

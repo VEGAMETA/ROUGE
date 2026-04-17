@@ -1,3 +1,4 @@
+from pathlib import Path
 from queue import Queue
 from threading import Thread
 from typing import Dict
@@ -11,11 +12,11 @@ class Mixer(Thread):
     def __init__(self) -> None:
         super().__init__(daemon=True)
         self.sounds: Dict[SoundType, WaveObject] = {}
-        self.q: Queue = Queue()
+        self.q: Queue[SoundType] = Queue()
         self.running: bool = False
 
-    def register(self, effect: SoundType, path: str) -> None:
-        self.sounds[effect] = WaveObject.from_wave_file(str(path))
+    def register(self, effect: SoundType, path: Path) -> None:
+        self.sounds[effect] = WaveObject.from_wave_file(path.as_posix())
 
     def play(self, session: SoundType) -> None:
         for sound in session.sounds:
@@ -27,13 +28,16 @@ class Mixer(Thread):
         self.running = True
         while self.running:
             effect = self.q.get()
-            if effect is None:
+            if not effect:
                 break
-            sound = self.sounds.get(effect)
-            if sound:
+            if sound := self.sounds.get(effect):
                 sound.play()
             self.q.task_done()
 
     def stop(self) -> None:
         self.running = False
-        self.q.put(None)
+        while not self.q.empty():
+            self.q.get()
+
+    def __del__(self) -> None:
+        self.stop()

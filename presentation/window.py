@@ -1,16 +1,22 @@
 from application.dto.game_state import GameStateDTO
 from presentation.input_handler import InputAction, InputHandler
 from presentation.renderer import Renderer
+from presentation.views.menu import Menu
 from presentation.views.notificator import NotificationType, Notificator
 
 
 class Window:
     def __init__(
-        self, renderer: Renderer, input_handler: InputHandler, notificator: Notificator
+        self,
+        renderer: Renderer,
+        input_handler: InputHandler,
+        notificator: Notificator,
+        menu: Menu,
     ) -> None:
         self.renderer: Renderer = renderer
         self.input_handler: InputHandler = input_handler
         self.notificator: Notificator = notificator
+        self.menu: Menu = menu
 
     def get_size(self) -> tuple[int, int]: ...
 
