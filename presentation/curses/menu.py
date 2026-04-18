@@ -1,7 +1,18 @@
 import curses
 
+from infrastructure.timers import Timer
+from presentation.curses.widgets import VerticalMenu
 from presentation.views.menu import Menu
 
 
 class CursesMenu(Menu):
-    def show(window: curses.window) -> None: ...
+    @staticmethod
+    def show(window: curses.window, duration: float = 0.0) -> None:
+        curses.curs_set(0)
+        window.clear()
+        window.refresh()
+        menu = VerticalMenu()
+        menu.draw(window)
+        if duration:
+            Timer.sleep_for(duration)
+

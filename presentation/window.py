@@ -35,6 +35,10 @@ class Window:
     ) -> None:
         self.notificator.show(self.window, message, title, duration, style)
         self.input_handler.flush()
+    
+    def show_menu(self, duration: float = 0.0) -> None:
+        self.menu.show(self.window, duration)
+        self.input_handler.flush()
 
     def close(self) -> None: ...
 
