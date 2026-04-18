@@ -8,7 +8,7 @@ class SoundAssembler:
     @staticmethod
     def assemble_sounds(mixer: Mixer) -> None:
         mixer.register(
-            SoundType.MUSIC, Path("./static/audio/music/dungeon-ambiance.wav")
+            SoundType.MUSIC, Path("./static/audio/music/dungeon-ambience.wav")
         )
         mixer.register(SoundType.MOVE, Path("./static/audio/sfx/move.wav"))
         mixer.register(SoundType.SWING, Path("./static/audio/sfx/swing.wav"))

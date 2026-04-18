@@ -7,7 +7,7 @@ from presentation.views.menu import Menu
 
 class CursesMenu(Menu):
     @staticmethod
-    def show(window: curses.window, duration: float = 0.0) -> None:
+    def show(window: curses.window, state: bool = False) -> None:
         curses.curs_set(0)
         window.clear()
         window.refresh()
