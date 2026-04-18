@@ -16,8 +16,12 @@ class CursesRenderer(Renderer):
 
 
 class CursesRenderer2D(CursesRenderer):
+    ColorPair = 1
+
     def add_data(self, x: int, y: int, data: CursesRenderData):
-        self.window.addstr(y, x, data.character, data.color1 | data.color2)
+        curses.init_pair(self.ColorPair, data.color1, data.color2)
+        self.window.addstr(y, x, data.character, curses.color_pair(self.ColorPair))
+        self.ColorPair += 1
 
     def insert_data(self, x: int, y: int, data: CursesRenderData):
         self.window.insstr(y, x, data.character, data.color1 | data.color2)
@@ -28,17 +32,19 @@ class CursesRenderer2D(CursesRenderer):
         max_health = round(game_state.player.max_health)
         strength = game_state.player.strength
         dexterity = game_state.player.dexterity
+        curses.init_pair(255, curses.COLOR_BLACK, curses.COLOR_BLACK)
         self.window.addstr(
             0,
             0,
             f"↓{level:2d}/{len(Level)}    ♥{health:4d}/{max_health}    S {strength}  D {dexterity}",
+            curses.color_pair(255) | curses.A_REVERSE | curses.A_BLINK | curses.A_DIM,
         )
 
     def render(self, game_state: GameStateDTO) -> None:
         visible: set[tuple[int, int]] = set()
 
         self.window.clear()
-
+        self.ColorPair = 1
         for i in range(len(game_state.tile_map)):
             for j in range(len(game_state.tile_map[i])):
                 tile = game_state.tile_map[i][j]

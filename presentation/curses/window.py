@@ -18,6 +18,7 @@ class CursesWindow(Window):
         self.window.refresh()
         curses.noecho()
         curses.cbreak()
+        curses.start_color()
         self.window.keypad(True)
 
     def get_size(self) -> tuple[int, int]:
@@ -29,4 +30,5 @@ class CursesWindow(Window):
         self.window.refresh()
         curses.nocbreak()
         self.window.keypad(False)
+        curses.use_default_colors()
         curses.endwin()

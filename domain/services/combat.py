@@ -7,6 +7,7 @@ class CombatService:
     @staticmethod
     def hit(attacker: Character, defender: Character) -> None:
         defender.health -= attacker.strength + attacker.dexterity * 0.5
+        defender.health = max(defender.health, 0)
 
     @staticmethod
     def attack(context: GameSession) -> bool:
