@@ -1,6 +1,7 @@
 from curses import (
     COLOR_BLACK,
     COLOR_BLUE,
+    COLOR_CYAN,
     COLOR_GREEN,
     COLOR_MAGENTA,
     COLOR_RED,
@@ -20,7 +21,7 @@ class CursesRenderData:
 
 
 class CursesRenderMap:
-    PLAYER_RENDER_DATA = CursesRenderData("@", COLOR_WHITE)
+    PLAYER_RENDER_DATA = CursesRenderData("@", COLOR_YELLOW)
 
     TILE_RENDER_MAP = {
         TileType.UNDEFINED: CursesRenderData("☼"),
@@ -36,9 +37,9 @@ class CursesRenderMap:
     ENEMY_RENDER_MAP = {
         EnemyType.ZOMBIE: CursesRenderData("z", COLOR_GREEN),
         EnemyType.VAMPIRE: CursesRenderData("v", COLOR_RED),
-        EnemyType.GHOST: CursesRenderData("g", COLOR_WHITE),
-        EnemyType.OGRE: CursesRenderData("o", COLOR_YELLOW),
-        EnemyType.SNAKE_MAGE: CursesRenderData("s", COLOR_WHITE),
+        EnemyType.GHOST: CursesRenderData("g", COLOR_BLUE),
+        EnemyType.OGRE: CursesRenderData("o", COLOR_MAGENTA),
+        EnemyType.SNAKE_MAGE: CursesRenderData("s", COLOR_CYAN),
     }
 
     ITEM_RENDER_MAP = {

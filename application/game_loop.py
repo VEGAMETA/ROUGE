@@ -48,6 +48,6 @@ class GameLoop:
 
             self.mixer.play(self.game_session)
 
-        self.window.draw(game_state)
         if self.stage < len(Level):
+            self.window.draw(GameMapper.to_dto(self.game_session))
             self.window.game_over()

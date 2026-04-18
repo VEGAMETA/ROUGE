@@ -16,3 +16,11 @@ Linux
 ```bash
     uv run game.py
 ```
+
+If you have any troubles with `uv` building `simpleaudio` binary simply install `libasound2-dev`
+
+Debian:
+
+```bash
+sudo apt install libasound2-dev
+```
