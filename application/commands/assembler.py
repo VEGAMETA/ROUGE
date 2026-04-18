@@ -1,4 +1,3 @@
-from application.commands.attack import Attack
 from application.commands.command import CommandService
 from application.commands.idle import Idle
 from application.commands.inventory import Inventory
@@ -13,8 +12,8 @@ class CommandAssembler:
     @staticmethod
     def assemble_commands():
         CommandService.register(InputAction.UNDEFINED, lambda: Idle())
+        CommandService.register(InputAction.PASS, lambda: Idle(True))
         CommandService.register(InputAction.QUIT, lambda: Quit())
-        CommandService.register(InputAction.ATTACK, lambda: Attack())
         CommandService.register(InputAction.MOVE_UP, lambda: Move(Direction.UP))
         CommandService.register(InputAction.MOVE_DOWN, lambda: Move(Direction.DOWN))
         CommandService.register(InputAction.MOVE_LEFT, lambda: Move(Direction.LEFT))

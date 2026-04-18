@@ -3,6 +3,7 @@ from random import random
 
 from application.dto.game_state import GameStateDTO
 from config.settings import Visuals
+from domain.rules.progression import Level
 from domain.value_objects.enums import TileType
 from presentation.curses.render_map import CursesRenderData, CursesRenderMap
 from presentation.renderer import Renderer
@@ -20,6 +21,18 @@ class CursesRenderer2D(CursesRenderer):
 
     def insert_data(self, x: int, y: int, data: CursesRenderData):
         self.window.insstr(y, x, data.character, data.color1 | data.color2)
+
+    def hud(self, game_state: GameStateDTO) -> None:
+        level = game_state.player.level.value
+        health = round(game_state.player.health)
+        max_health = round(game_state.player.max_health)
+        strength = game_state.player.strength
+        dexterity = game_state.player.dexterity
+        self.window.addstr(
+            0,
+            0,
+            f"↓{level:2d}/{len(Level)}    ♥{health:4d}/{max_health}    S {strength}  D {dexterity}",
+        )
 
     def render(self, game_state: GameStateDTO) -> None:
         visible: set[tuple[int, int]] = set()
@@ -61,6 +74,8 @@ class CursesRenderer2D(CursesRenderer):
 
         data = CursesRenderMap.PLAYER_RENDER_DATA
         self.add_data(game_state.player.x, game_state.player.y, data)
+
+        self.hud(game_state)
 
         curses.curs_set(0)
         self.window.refresh()

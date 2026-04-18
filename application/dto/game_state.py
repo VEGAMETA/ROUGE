@@ -16,10 +16,10 @@ class GameStateDTO:
 
 
 class GameMapper:
-    def to_dto(session: GameSession):
+    def to_dto(context: GameSession):
         return GameStateDTO(
-            player=PlayerMapper.to_dto(session.player),
-            enemies=list(map(EnemyMaper.to_dto, session.enemies)),
-            tile_map=TileMapMapper.to_dto(session.tile_map),
-            items=list(map(ItemMapper.to_dto, session.items)),
+            player=PlayerMapper.to_dto(context.player),
+            enemies=list(map(EnemyMaper.to_dto, context.enemies)),
+            tile_map=TileMapMapper.to_dto(context.tile_map),
+            items=list(map(ItemMapper.to_dto, context.items)),
         )

@@ -72,17 +72,6 @@ class CursesNotificator(Notificator):
         start_x = max(0, (screen_w - win_w) // 2)
 
         try:
-            shadow = curses.newwin(win_h, win_w, start_y + 2, start_x + 2)
-            shadow.bkgd(
-                " ",
-                curses.color_pair(NotificationType.DEBUG.value) | curses.A_DIM,
-            )
-            shadow.refresh()
-
-        except curses.error:
-            pass
-
-        try:
             win = curses.newwin(win_h, win_w, start_y, start_x)
             win.bkgd(" ", color_pair)
             win.attron(color_pair)
@@ -92,15 +81,15 @@ class CursesNotificator(Notificator):
             title_text = " ".join([icon, title]).strip()
             title_x = max(1, (inner_w - len(title_text) + 1) // 2)
             if title_text:
-                win.insstr(0, title_x, f" {title_text} ")
+                win.addstr(0, title_x, f" {title_text} ")
 
             for i, line in enumerate(lines):
-                win.insstr(1 + i, 3, line, color_pair)
+                win.addstr(1 + i, 3, line, color_pair)
 
             if not duration:
                 hint = "[ Press any key... ]"
                 hint_x = max(inner_h, (inner_w - len(hint) + 2) // 2)
-                win.insstr(inner_h + 1, hint_x, hint)
+                win.addstr(inner_h + 1, hint_x, hint)
 
             win.attroff(color_pair)
             win.refresh()
@@ -117,9 +106,3 @@ class CursesNotificator(Notificator):
         win.clear()
         win.bkgd(" ")
         win.refresh()
-        try:
-            shadow.clear()
-            shadow.bkgd(" ")
-            shadow.refresh()
-        except Exception:
-            pass

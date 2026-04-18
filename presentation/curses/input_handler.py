@@ -20,7 +20,7 @@ class CursesKeymap:
         curses.KEY_DOWN: InputAction.MOVE_DOWN,
         curses.KEY_LEFT: InputAction.MOVE_LEFT,
         curses.KEY_RIGHT: InputAction.MOVE_RIGHT,
-        32: InputAction.ATTACK,
+        32: InputAction.PASS,
         ord("e"): InputAction.INTERACT,
         ord("E"): InputAction.INTERACT,
         curses.KEY_ENTER: InputAction.INTERACT,

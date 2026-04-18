@@ -8,7 +8,9 @@ from infrastructure.vector import Vector2i
 @dataclass
 class Position(Vector2i):
     def is_adjacent(self, other: Position) -> bool:
-        return abs(self.x - other.x) + abs(self.y - other.y) == 1
+        if abs(self.x - other.x) > 1 or abs(self.y - other.y) > 1:
+            return False
+        return True
 
 
 @dataclass(frozen=True)

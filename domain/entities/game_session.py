@@ -28,15 +28,14 @@ class GameSession(Entity):
     sounds: list[SoundType]
     tile_map: list[list[Tile]]
     process: bool = True
-    player_turn: bool = True
 
     def __init__(self, size: Size) -> None:
         self.size: Size = size
         self.player: Player = Player(
-            health=1,
-            max_health=1,
-            dexterity=1,
-            strength=1,
+            health=100,
+            max_health=100,
+            dexterity=25,
+            strength=10,
             level=Level.LEVEL_1,
             position=Position(),
             rotation=Rotation(),
@@ -64,10 +63,10 @@ class GameSession(Entity):
         return None
 
     def get_obstacle_map(self) -> list[list[bool]]:
-        obstacle_map = [
-            [False for _ in range(self.size.width)] for _ in range(self.size.height)
-        ]
+        obstacle_map = [[True] * self.size.width for _ in range(self.size.height)]
         for tile in self.tiles:
-            if tile.type in OBSTACLES:
-                obstacle_map[tile.position.y][tile.position.x] = True
+            if tile.type not in OBSTACLES:
+                obstacle_map[tile.position.y][tile.position.x] = False
+        for enemy in self.enemies:
+            obstacle_map[enemy.position.y][enemy.position.x] = True
         return obstacle_map

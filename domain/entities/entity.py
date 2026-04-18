@@ -38,8 +38,8 @@ class Shape2D(Entity2D):
 
 @dataclass(eq=False)
 class Character(Entity2D):
-    health: int
-    max_health: int
+    health: float
+    max_health: float
     dexterity: int
     strength: int
     level: Level

@@ -1,11 +1,12 @@
-# TODO: Autosave, spawn, map generation, sound mixer
+# TODO: Autosave, fog of war, items, backpack, stairs
 from application.commands.assembler import CommandAssembler
-from application.commands.command import CommandService
+from application.commands.command import CommandResult, CommandService
 from application.dto.game_state import GameMapper
 from application.sounds.assembler import SoundAssembler
 from domain.entities.game_session import GameSession
 from domain.rules.progression import Level
 from domain.services.ai import EnemyAI
+from domain.value_objects.enums import SoundType
 from domain.value_objects.size import Size
 from infrastructure.audio.mixer import Mixer
 from presentation.input_handler import InputAction
@@ -25,13 +26,28 @@ class GameLoop:
         self.mixer.start()
         CommandAssembler.assemble_commands()
         SoundAssembler.assemble_sounds(self.mixer)
-        while self.stage < len(Level) and self.game_session.process:
+        self.game_session.sounds.append(SoundType.MUSIC)
+        self.mixer.play(self.game_session)
+
+        while self.game_session.process:
             game_state = GameMapper.to_dto(self.game_session)
+
             self.window.draw(game_state)
-            self.game_session.player_turn = True
+
             action: InputAction = self.window.action()
-            CommandService(action, self.game_session, self.window).execute()
-            self.mixer.play(self.game_session)
-            self.game_session.player_turn = False
+            result = CommandService(action, self.game_session, self.window).execute()
+            if result == CommandResult.NO_ACTION:
+                continue
+
             for enemy in self.game_session.enemies:
                 EnemyAI.action(enemy, self.game_session)
+
+            if self.game_session.player.health <= 0:
+                self.game_session.sounds.append(SoundType.DEATH)
+                self.game_session.process = False
+
+            self.mixer.play(self.game_session)
+
+        self.window.draw(game_state)
+        if self.stage < len(Level):
+            self.window.game_over()
