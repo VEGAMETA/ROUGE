@@ -36,8 +36,8 @@ class Window:
         self.notificator.show(self.window, message, title, duration, style)
         self.input_handler.flush()
     
-    def active_menu(self, state: bool = True) -> None:
-        self.menu.show(self.window, state)
+    def show_menu(self, duration: float = 0.0) -> None:
+        self.menu.show(self.window, duration)
         self.input_handler.flush()
 
     def game_over(self) -> None:

@@ -8,6 +8,6 @@ class Menu(Command):
         self, context: GameSession, window: Window, *args, **kwargs
     ) -> CommandResult:
         context
-        #window.notify("NA", "Menu", duration=2.0)
+        # window.notify("NA", "Menu", duration=2.0)
         window.show_menu(duration=2.0)
-        return CommandResult.OK
+        return CommandResult.NO_ACTION

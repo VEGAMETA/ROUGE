@@ -1,22 +1,32 @@
+from __future__ import annotations
 import curses
+from typing import Callable, Optional
 
 
 class Widget:
-    def __init__(self, x: int, y: int, w: int, h: int) -> None:
-        self.x = x
-        self.y = y
-        self.w = w
-        self.h = h
-        self.title: str = ''
+    def __init__(self, x: int = 0, y: int = 0, w: int = 0, h: int = 0) -> None:
+        self.x: int = x
+        self.y: int = y
+        self.w: int = w
+        self.h: int = h
 
 
 class Panel(Widget):
-    def __init__(self, x: int = 0, y: int = 0, w: int = 0, h: int = 0) -> None:
-        super().__init__(x, y, w, h)
-        self.padding_y = 1
-        self.padding_x = 3
-        self.spacing = 1
-        self.border = True
+    def __init__(
+        self,
+        padding_y: int = 1,
+        padding_x: int = 3,
+        spacing: int = 1,
+        border: bool = True,
+        children: list[Widget] = [],
+        **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.padding_y: int = padding_y
+        self.padding_x: int = padding_x
+        self.spacing: int = spacing
+        self.border: bool = border
+        self.children: list[Widget] = children
 
     def centerize(self, screen_w: int, screen_h: int) -> None:
         self.y = (screen_h - self.h) // 2 if screen_h >= self.h else 0
@@ -24,49 +34,78 @@ class Panel(Widget):
 
 
 class Label(Widget):
-    def __init__(self, title: str) -> None:
-        super().__init__(0, 0, 0, 1)
-        self.title = title
-        self.w = len(title)
-        self.h = 1
+    def __init__(self, text: str, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.w = len(text)
+        self.text: str = text
 
     def draw(self, win: curses.window, origin_x: int = 0, origin_y: int = 0) -> None:
-        win.addstr(origin_y + self.y, origin_x + self.x, self.title)
-    
+        win.addstr(origin_y + self.y, origin_x + self.x, self.text)
+
     def select(self, win: curses.window, origin_x: int = 0, origin_y: int = 0) -> None:
-        win.addstr(origin_y + self.y, origin_x + self.x, f'> {self.title} <')
+        win.addstr(origin_y + self.y, origin_x + self.x, self.text, curses.A_REVERSE)
 
 
-class Button(Panel):
+class Button(Label):
+    def __init__(self, trigger: Callable = lambda: ..., **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.trigger: Callable = trigger
+
     def toggle(self) -> None:
-        ...
+        self.trigger()
 
 
 class Checkbox(Button):
-    def align(self) -> None:
-        ...
+    def __init__(self, toggled: bool = False, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.toggled: bool = toggled
+        self.text += "  ■" if toggled else "  ⌂"
+
+    def toggled(self) -> None:
+        self.toggled = not self.toggled
+        self.text[-1] = "■" if self.toggled else "⌂"
 
 
 class Slider(Button):
-    ...
+    def __init__(
+        self,
+        value: float = 1.0,
+        min_value: float = 0.0,
+        max_value: float = 1.0,
+        step: float = 0.1,
+        **kwargs,
+    ) -> None:
+        super().__init__(**kwargs)
+        self.value: float = value
+        self.min_value: float = min_value
+        self.max_value: float = max_value
+        self.step: float = step
+        self.text += "  ══════════ "
+        self.set_value(self.value)
+
+    def set_value(self, value: float) -> None:
+        self.value = min(self.max_value, max(self.min_value, value))
+        idx: int = -12 + int(10 * self.value / (self.max_value - self.min_value))
+        self.text = self.text[:-12] + " ══════════ "
+        self.text = self.text[:idx] + "█" + self.text[idx + 1 :]
+
+    def increase_value(self):
+        self.set_value(self.value + self.step)
+
+    def decrease_value(self):
+        self.set_value(self.value - self.step)
 
 
-class Widjet_list:
-    WIDGETS: list[Widget] = [
-        Label("Continue"),
-        Label("New game"),
-        Label("Exit"),
-    ]
-
-
-class VerticalMenu(Panel, Widjet_list):
-    def __init__(self) -> None:
-        Panel.__init__(self, 0, 0, 0, 0)
-        self.selected_widget: Widget = self.WIDGETS[0]
+class VerticalMenu(Panel):
+    def __init__(self, **kwargs) -> None:
+        super().__init__(**kwargs)
+        self.selected_widget: Optional[Widget] = (
+            self.children[0] if len(self.children) else None
+        )
 
     def compute_size(self) -> None:
-        longest = max((len(widget.title) for widget in self.WIDGETS), default=1)
-        n = len(self.WIDGETS)
+        longest = max((len(widget.text) for widget in self.children), default=1)
+        n = len(self.children)
         content_height = n + self.spacing * (n - 1) if n > 0 else 0
         self.w = longest + 2 * self.padding_x + (2 if self.border else 0)
         self.h = content_height + 2 * self.padding_y + (2 if self.border else 0)
@@ -77,12 +116,12 @@ class VerticalMenu(Panel, Widjet_list):
 
     def set_widget_postions(self) -> None:
         row_y = 0
-        for i, wdg in enumerate(self.WIDGETS):
-            wdg.w = len(wdg.title)
+        for i, wdg in enumerate(self.children):
+            wdg.w = len(wdg.text)
             wdg.h = 1
             self.centralize_widget(wdg)
             wdg.y = row_y
-            if i < len(self.WIDGETS) - 1:
+            if i < len(self.children) - 1:
                 row_y += 1 + self.spacing
 
     def draw(self, parent_win: curses.window) -> curses.window:
@@ -96,10 +135,11 @@ class VerticalMenu(Panel, Widjet_list):
         content_origin_y = (1 if self.border else 0) + self.padding_y
         content_origin_x = (1 if self.border else 0) + self.padding_x
         self.set_widget_postions()
-        for wdg in self.WIDGETS:
+        for wdg in self.children:
             if wdg == self.selected_widget:
                 wdg.select(win, content_origin_x, content_origin_y)
-            wdg.draw(win, content_origin_x, content_origin_y)
+            else:
+                wdg.draw(win, content_origin_x, content_origin_y)
         win.refresh()
         return win
 
