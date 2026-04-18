@@ -64,10 +64,10 @@ class GameSession(Entity):
         return None
 
     def get_obstacle_map(self) -> list[list[bool]]:
-        obstacle_map = [
-            [False for _ in range(self.size.width)] for _ in range(self.size.height)
-        ]
+        obstacle_map = [[True] * self.size.width for _ in range(self.size.height)]
         for tile in self.tiles:
-            if tile.type in OBSTACLES:
-                obstacle_map[tile.position.y][tile.position.x] = True
+            if tile.type not in OBSTACLES:
+                obstacle_map[tile.position.y][tile.position.x] = False
+        for enemy in self.enemies:
+            obstacle_map[enemy.position.y][enemy.position.x] = True
         return obstacle_map
