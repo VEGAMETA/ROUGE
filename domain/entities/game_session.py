@@ -32,10 +32,10 @@ class GameSession(Entity):
     def __init__(self, size: Size) -> None:
         self.size: Size = size
         self.player: Player = Player(
-            health=20,
-            max_health=1,
-            dexterity=1,
-            strength=1,
+            health=100,
+            max_health=100,
+            dexterity=25,
+            strength=100,
             level=Level.LEVEL_1,
             position=Position(),
             rotation=Rotation(),

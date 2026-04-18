@@ -1,4 +1,4 @@
-# TODO: Autosave, spawn, map generation, sound mixer
+# TODO: Autosave, player attack, items, backpack, stairs
 from application.commands.assembler import CommandAssembler
 from application.commands.command import CommandService
 from application.dto.game_state import GameMapper
