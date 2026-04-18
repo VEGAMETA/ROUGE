@@ -26,6 +26,7 @@ class GameLoop:
         self.mixer.start()
         CommandAssembler.assemble_commands()
         SoundAssembler.assemble_sounds(self.mixer)
+        self.game_session.sounds.append(SoundType.MUSIC)
 
         while self.game_session.process:
             game_state = GameMapper.to_dto(self.game_session)
