@@ -10,8 +10,6 @@ from domain.value_objects.position import Position
 class EnemyAI:
     @staticmethod
     def action(enemy: "Enemy", context: "GameSession") -> EnemyAction:
-        if context.player_turn:
-            return EnemyAction.UNDEFINED
         if context.player.position.is_adjacent(enemy.position):
             return EnemyAI.attack(enemy, context)
         return EnemyAI.move(enemy, context)

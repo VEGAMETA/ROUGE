@@ -36,6 +36,9 @@ class Window:
         self.notificator.show(self.window, message, title, duration, style)
         self.input_handler.flush()
 
+    def game_over(self) -> None:
+        self.notificator.show(self.window, "GAME OVER", "", 2.0, NotificationType.ERROR)
+
     def close(self) -> None: ...
 
     def __del__(self) -> None:

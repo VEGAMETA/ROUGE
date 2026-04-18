@@ -11,9 +11,9 @@ class Move(Command):
     def __init__(self, direction: Optional[Direction] = None) -> None:
         self.direction = direction
 
-    def execute(self, session: GameSession, *args, **kwargs):
-        new_position = session.player.position + self.direction
-        session.player.direction = self.direction
-        if not MovementService.move(session.player, new_position, session):
+    def execute(self, context: GameSession, *args, **kwargs):
+        new_position = context.player.position + self.direction
+        context.player.direction = self.direction
+        if not MovementService.move(context.player, new_position, context):
             return
-        session.sounds.append(SoundType.MOVE)
+        context.sounds.append(SoundType.MOVE)

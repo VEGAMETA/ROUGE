@@ -4,6 +4,6 @@ from presentation.window import Window
 
 
 class Inventory(Command):
-    def execute(self, session: GameSession, window: Window, *args, **kwargs):
-        session
+    def execute(self, context: GameSession, window: Window, *args, **kwargs):
+        context
         window.notify("NA", "Menu", duration=2.0)

@@ -5,6 +5,7 @@ from typing import Dict
 
 from simpleaudio import WaveObject
 
+from domain.entities.game_session import GameSession
 from domain.value_objects.enums import SoundType
 
 
@@ -18,11 +19,11 @@ class Mixer(Thread):
     def register(self, effect: SoundType, path: Path) -> None:
         self.sounds[effect] = WaveObject.from_wave_file(path.as_posix())
 
-    def play(self, session: SoundType) -> None:
-        for sound in session.sounds:
+    def play(self, context: GameSession) -> None:
+        for sound in context.sounds:
             if sound in self.sounds:
                 self.q.put(sound)
-        session.sounds.clear()
+        context.sounds.clear()
 
     def run(self) -> None:
         self.running = True

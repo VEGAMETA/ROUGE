@@ -87,3 +87,5 @@ class ItemRarityType(IntEnum):
 class SoundType(IntEnum):
     MOVE: int = auto()
     SWING: int = auto()
+    HIT: int = auto()
+    DEATH: int = auto()

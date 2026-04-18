@@ -24,10 +24,10 @@ class CommandService:
     commands: dict[InputAction, Command] = {}
 
     def __init__(
-        self, action: InputAction, session: GameSession, window: Window
+        self, action: InputAction, context: GameSession, window: Window
     ) -> None:
         self.action: InputAction = action
-        self.session: GameSession = session
+        self.context: GameSession = context
         self.window: Window = window
 
     @classmethod
@@ -35,16 +35,4 @@ class CommandService:
         cls.commands[input_action] = command
 
     def execute(self, *args, **kwargs):
-        self.commands[self.action]().execute(self.session, self.window)
-
-        # match self.action:
-        #     case InputAction.QUIT:
-        #         self.session.process = False
-        #     case InputAction.MENU:
-        #         self.window.notify("NA", "Menu", duration=2.0)
-        #     case action if action in MOVE_COMMAND:
-        #         MovementService.move(self.session, MOVE_COMMAND[self.action])
-        #     case InputAction.ATTACK:
-        #         CombatService
-
-        # return Exit.OK
+        self.commands[self.action]().execute(self.context, self.window)

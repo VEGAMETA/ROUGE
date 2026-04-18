@@ -28,12 +28,11 @@ class GameSession(Entity):
     sounds: list[SoundType]
     tile_map: list[list[Tile]]
     process: bool = True
-    player_turn: bool = True
 
     def __init__(self, size: Size) -> None:
         self.size: Size = size
         self.player: Player = Player(
-            health=1,
+            health=20,
             max_health=1,
             dexterity=1,
             strength=1,

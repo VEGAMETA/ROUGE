@@ -1,6 +1,5 @@
 from domain.entities.entity import Character
 from domain.entities.game_session import GameSession
-from domain.value_objects.enums import SoundType
 
 
 class CombatService:
@@ -9,10 +8,12 @@ class CombatService:
         defender.health -= attacker.strength + attacker.dexterity * 0.5
 
     @staticmethod
-    def attack(context: GameSession) -> None:
-        if context.player_turn:
-            context.sounds.append(SoundType.SWING)
-            defender = context.find_enemy()
-            if not defender:
-                return
-            return CombatService.hit(context.player, defender)
+    def attack(context: GameSession) -> bool:
+        defender = context.find_enemy()
+        if not defender:
+            return False
+        CombatService.hit(context.player, defender)
+        if defender.health <= 0:
+            context.enemies.remove(defender)
+            # generate an item on dead enemy position
+        return True

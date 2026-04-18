@@ -3,5 +3,5 @@ from domain.entities.game_session import GameSession
 
 
 class Quit(Command):
-    def execute(self, session: GameSession, *args, **kwargs):
-        session.process = False
+    def execute(self, context: GameSession, *args, **kwargs):
+        context.process = False

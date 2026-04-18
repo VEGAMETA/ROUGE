@@ -9,3 +9,5 @@ class SoundAssembler:
     def assemble_sounds(mixer: Mixer) -> None:
         mixer.register(SoundType.MOVE, Path("./static/audio/sfx/move.wav"))
         mixer.register(SoundType.SWING, Path("./static/audio/sfx/swing.wav"))
+        # mixer.register(SoundType.HIT, Path("static\\audio\sfx\hit.wav"))
+        mixer.register(SoundType.DEATH, Path("./static/audio/sfx/death.wav"))
