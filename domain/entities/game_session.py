@@ -35,7 +35,7 @@ class GameSession(Entity):
             health=100,
             max_health=100,
             dexterity=25,
-            strength=100,
+            strength=10,
             level=Level.LEVEL_1,
             position=Position(),
             rotation=Rotation(),

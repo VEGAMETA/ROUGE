@@ -1,6 +1,6 @@
-# TODO: Autosave, player attack, items, backpack, stairs
+# TODO: Autosave, fog of war, items, backpack, stairs
 from application.commands.assembler import CommandAssembler
-from application.commands.command import CommandService
+from application.commands.command import CommandResult, CommandService
 from application.dto.game_state import GameMapper
 from application.sounds.assembler import SoundAssembler
 from domain.entities.game_session import GameSession
@@ -27,18 +27,27 @@ class GameLoop:
         CommandAssembler.assemble_commands()
         SoundAssembler.assemble_sounds(self.mixer)
         self.game_session.sounds.append(SoundType.MUSIC)
+        self.mixer.play(self.game_session)
 
         while self.game_session.process:
             game_state = GameMapper.to_dto(self.game_session)
+
             self.window.draw(game_state)
+
             action: InputAction = self.window.action()
-            CommandService(action, self.game_session, self.window).execute()
+            result = CommandService(action, self.game_session, self.window).execute()
+            if result == CommandResult.NO_ACTION:
+                continue
+
             for enemy in self.game_session.enemies:
                 EnemyAI.action(enemy, self.game_session)
+
             if self.game_session.player.health <= 0:
                 self.game_session.sounds.append(SoundType.DEATH)
                 self.game_session.process = False
+
             self.mixer.play(self.game_session)
 
+        self.window.draw(game_state)
         if self.stage < len(Level):
             self.window.game_over()

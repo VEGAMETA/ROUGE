@@ -1,5 +1,6 @@
 from domain.entities.entity import Character
 from domain.entities.game_session import GameSession
+from domain.value_objects.enums import SoundType
 
 
 class CombatService:
@@ -15,5 +16,6 @@ class CombatService:
         CombatService.hit(context.player, defender)
         if defender.health <= 0:
             context.enemies.remove(defender)
+            context.sounds.append(SoundType.KILL)
             # generate an item on dead enemy position
         return True

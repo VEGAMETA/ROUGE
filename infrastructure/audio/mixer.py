@@ -15,9 +15,15 @@ class Mixer(Thread):
         self.sounds: Dict[SoundType, WaveObject] = {}
         self.q: Queue[SoundType] = Queue()
         self.running: bool = False
+        self.loop_music: bool = True
 
     def register(self, effect: SoundType, path: Path) -> None:
         self.sounds[effect] = WaveObject.from_wave_file(path.as_posix())
+
+    def _play_loop(self, sound: WaveObject):
+        while self.loop_music and self.running:
+            play_obj = sound.play()
+            play_obj.wait_done()
 
     def play(self, context: GameSession) -> None:
         for sound in context.sounds:
@@ -28,11 +34,15 @@ class Mixer(Thread):
     def run(self) -> None:
         self.running = True
         while self.running:
-            effect = self.q.get()
+            effect: SoundType = self.q.get()
             if not effect:
                 break
             if sound := self.sounds.get(effect):
-                sound.play()
+                if effect == SoundType.MUSIC:
+                    Thread(target=self._play_loop, daemon=True, args=(sound,)).start()
+                else:
+                    sound.play()
+
             self.q.task_done()
 
     def stop(self) -> None:

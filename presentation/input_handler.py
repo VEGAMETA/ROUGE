@@ -9,7 +9,6 @@ class InputAction(IntEnum):
     MOVE_DOWN: int = auto()
     MOVE_LEFT: int = auto()
     MOVE_RIGHT: int = auto()
-    ATTACK: int = auto()
     PASS: int = auto()
     INTERACT: int = auto()
     INVENTORY: int = auto()

@@ -3,7 +3,7 @@ from domain.entities.game_session import GameSession
 from domain.services.combat import CombatService
 from domain.services.movement import MovementService
 from domain.services.pathfinding import astar
-from domain.value_objects.enums import EnemyAction
+from domain.value_objects.enums import EnemyAction, SoundType
 from domain.value_objects.position import Position
 
 
@@ -17,6 +17,7 @@ class EnemyAI:
     @staticmethod
     def attack(enemy: "Enemy", context: "GameSession") -> EnemyAction:
         CombatService.hit(enemy, context.player)
+        context.sounds.append(SoundType.HIT)
         return EnemyAction.ATTACK
 
     @staticmethod

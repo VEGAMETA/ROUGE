@@ -17,7 +17,7 @@ class CommandResult(IntEnum):
 class Command(ABC):
     @staticmethod
     @abstractmethod
-    def execute(*args, **kwargs): ...
+    def execute(*args, **kwargs) -> CommandResult: ...
 
 
 class CommandService:
@@ -34,5 +34,5 @@ class CommandService:
     def register(cls, input_action: InputAction, command: Command):
         cls.commands[input_action] = command
 
-    def execute(self, *args, **kwargs):
-        self.commands[self.action]().execute(self.context, self.window)
+    def execute(self, *args, **kwargs) -> CommandResult:
+        return self.commands[self.action]().execute(self.context, self.window)
