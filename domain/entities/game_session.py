@@ -28,6 +28,7 @@ class GameSession(Entity):
     sounds: list[SoundType]
     tile_map: list[list[Tile]]
     process: bool = True
+    selected_3d: bool = False
 
     def __init__(self, size: Size) -> None:
         self.size: Size = size
@@ -38,7 +39,7 @@ class GameSession(Entity):
             strength=10,
             level=Level.LEVEL_1,
             position=Position(),
-            rotation=Rotation(),
+            rotation=-3.14159 / 2.0,
         )
 
     def new_stage(self) -> None:

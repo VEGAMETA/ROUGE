@@ -9,6 +9,7 @@ from domain.services.ai import EnemyAI
 from domain.value_objects.enums import SoundType
 from domain.value_objects.size import Size
 from infrastructure.audio.mixer import Mixer
+from presentation.curses.sprites import SpriteAssembler
 from presentation.input_handler import InputAction
 from presentation.window import Window
 
@@ -16,6 +17,7 @@ from presentation.window import Window
 class GameLoop:
     def __init__(self, window: Window) -> None:
         self.window: Window = window
+        # size = Size(*self.window.get_size()) / 3 for 3d
         size = Size(*self.window.get_size())
         self.game_session: GameSession = GameSession(size)
         self.game_session.new_stage()
@@ -26,9 +28,10 @@ class GameLoop:
         self.mixer.start()
         CommandAssembler.assemble_commands()
         SoundAssembler.assemble_sounds(self.mixer)
+        # SpriteAssembler.assemble_sprites()
         self.game_session.sounds.append(SoundType.MUSIC)
         self.mixer.play(self.game_session)
-
+        # self.game_session.selected_3d = True
         while self.game_session.process:
             game_state = GameMapper.to_dto(self.game_session)
 

@@ -12,6 +12,7 @@ class PlayerDTO:
     dexterity: int
     strength: int
     level: int
+    rotation: float
 
 
 class PlayerMapper:
@@ -25,4 +26,5 @@ class PlayerMapper:
             dexterity=player.dexterity,
             strength=player.strength,
             level=player.level,
+            rotation=player.rotation,
         )
