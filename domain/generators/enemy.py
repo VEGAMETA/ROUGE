@@ -17,7 +17,7 @@ class EnemyFactory:
     def create(
         enemy_type: EnemyType, position: Position, level: Level = Level.LEVEL_1
     ) -> Enemy:
-        template = ENEMY_TEMPLATES[enemy_type](position=position, level=level)
+        template = ENEMY_TEMPLATES[enemy_type](position=position, level=level, path=[])
         health, dexterity, strength = EnemyStats.get(level, template)
         return Enemy(
             position=position,
@@ -27,5 +27,6 @@ class EnemyFactory:
             strength=strength,
             level=level,
             type=enemy_type,
+            path=[],
             hostility=template.hostility,
         )

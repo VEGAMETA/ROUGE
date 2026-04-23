@@ -23,16 +23,12 @@ class Command(ABC):
 class CommandService:
     commands: dict[InputAction, Command] = {}
 
-    def __init__(
-        self, action: InputAction, context: GameSession, window: Window
-    ) -> None:
-        self.action: InputAction = action
-        self.context: GameSession = context
-        self.window: Window = window
-
     @classmethod
     def register(cls, input_action: InputAction, command: Command):
         cls.commands[input_action] = command
 
-    def execute(self, *args, **kwargs) -> CommandResult:
-        return self.commands[self.action]().execute(self.context, self.window)
+    @staticmethod
+    def execute(
+        action: InputAction, context: GameSession, window: Window
+    ) -> CommandResult:
+        return CommandService.commands[action]().execute(context, window)

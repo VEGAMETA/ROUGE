@@ -7,4 +7,5 @@ from domain.value_objects.enums import EnemyType, Hostility
 @dataclass(eq=False)
 class Enemy(Character):
     type: EnemyType
+    path: list[tuple[int, int]]
     hostility: Hostility = Hostility.HOSTILE
