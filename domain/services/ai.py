@@ -11,26 +11,30 @@ class EnemyAI:
     @staticmethod
     def action(enemy: "Enemy", context: "GameSession") -> EnemyAction:
         if context.player.position.is_adjacent(enemy.position):
+            enemy.path.clear()
             return EnemyAI.attack(enemy, context)
         return EnemyAI.move(enemy, context)
 
     @staticmethod
     def attack(enemy: "Enemy", context: "GameSession") -> EnemyAction:
         CombatService.hit(enemy, context.player)
-        context.sounds.append(SoundType.HIT)
+        context.sounds.put(SoundType.HIT)
         return EnemyAction.ATTACK
 
     @staticmethod
     def move(enemy: "Enemy", context: "GameSession") -> EnemyAction:
-        path: list[tuple[int, int]] | None = astar(
-            *enemy.position,
-            *context.player.position,
-            context.get_obstacle_map(),
-        )
-        if not path:
-            return EnemyAction.UNDEFINED
-        if path and len(path) > 1:
-            MovementService.move(enemy, Position(*path[1]), context)
+        if not enemy.path:
+            path: list[tuple[int, int]] | None = astar(
+                *enemy.position,
+                *context.player.position,
+                context.get_obstacle_map(),
+            )
+            if not path:
+                return EnemyAction.UNDEFINED
+            path.pop(0)
+            enemy.path = path
+        if enemy.path:
+            MovementService.move(enemy, Position(*enemy.path.pop(0)), context)
         return EnemyAction.UNDEFINED
 
 

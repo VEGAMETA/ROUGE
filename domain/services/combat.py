@@ -17,6 +17,6 @@ class CombatService:
         CombatService.hit(context.player, defender)
         if defender.health <= 0:
             context.enemies.remove(defender)
-            context.sounds.append(SoundType.KILL)
+            context.sounds.put(SoundType.KILL)
             # generate an item on dead enemy position
         return True

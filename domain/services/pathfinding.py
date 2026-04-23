@@ -1,90 +1,89 @@
-from __future__ import annotations
-
 import heapq
-import math
 from typing import Optional
 
+DIRS = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 
-class Node:
-    def __init__(self, x: int, y: int) -> None:
-        self.x: int = x
-        self.y: int = y
-        self.g: int = 0
-        self.h: int = 0
-        self.f: int = 0
-        self.parent: Optional[Node] = None
 
-    def __hash__(self) -> int:
-        return hash(self.x) ^ hash(self.y)
+def chebyshev_distance(dx: int, dy: int) -> int:
+    """Октайльное расстояние (max) - быстрее чем sqrt"""
+    return max(abs(dx), abs(dy))
 
-    def __lt__(self, other: Node) -> bool:
-        return self.f < other.f
 
-    def __eq__(self, other: Node) -> bool:
-        return self.x == other.x and self.y == other.y
+def octile_distance(dx: int, dy: int) -> int:
+    """Более точное октаильное расстояние для 8 направлений"""
+    return max(abs(dx), abs(dy)) * 10 + (min(abs(dx), abs(dy)) * 4)
+    # 10 и 4 вместо 1 и 0.414 для целочисленной арифметики
 
 
 def astar(
     start_x: int, start_y: int, end_x: int, end_y: int, obstacles: list[list[bool]]
 ) -> Optional[list[tuple[int, int]]]:
-    start_node: Node = Node(start_x, start_y)
-    end_node: Node = Node(end_x, end_y)
+    # if obstacles[start_y][start_x] or obstacles[end_y][end_x]:
+    #     return None
 
-    open_list: list[Node] = []
-    heapq.heappush(open_list, start_node)
+    height, width = len(obstacles), len(obstacles[0])
+    total_cells = width * height
+    g_score = [100_000_000] * total_cells
+    parent = [-1] * total_cells
 
-    closed_set: set[Node] = set()
+    def pack(x: int, y: int) -> int:
+        return y * width + x
 
-    while open_list:
-        current_node: Node = heapq.heappop(open_list)
+    def unpack(idx: int) -> tuple[int, int]:
+        return (idx % width, idx // width)
 
-        if current_node == end_node:
-            path: list[tuple[int, int]] = []
-            while current_node:
-                path.append((current_node.x, current_node.y))
-                current_node: Node = current_node.parent
+    start_idx = pack(start_x, start_y)
+    end_idx = pack(end_x, end_y)
+    g_score[start_idx] = 0
+
+    open_heap = [(chebyshev_distance(start_x - end_x, start_y - end_y), 0, start_idx)]
+
+    closed = [False] * total_cells
+
+    while open_heap:
+        f_score, _, current_idx = heapq.heappop(open_heap)
+
+        if closed[current_idx]:
+            continue
+
+        if current_idx == end_idx:
+            path = []
+            while current_idx != -1:
+                x, y = unpack(current_idx)
+                path.append((x, y))
+                current_idx = parent[current_idx]
             return path[::-1]
 
-        closed_set.add(current_node)
+        closed[current_idx] = True
+        current_x, current_y = unpack(current_idx)
+        current_g = g_score[current_idx]
 
-        neighbors: list[Node] = []
-        for dx in range(-1, 2):
-            for dy in range(-1, 2):
-                if dx == 0 and dy == 0:
-                    continue
-                x: int = current_node.x + dx
-                y: int = current_node.y + dy
-                if x < 0 or x >= len(obstacles[0]) or y < 0 or y >= len(obstacles):
-                    continue
-                if obstacles[y][x]:
-                    continue
-                neighbor: Node = Node(x, y)
-                neighbors.append(neighbor)
+        for dx, dy in DIRS:
+            nx, ny = current_x + dx, current_y + dy
 
-        for neighbor in neighbors:
-            if neighbor in closed_set:
+            if nx < 0 or nx >= width or ny < 0 or ny >= height:
                 continue
 
-            new_g: int = current_node.g + 1
+            if obstacles[ny][nx]:
+                continue
 
-            if nfo := next((n for n in open_list if n == neighbor), None):
-                if new_g < nfo.g:
-                    nfo.g = new_g
-                    nfo.h = int(
-                        math.sqrt((end_node.x - nfo.x) ** 2 + (end_node.y - nfo.y) ** 2)
-                    )
-                    nfo.f = nfo.g + nfo.h
-                    nfo.parent = current_node
-                    heapq.heapify(open_list)
+            neighbor_idx = pack(nx, ny)
+
+            if closed[neighbor_idx]:
+                continue
+
+            if dx != 0 and dy != 0:
+                move_cost = 14  # sqrt(2) * 10 ≈ 14
             else:
-                neighbor.g = new_g
-                neighbor.h = int(
-                    math.sqrt(
-                        (end_node.x - neighbor.x) ** 2 + (end_node.y - neighbor.y) ** 2
-                    )
-                )
-                neighbor.f = neighbor.g + neighbor.h
-                neighbor.parent = current_node
-                heapq.heappush(open_list, neighbor)
+                move_cost = 10
 
+            new_g = current_g + move_cost
+
+            if new_g < g_score[neighbor_idx]:
+                g_score[neighbor_idx] = new_g
+                parent[neighbor_idx] = current_idx
+                # Октайльная эвристика (точная для 8 направлений)
+                h = octile_distance(nx - end_x, ny - end_y)
+                f = new_g + h
+                heapq.heappush(open_heap, (f, new_g, neighbor_idx))
     return None

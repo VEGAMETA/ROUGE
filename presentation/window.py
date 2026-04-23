@@ -1,3 +1,5 @@
+from threading import Thread
+
 from application.dto.game_state import GameStateDTO
 from presentation.input_handler import InputAction, InputHandler
 from presentation.renderer import Renderer
@@ -35,13 +37,15 @@ class Window:
     ) -> None:
         self.notificator.show(self.window, message, title, duration, style)
         self.input_handler.flush()
-    
+
     def show_menu(self, duration: float = 0.0) -> None:
         self.menu.show(self.window, duration)
         self.input_handler.flush()
 
-    def game_over(self) -> None:
-        self.notificator.show(self.window, "GAME OVER", "", 2.0, NotificationType.ERROR)
+    def game_over(self, time: float) -> None:
+        self.notificator.show(
+            self.window, "GAME OVER", f"{time:.2f}", 0.0, NotificationType.ERROR
+        )
 
     def close(self) -> None: ...
 

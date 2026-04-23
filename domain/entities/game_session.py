@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from multiprocessing import SimpleQueue
 from random import choice
 from typing import Optional
 
@@ -12,10 +13,9 @@ from domain.generators.enemy import EnemyFactory
 from domain.generators.stage import StageFactory
 from domain.generators.tiles import TileFactory
 from domain.rules.progression import Level
-from domain.value_objects.enums import SoundType
 from domain.value_objects.position import Position
-from domain.value_objects.rotation import Rotation
 from domain.value_objects.size import Size
+from infrastructure.math import Constant
 
 
 @dataclass(eq=False)
@@ -25,11 +25,11 @@ class GameSession(Entity):
     enemies: list[Enemy]
     tiles: list[Tile]
     items: list[Item]
-    sounds: list[SoundType]
     tile_map: list[list[Tile]]
     process: bool = True
+    selected_3d: bool = False
 
-    def __init__(self, size: Size) -> None:
+    def __init__(self, size: Size, sounds: SimpleQueue = SimpleQueue()) -> None:
         self.size: Size = size
         self.player: Player = Player(
             health=100,
@@ -38,13 +38,16 @@ class GameSession(Entity):
             strength=10,
             level=Level.LEVEL_1,
             position=Position(),
-            rotation=Rotation(),
+            rotation=Constant.PI_BY_MINUS_2,
         )
+        self.cached_obstacle_map: list[list[bool]] = []
+        self.sounds: SimpleQueue = sounds
 
     def new_stage(self) -> None:
         self.stage = StageFactory.create_stage(self.size)
         self.tiles = TileFactory.get_tiles(self.stage)
         self.tile_map = TileFactory.get_tile_map(self.stage, self.tiles)
+        self.get_cached_obstacle_map()
         player_room = choice(self.stage.rooms)
         self.player.position = player_room.get_random_inbound()
         self.enemies = {
@@ -53,7 +56,6 @@ class GameSession(Entity):
             if room != player_room
         }
         self.items = []
-        self.sounds = []
 
     def find_enemy(self) -> Optional[Enemy]:
         enemy_position = self.player.position + self.player.direction
@@ -62,11 +64,21 @@ class GameSession(Entity):
                 return enemy
         return None
 
-    def get_obstacle_map(self) -> list[list[bool]]:
-        obstacle_map = [[True] * self.size.width for _ in range(self.size.height)]
+    def get_cached_obstacle_map(self) -> list[list[bool]]:
+        self.cached_obstacle_map = [
+            [True] * self.size.width for _ in range(self.size.height)
+        ]
         for tile in self.tiles:
             if tile.type not in OBSTACLES:
-                obstacle_map[tile.position.y][tile.position.x] = False
+                self.cached_obstacle_map[tile.position.y][tile.position.x] = False
+
+        return [row[:] for row in self.cached_obstacle_map]
+
+    def get_obstacle_map(self) -> list[list[bool]]:
+        # return self.cached_obstacle_map
+        obstacle_map = self.get_cached_obstacle_map()
+
         for enemy in self.enemies:
             obstacle_map[enemy.position.y][enemy.position.x] = True
+
         return obstacle_map

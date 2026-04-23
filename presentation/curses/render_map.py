@@ -21,17 +21,17 @@ class CursesRenderData:
 
 
 class CursesRenderMap:
-    PLAYER_RENDER_DATA = CursesRenderData("@", COLOR_YELLOW)
+    PLAYER_RENDER_DATA = CursesRenderData("\u0040", COLOR_YELLOW)
 
     TILE_RENDER_MAP = {
-        TileType.UNDEFINED: CursesRenderData("â˜¼"),
-        TileType.VOID: CursesRenderData(" "),
-        TileType.CORRIDOR: CursesRenderData("â–’"),
-        TileType.FLOOR: CursesRenderData("Â·"),  # â–‘
-        TileType.WALL: CursesRenderData("â–“"),
-        TileType.STAIRS_UP: CursesRenderData("â–²"),
-        TileType.STAIRS_DOWN: CursesRenderData("â–¼"),
-        TileType.DOOR: CursesRenderData("â•«"),  # â•¬
+        TileType.UNDEFINED: CursesRenderData("\u263c"),  # ?
+        TileType.VOID: CursesRenderData("\u0020"),
+        TileType.CORRIDOR: CursesRenderData("\u2591"),  # ±
+        TileType.FLOOR: CursesRenderData("\u00b7"),  # ú°
+        TileType.WALL: CursesRenderData("\u2593"),  # ²
+        TileType.STAIRS_UP: CursesRenderData("?"),
+        TileType.STAIRS_DOWN: CursesRenderData("?"),
+        TileType.DOOR: CursesRenderData("\u2573"),  # ×Î u256b
     }
 
     ENEMY_RENDER_MAP = {

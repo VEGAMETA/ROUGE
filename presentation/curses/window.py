@@ -3,23 +3,38 @@ import curses
 from presentation.curses.input_handler import CursesInputHandler
 from presentation.curses.menu import CursesMenu
 from presentation.curses.notificator import CursesNotificator
-from presentation.curses.renderer import CursesRenderer2D
+from presentation.curses.renderer import CursesRenderer2D, CursesRenderer3D
 from presentation.window import Window
 
 
 class CursesWindow(Window):
+    @staticmethod
+    def _get_curses_window(window: curses.window) -> curses.window:
+        return window
+
     def __init__(self):
         super().__init__(
-            CursesRenderer2D(), CursesInputHandler, CursesNotificator, CursesMenu
+            CursesRenderer3D(), CursesInputHandler, CursesNotificator, CursesMenu
         )
-        self.window: curses.window = curses.initscr()
+        # import os
+
+        # os.environ["ESCDELAY"] = "1"
+        self.window: curses.window = curses.wrapper(self._get_curses_window)
         self.renderer.window = self.window
         self.window.clear()
         self.window.refresh()
-        curses.noecho()
-        curses.cbreak()
-        curses.start_color()
+        self.window.nodelay(True)
         self.window.keypad(True)
+        self.window.timeout(0)
+        curses.start_color()
+        curses.typeahead(-1)
+        curses.noqiflush()
+        curses.curs_set(0)
+        curses.cbreak()
+        curses.noecho()
+        if hasattr(curses, "set_escdelay"):
+            curses.set_escdelay(1)
+        # curses.raw()
 
     def get_size(self) -> tuple[int, int]:
         return self.window.getmaxyx()[::-1]

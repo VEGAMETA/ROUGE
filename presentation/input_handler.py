@@ -9,6 +9,8 @@ class InputAction(IntEnum):
     MOVE_DOWN: int = auto()
     MOVE_LEFT: int = auto()
     MOVE_RIGHT: int = auto()
+    ROTATE_LEFT: int = auto()
+    ROTATE_RIGHT: int = auto()
     PASS: int = auto()
     INTERACT: int = auto()
     INVENTORY: int = auto()
@@ -21,8 +23,12 @@ class InputHandler(ABC):
 
     @staticmethod
     @abstractmethod
-    def get(window: Any) -> InputAction: ...
+    def get() -> InputAction: ...
 
     @staticmethod
     @abstractmethod
-    def flush(self) -> None: ...
+    def thread(window: Any) -> None: ...
+
+    @staticmethod
+    @abstractmethod
+    def flush() -> None: ...

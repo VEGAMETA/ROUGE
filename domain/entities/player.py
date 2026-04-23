@@ -12,5 +12,5 @@ from domain.value_objects.rotation import Rotation
 class Player(Character):
     weapon: Optional[Weapon] = None
     inventory: Backpack = Backpack()
-    rotation: Rotation = Rotation()
+    rotation: float = -3.14159 / 2.0
     direction: Direction = Direction.UP
