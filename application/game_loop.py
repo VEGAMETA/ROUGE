@@ -11,8 +11,8 @@ from domain.entities.game_session import GameSession
 from domain.rules.progression import Level
 from domain.services.ai import EnemyAI
 from domain.value_objects.enums import SoundType
-from domain.value_objects.size import Size
 from infrastructure.audio.mixer import Mixer
+from infrastructure.vector import Size
 from presentation.curses.sprites import SpriteAssembler
 from presentation.input_handler import InputAction
 from presentation.window import Window

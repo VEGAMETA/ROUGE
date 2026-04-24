@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from enum import IntEnum, auto
 from pathlib import Path
 from typing import Any, Dict
+
 from PIL import Image
 
 from domain.value_objects.enums import EnemyType
@@ -79,14 +80,8 @@ class SpriteService:
 
     @staticmethod
     def sample_sprite_color(sprite_type: SpriteType, u, v, default_color=None):
-        if u < 0.0:
-            u = 0.0
-        if u > 1.0:
-            u = 1.0
-        if v < 0.0:
-            v = 0.0
-        if v > 1.0:
-            v = 1.0
+        u = min(1, max(0, u))
+        v = min(1, max(0, v))
 
         sprite = SpriteService.sprites[sprite_type]
 

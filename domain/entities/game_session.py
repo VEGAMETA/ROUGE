@@ -14,8 +14,8 @@ from domain.generators.stage import StageFactory
 from domain.generators.tiles import TileFactory
 from domain.rules.progression import Level
 from domain.value_objects.position import Position
-from domain.value_objects.size import Size
 from infrastructure.math import Constant
+from infrastructure.vector import Size
 
 
 @dataclass(eq=False)

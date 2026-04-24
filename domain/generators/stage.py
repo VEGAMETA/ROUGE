@@ -6,8 +6,8 @@ from domain.entities.room import Room
 from domain.entities.stage import Stage
 from domain.value_objects.enums import DoorSide
 from domain.value_objects.position import Position
-from domain.value_objects.size import Size
 from infrastructure.math import build_grid_graph
+from infrastructure.vector import Size
 
 
 class StageFactory:

@@ -6,7 +6,7 @@ from uuid import UUID, uuid4
 
 from domain.rules.progression import Level
 from domain.value_objects.position import Position
-from domain.value_objects.size import Size
+from infrastructure.vector import Size
 
 
 @dataclass
