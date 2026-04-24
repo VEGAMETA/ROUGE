@@ -2,7 +2,6 @@ import curses
 from dataclasses import dataclass
 from enum import IntEnum, auto
 from pathlib import Path
-from typing import Any, Dict
 
 from PIL import Image
 
@@ -32,11 +31,42 @@ class Sprite:
     type: SpriteType
     width: int
     height: int
-    color_matrix: list[Any | None]
+    color_matrix: list[int | None]
 
 
-class SpriteService:
-    sprites: Dict[SpriteType, Sprite] = {}
+class SpriteMap:
+    ENEMY_MAP = {
+        EnemyType.ZOMBIE: SpriteType.ZOMBIE,
+        EnemyType.VAMPIRE: SpriteType.VAMPIRE,
+        EnemyType.GHOST: SpriteType.GHOST,
+        EnemyType.OGRE: SpriteType.OGRE,
+        EnemyType.SNAKE_MAGE: SpriteType.SNAKE_MAGE,
+    }
+
+    SPRITE_PATHS: dict[SpriteType, Path] = {
+        SpriteType.WALL_1: Path("./static/sprites/wall_1.png"),
+        SpriteType.WALL_2: Path("./static/sprites/wall_2.png"),
+        SpriteType.WALL_3: Path("./static/sprites/wall_3.png"),
+        SpriteType.FLOOR_1: Path("./static/sprites/floor_1.png"),
+        SpriteType.FLOOR_2: Path("./static/sprites/floor_2.png"),
+        SpriteType.FLOOR_3: Path("./static/sprites/floor_3.png"),
+        SpriteType.CEILING_1: Path("./static/sprites/ceiling_1.png"),
+        SpriteType.CEILING_2: Path("./static/sprites/ceiling_2.png"),
+        SpriteType.CEILING_3: Path("./static/sprites/ceiling_3.png"),
+        SpriteType.ZOMBIE: Path("./static/sprites/zombie.png"),
+        SpriteType.OGRE: Path("./static/sprites/ogre.png"),
+        SpriteType.VAMPIRE: Path("./static/sprites/vampire.png"),
+        SpriteType.GHOST: Path("./static/sprites/ghost.png"),
+        SpriteType.SNAKE_MAGE: Path("./static/sprites/snake-mage.png"),
+    }
+
+    """THEME_MAP = {
+        
+    }"""
+
+
+class Sprites:
+    sprites: dict[SpriteType, Sprite] = {}
     PALETTE = [
         (curses.COLOR_BLACK, (0, 0, 0)),
         (curses.COLOR_RED, (255, 0, 0)),
@@ -48,11 +78,15 @@ class SpriteService:
         (curses.COLOR_WHITE, (255, 255, 255)),
     ]
 
-    @staticmethod
-    def nearest_curses_color(r, g, b) -> int:
+    def __init__(self):
+        for sprite, path in SpriteMap.SPRITE_PATHS.items():
+            color_matrix, width, height = self.png_to_color_matrix(path)
+            self.sprites[sprite] = Sprite(sprite, width, height, color_matrix)
+
+    def nearest_curses_color(self, r, g, b) -> int:
         best_const = curses.COLOR_WHITE
         best_dist2 = float("inf")
-        for const, (pr, pg, pb) in SpriteService.PALETTE:
+        for const, (pr, pg, pb) in self.PALETTE:
             dr = r - pr
             dg = g - pg
             db = b - pb
@@ -62,76 +96,29 @@ class SpriteService:
                 best_const = const
         return best_const
 
-    @staticmethod
-    def png_to_color_matrix(path, alpha_threshold=128, transparent_value=None):
+    def png_to_color_matrix(self, path, alpha_threshold=128, transparent_value=None):
         img = Image.open(path).convert("RGBA")
         w, h = img.size
         px = img.load()
-
-        matrix = [[transparent_value for _ in range(w)] for _ in range(h)]
+        matrix = [[transparent_value] * w for _ in range(h)]
         for y in range(h):
             for x in range(w):
                 r, g, b, a = px[x, y]
-                if a >= alpha_threshold:
-                    matrix[y][x] = SpriteService.nearest_curses_color(r, g, b)
-                else:
-                    matrix[y][x] = transparent_value
+                matrix[y][x] = (
+                    transparent_value
+                    if a < alpha_threshold
+                    else self.nearest_curses_color(r, g, b)
+                )
         return matrix, w, h
 
-    @staticmethod
-    def sample_sprite_color(sprite_type: SpriteType, u, v, default_color=None):
+    def sample_sprite_color(self, sprite_type: SpriteType, u, v, default_color=None):
         u = min(1, max(0, u))
         v = min(1, max(0, v))
-
-        sprite = SpriteService.sprites[sprite_type]
-
-        x = min(int(u * sprite.width), sprite.width - 1) if sprite.width > 0 else 0
-        y = min(int(v * sprite.height), sprite.height - 1) if sprite.height > 0 else 0
-
+        sprite = self.sprites[sprite_type]
+        x = min(int(u * sprite.width), sprite.width - 1)
+        y = min(int(v * sprite.height), sprite.height - 1)
         color = sprite.color_matrix[y][x]
         return default_color if color is None else color
 
-    @classmethod
-    def register(cls, sprite: SpriteType, path: Path):
-        color_matrix, width, height = SpriteService.png_to_color_matrix(path)
-        cls.sprites[sprite] = Sprite(sprite, width, height, color_matrix)
 
-
-class SpriteAssembler:
-    @staticmethod
-    def assemble_sprites() -> None:
-        SpriteService.register(SpriteType.WALL_1, Path("./static/sprites/wall_1.png"))
-        SpriteService.register(SpriteType.WALL_2, Path("./static/sprites/wall_2.png"))
-        SpriteService.register(SpriteType.WALL_3, Path("./static/sprites/wall_3.png"))
-        SpriteService.register(SpriteType.FLOOR_1, Path("./static/sprites/floor_1.png"))
-        SpriteService.register(SpriteType.FLOOR_2, Path("./static/sprites/floor_2.png"))
-        SpriteService.register(SpriteType.FLOOR_3, Path("./static/sprites/floor_3.png"))
-        SpriteService.register(
-            SpriteType.CEILING_1, Path("./static/sprites/ceiling_1.png")
-        )
-        SpriteService.register(
-            SpriteType.CEILING_2, Path("./static/sprites/ceiling_2.png")
-        )
-        SpriteService.register(
-            SpriteType.CEILING_3, Path("./static/sprites/ceiling_3.png")
-        )
-        SpriteService.register(SpriteType.ZOMBIE, Path("./static/sprites/zombie.png"))
-        SpriteService.register(SpriteType.OGRE, Path("./static/sprites/ogre.png"))
-        SpriteService.register(SpriteType.VAMPIRE, Path("./static/sprites/vampire.png"))
-        SpriteService.register(SpriteType.GHOST, Path("./static/sprites/ghost.png"))
-        SpriteService.register(
-            SpriteType.SNAKE_MAGE, Path("./static/sprites/snake-mage.png")
-        )
-
-
-class SpriteMap:
-    ENEMY_MAP = {
-        EnemyType.ZOMBIE: SpriteType.ZOMBIE,
-        EnemyType.VAMPIRE: SpriteType.VAMPIRE,
-        EnemyType.GHOST: SpriteType.GHOST,
-        EnemyType.OGRE: SpriteType.OGRE,
-        EnemyType.SNAKE_MAGE: SpriteType.SNAKE_MAGE,
-    }
-    """THEME_MAP = {
-        
-    }"""
+SpriteService = Sprites()

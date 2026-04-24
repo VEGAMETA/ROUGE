@@ -13,7 +13,6 @@ from domain.services.ai import EnemyAI
 from domain.value_objects.enums import SoundType
 from infrastructure.audio.mixer import Mixer
 from infrastructure.vector import Size
-from presentation.curses.sprites import SpriteAssembler
 from presentation.input_handler import InputAction
 from presentation.window import Window
 
@@ -32,7 +31,6 @@ class GameLoop:
 
     def run(self) -> None:
         CommandAssembler.assemble_commands()
-        SpriteAssembler.assemble_sprites()
         self.game_session.sounds.put(SoundType.MUSIC)
         self.game_session.selected_3d = False
         game_timer = time.monotonic()
@@ -60,9 +58,9 @@ class GameLoop:
             for enemy in self.game_session.enemies:  # 0.00-0.01 s
                 EnemyAI.action(enemy, self.game_session)
 
-            if self.game_session.player.health <= 0:
-                self.game_session.sounds.put(SoundType.DEATH)
-                self.game_session.process = False
+            # if self.game_session.player.health <= 0:
+            #     self.game_session.sounds.put(SoundType.DEATH)
+            #     self.game_session.process = False
             tick_t = time.perf_counter() - tick_timer
 
         self.mixer.join(0.1)

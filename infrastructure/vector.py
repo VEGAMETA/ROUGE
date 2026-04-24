@@ -62,6 +62,9 @@ class Vector2:
         yield self.x
         yield self.y
 
+    def length(self) -> float:
+        return (self.x * self.x + self.y * self.y) ** 0.5
+
 
 @dataclass
 class Vector2i(Vector2):

@@ -6,6 +6,7 @@ from application.commands.move import Move
 from application.commands.quit import Quit
 from application.commands.rotate import Rotate
 from domain.value_objects.position import Direction
+from infrastructure.math import Constant
 from presentation.input_handler import InputAction
 
 
@@ -19,7 +20,11 @@ class CommandAssembler:
         CommandService.register(InputAction.MOVE_DOWN, lambda: Move(Direction.DOWN))
         CommandService.register(InputAction.MOVE_LEFT, lambda: Move(Direction.LEFT))
         CommandService.register(InputAction.MOVE_RIGHT, lambda: Move(Direction.RIGHT))
-        CommandService.register(InputAction.ROTATE_LEFT, lambda: Rotate(-0.1))
-        CommandService.register(InputAction.ROTATE_RIGHT, lambda: Rotate(0.1))
+        CommandService.register(
+            InputAction.ROTATE_LEFT, lambda: Rotate(Constant.PI_BY_MINUS_4)
+        )
+        CommandService.register(
+            InputAction.ROTATE_RIGHT, lambda: Rotate(Constant.PI_BY_4)
+        )
         CommandService.register(InputAction.MENU, lambda: Menu())
         CommandService.register(InputAction.INVENTORY, lambda: Inventory())

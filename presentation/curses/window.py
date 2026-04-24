@@ -3,7 +3,8 @@ import curses
 from presentation.curses.input_handler import CursesInputHandler
 from presentation.curses.menu import CursesMenu
 from presentation.curses.notificator import CursesNotificator
-from presentation.curses.renderer import CursesRenderer2D, CursesRenderer3D
+from presentation.curses.render.renderer2d import CursesRenderer2D
+from presentation.curses.render.renderer3d import CursesRenderer3D
 from presentation.window import Window
 
 
