@@ -15,7 +15,7 @@ class CursesWindow(Window):
 
     def __init__(self):
         super().__init__(
-            CursesRenderer3D(), CursesInputHandler, CursesNotificator, CursesMenu
+            CursesRenderer2D(), CursesInputHandler, CursesNotificator, CursesMenu
         )
         # import os
 

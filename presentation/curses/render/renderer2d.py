@@ -28,7 +28,8 @@ class CursesRenderer2D(CursesRenderer):
 
     def render(self, game_state: GameStateDTO) -> None:
         # visible: set[tuple[int, int]] = set()
-        for row in game_state.tile_map[:-1]:
+        toprint: dict[tuple[int, int], str] = {}
+        for row in game_state.tile_map:
             for tile in row:
                 # tile.show_type = tile.type if tile.explored else TileType.VOID
 
@@ -42,11 +43,9 @@ class CursesRenderer2D(CursesRenderer):
                 # else:
                 # tile.show_type = tile.type
                 if tile.changed or tile.x + tile.y in self.old_pos:
-                    self.window.addch(
-                        tile.y,
-                        tile.x,
-                        CursesRenderMap.TILE_RENDER_MAP[tile.show_type].character,
-                    )
+                    toprint[(tile.x, tile.y)] = CursesRenderMap.TILE_RENDER_MAP[
+                        tile.show_type
+                    ]
                     tile.changed = False
                 if tile.show_type == TileType.VOID:
                     if random() < Visuals.GLIMP_DENSITY_M:
@@ -61,9 +60,7 @@ class CursesRenderer2D(CursesRenderer):
         for enemy in game_state.enemies:
             # if (enemy.x, enemy.y) not in visible:
             #     continue
-            self.add_data(
-                enemy.x, enemy.y, CursesRenderMap.ENEMY_RENDER_MAP[enemy.type]
-            )
+            toprint[(enemy.x, enemy.y)] = CursesRenderMap.ENEMY_RENDER_MAP[enemy.type]
             self.old_pos.append(enemy.x + enemy.y)
 
         # for item in game_state.items:
@@ -75,9 +72,16 @@ class CursesRenderer2D(CursesRenderer):
         #     data.color1 = CursesRenderMap.RARITY_MAP[item.rarity]
         #     # self.add_data(item.x, item.y, data)
 
-        self.add_data(
-            game_state.player.x, game_state.player.y, CursesRenderMap.PLAYER_RENDER_DATA
+        toprint[(game_state.player.x, game_state.player.y)] = (
+            CursesRenderMap.PLAYER_RENDER_DATA
         )
+
         self.old_pos.append(game_state.player.x + game_state.player.y)
 
+        max_height = len(game_state.tile_map) - 1
+        max_width = len(game_state.tile_map[0]) - 1
+
+        toprint.pop((max_width, max_height), None)
+        for t, data in toprint.items():
+            self.add_data(t[0], t[1], data)
         self.hud(game_state)
