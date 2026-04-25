@@ -5,14 +5,14 @@ from domain.entities.item import Item
 
 
 class Backpack(Entity):
-    def __init__(self, capacity: int = 3, items: list[Item] = []) -> None:
+    def __init__(self, capacity: int = 9, items: list[Item] = None) -> None:
         super().__init__()
         self.capacity = capacity
-        self.items = items
+        self.items = items if items is not None else []
 
     def add_item(self, item: Item) -> None:
         if len(self.items) >= self.capacity:
-            Exception("Backpack is full")
+            raise Exception("Backpack is full")
         self.items.append(item)
 
     def remove_item(self, item: Item) -> None:

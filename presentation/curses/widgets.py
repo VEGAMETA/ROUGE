@@ -59,6 +59,7 @@ class Panel(Widget):
         self.compute_size()
         self.centerize(sw, sh)
         win = curses.newwin(self.h, self.w, self.y, self.x)
+        win.keypad(True)
         win.clear()
         if self.border:
             win.box()

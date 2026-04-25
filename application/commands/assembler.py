@@ -5,6 +5,9 @@ from application.commands.menu import Menu
 from application.commands.move import Move
 from application.commands.quit import Quit
 from application.commands.rotate import Rotate
+from application.commands.eat_food import EatFood
+from application.commands.use_item import UseItem
+from domain.value_objects.enums import ItemType
 from domain.value_objects.position import Direction
 from infrastructure.math import Constant
 from presentation.input_handler import InputAction
@@ -28,3 +31,10 @@ class CommandAssembler:
         )
         CommandService.register(InputAction.MENU, lambda: Menu())
         CommandService.register(InputAction.INVENTORY, lambda: Inventory())
+        CommandService.register(InputAction.USE_FOOD, lambda: EatFood())
+        CommandService.register(
+            InputAction.USE_WEAPON, lambda: UseItem(ItemType.WEAPON)
+        )
+        CommandService.register(
+            InputAction.USE_ELIXIR, lambda: UseItem(ItemType.CONSUMABLE)
+        )

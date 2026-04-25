@@ -1,5 +1,6 @@
 import curses
 
+from presentation.curses.backpack import CursesBackpackView
 from presentation.curses.input_handler import CursesInputHandler
 from presentation.curses.menu import CursesMenu
 from presentation.curses.notificator import CursesNotificator
@@ -15,7 +16,11 @@ class CursesWindow(Window):
 
     def __init__(self):
         super().__init__(
-            CursesRenderer3D(), CursesInputHandler, CursesNotificator, CursesMenu
+            CursesRenderer3D(),
+            CursesInputHandler,
+            CursesNotificator,
+            CursesMenu,
+            CursesBackpackView,
         )
         # import os
 

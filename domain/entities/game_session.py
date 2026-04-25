@@ -4,6 +4,7 @@ from random import choice
 from typing import Optional
 
 from domain.entities.enemy import Enemy
+from domain.generators.item import ItemFactory
 from domain.entities.entity import Entity
 from domain.entities.item import Item
 from domain.entities.player import Player
@@ -56,6 +57,16 @@ class GameSession(Entity):
             if room != player_room
         }
         self.items = []
+        for room in self.stage.rooms:
+            if room != player_room:
+                self.items += [
+                    ItemFactory.create_random(
+                        room.get_random_inbound(), self.player.level
+                    ),
+                    ItemFactory.create_random(
+                        room.get_random_inbound(), self.player.level
+                    ),
+                ]
 
     def find_enemy(self) -> Optional[Enemy]:
         enemy_position = self.player.position + self.player.direction

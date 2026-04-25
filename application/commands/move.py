@@ -3,6 +3,7 @@ from math import cos, sin
 from application.commands.command import Command, CommandResult
 from domain.entities.game_session import GameSession
 from domain.services.combat import CombatService
+from domain.services.item import ItemService
 from domain.services.movement import MovementService
 from domain.value_objects.enums import SoundType
 from domain.value_objects.position import Direction, Position
@@ -49,4 +50,8 @@ class Move(Command):
                 return CommandResult.SWAP_ACTION
             return CommandResult.NO_ACTION
         context.sounds.put(SoundType.MOVE)
+        for item in context.items:
+            if not item.is_owned and item.position == context.player.position:
+                ItemService.pickup(item, context)
+                break
         return CommandResult.OK

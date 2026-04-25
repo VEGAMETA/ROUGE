@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
 from domain.entities.item import Item
-from domain.value_objects.enums import ItemType
+from domain.value_objects.enums import ItemRarityType, ItemType
 
 
 @dataclass
@@ -13,6 +13,7 @@ class ItemDTO:
     name: str
     description: str
     value: int
+    rarity: ItemRarityType
 
 
 class ItemMapper:
@@ -26,4 +27,5 @@ class ItemMapper:
             name=item.name,
             description=item.description,
             value=item.value,
+            rarity=item.rarity,
         )

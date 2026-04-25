@@ -5,7 +5,7 @@ from application.dto.game_state import GameStateDTO
 from config.settings import Visuals
 from domain.rules.progression import Level
 from domain.value_objects.enums import TileType
-from presentation.curses.render.render_map import CursesRenderMap
+from presentation.curses.render.render_map import CursesRenderData, CursesRenderMap
 from presentation.curses.render.renderer import CursesRenderer
 
 
@@ -66,14 +66,15 @@ class CursesRenderer2D(CursesRenderer):
             )
             self.old_pos.append(enemy.x + enemy.y)
 
-        # for item in game_state.items:
-        #     if (item.x, item.y) not in visible:
-        #         continue
-        #     if not item.is_owned:
-        #         continue
-        #     data = CursesRenderMap.ITEM_RENDER_MAP[item.type]
-        #     data.color1 = CursesRenderMap.RARITY_MAP[item.rarity]
-        #     # self.add_data(item.x, item.y, data)
+        for item in game_state.items:
+            if item.is_owned:
+                continue
+            data = CursesRenderData(
+                CursesRenderMap.ITEM_RENDER_MAP[item.type].character,
+                CursesRenderMap.RARITY_MAP[item.rarity],
+            )
+            self.add_data(item.x, item.y, data)
+            self.old_pos.append(item.x + item.y)
 
         self.add_data(
             game_state.player.x, game_state.player.y, CursesRenderMap.PLAYER_RENDER_DATA

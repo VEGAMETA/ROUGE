@@ -1,0 +1,39 @@
+from domain.entities.game_session import GameSession
+from domain.entities.item import Item
+from domain.value_objects.enums import ConsumableType, ItemType, SoundType
+
+
+class ItemService:
+    @staticmethod
+    def pickup(item: Item, context: GameSession) -> bool:
+        if len(context.player.inventory.items) >= context.player.inventory.capacity:
+            return False
+        item.is_owned = True
+        context.player.inventory.add_item(item)
+        context.sounds.put(SoundType.ITEM_PICK)
+        return True
+
+    @staticmethod
+    def use(item: Item, context: GameSession) -> bool:
+        if item.type == ItemType.CONSUMABLE:
+            ItemService._apply_consumable(item, context)
+            context.player.inventory.remove_item(item)
+        elif item.type == ItemType.WEAPON:
+            context.player.weapon = item
+        context.sounds.put(SoundType.ITEM_USE)
+        return True
+
+    @staticmethod
+    def _apply_consumable(item: Item, context: GameSession) -> None:
+        match item.subtype:
+            case ConsumableType.HEALTH | ConsumableType.FOOD:
+                context.player.health = min(
+                    context.player.health + item.health, context.player.max_health
+                )
+            case ConsumableType.STRENGTH | ConsumableType.MAX_STRENGTH:
+                context.player.strength += item.strength
+            case ConsumableType.DEXTERITY | ConsumableType.MAX_DEXTERITY:
+                context.player.dexterity += item.dexterity
+            case ConsumableType.MAX_HEALTH:
+                context.player.max_health += item.max_health
+                context.player.health += item.max_health

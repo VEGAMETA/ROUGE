@@ -43,6 +43,7 @@ class ConsumableType(IntEnum):
     MAX_HEALTH: int = auto()
     MAX_DEXTERITY: int = auto()
     MAX_STRENGTH: int = auto()
+    FOOD: int = auto()
 
 
 class WeaponType(IntEnum):
@@ -51,6 +52,10 @@ class WeaponType(IntEnum):
     AXE: int = auto()
     BOW: int = auto()
     STAFF: int = auto()
+    DAGGER: int = auto()
+    MACE: int = auto()
+    SPEAR: int = auto()
+    TWO_HANDED_SWORD: int = auto()
 
 
 class Hostility(IntEnum):

@@ -5,6 +5,8 @@ from presentation.views.notificator import NotificationType, Notificator
 
 
 class CursesNotificator(Notificator):
+    PAIR_OFFSET = 230
+
     ICON_MAP = {
         NotificationType.UNDEFINED: "",
         NotificationType.INFO: "!",
@@ -15,6 +17,7 @@ class CursesNotificator(Notificator):
 
     @staticmethod
     def _init_colors() -> None:
+        offset = CursesNotificator.PAIR_OFFSET
         for v, c1, c2 in [
             (NotificationType.UNDEFINED.value, curses.COLOR_WHITE, curses.COLOR_BLACK),
             (NotificationType.INFO.value, curses.COLOR_WHITE, curses.COLOR_BLUE),
@@ -23,7 +26,7 @@ class CursesNotificator(Notificator):
             (NotificationType.ERROR.value, curses.COLOR_WHITE, curses.COLOR_RED),
             (NotificationType.DEBUG.value, curses.COLOR_BLACK, curses.COLOR_WHITE),
         ]:
-            curses.init_pair(v, c1, c2)
+            curses.init_pair(offset + v, c1, c2)
 
     @staticmethod
     def show(
@@ -37,13 +40,9 @@ class CursesNotificator(Notificator):
         if not isinstance(window, curses.window):
             return
 
-        curses.curs_set(0)
-        curses.start_color()
-        curses.use_default_colors()
-
         CursesNotificator._init_colors()
 
-        color_pair = curses.color_pair(style.value)
+        color_pair = curses.color_pair(CursesNotificator.PAIR_OFFSET + style.value)
 
         icon = CursesNotificator.ICON_MAP.get(style, "•")
 
