@@ -42,10 +42,9 @@ class CursesRenderer2D(CursesRenderer):
                 # tile.show_type = TileType.VOID
                 # else:
                 # tile.show_type = tile.type
-                if tile.changed or tile.x + tile.y in self.old_pos:
-                    toprint[(tile.x, tile.y)] = CursesRenderMap.TILE_RENDER_MAP[
-                        tile.show_type
-                    ]
+                t = (tile.x, tile.y)
+                if tile.changed or hash(t) in self.old_pos:
+                    toprint[t] = CursesRenderMap.TILE_RENDER_MAP[tile.show_type]
                     tile.changed = False
                 if tile.show_type == TileType.VOID:
                     if random() < Visuals.GLIMP_DENSITY_M:
@@ -57,27 +56,27 @@ class CursesRenderer2D(CursesRenderer):
                         tile.changed = True
 
         self.old_pos.clear()
-        for enemy in game_state.enemies:
-            # if (enemy.x, enemy.y) not in visible:
-            #     continue
-            toprint[(enemy.x, enemy.y)] = CursesRenderMap.ENEMY_RENDER_MAP[enemy.type]
-            self.old_pos.append(enemy.x + enemy.y)
 
         for item in game_state.items:
             if item.is_owned:
                 continue
-            data = CursesRenderData(
+            t = (item.x, item.y)
+            toprint[t] = CursesRenderData(
                 CursesRenderMap.ITEM_RENDER_MAP[item.type].character,
                 CursesRenderMap.RARITY_MAP[item.rarity],
             )
-            self.add_data(item.x, item.y, data)
-            self.old_pos.append(item.x + item.y)
+            self.old_pos.append(hash(t))
 
-        toprint[(game_state.player.x, game_state.player.y)] = (
-            CursesRenderMap.PLAYER_RENDER_DATA
-        )
+        for enemy in game_state.enemies:
+            # if (enemy.x, enemy.y) not in visible:
+            #     continue
+            t = (enemy.x, enemy.y)
+            toprint[t] = CursesRenderMap.ENEMY_RENDER_MAP[enemy.type]
+            self.old_pos.append(hash(t))
 
-        self.old_pos.append(game_state.player.x + game_state.player.y)
+        t = (game_state.player.x, game_state.player.y)
+        toprint[t] = CursesRenderMap.PLAYER_RENDER_DATA
+        self.old_pos.append(hash(t))
 
         max_height = len(game_state.tile_map) - 1
         max_width = len(game_state.tile_map[0]) - 1

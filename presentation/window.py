@@ -1,5 +1,3 @@
-from threading import Thread
-
 from application.dto.game_state import GameStateDTO
 from presentation.input_handler import InputAction, InputHandler
 from presentation.renderer import Renderer
@@ -25,8 +23,8 @@ class Window:
 
     def get_size(self) -> tuple[int, int]: ...
 
-    def action(self) -> InputAction:
-        return self.input_handler.get(self.window)
+    def action(self, action3d: bool = False) -> InputAction:
+        return self.input_handler.get(self.window, action3d)
 
     def draw(self, game_state: GameStateDTO) -> None:
         self.renderer.render(game_state)

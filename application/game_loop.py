@@ -19,10 +19,10 @@ class GameLoop:
     def __init__(self, window: Window) -> None:
         self.window: Window = window()
         size: Size = Size(*self.window.get_size())
-        # size /= 3  # 3D
+        size /= 3  # 3D
         self.stage: int = 0
         self.game_session: GameSession = GameSession(size, SimpleQueue())
-        # self.game_session.selected_3d = True  # 3D
+        self.game_session.selected_3d = True  # 3D
         self.game_session.new_stage()
         self.mixer: Mixer = Mixer(self.game_session.sounds)
         self.mixer.start()
@@ -45,7 +45,7 @@ class GameLoop:
             )
             self.window.renderer.window.refresh()
 
-            action: InputAction = self.window.action()
+            action: InputAction = self.window.action(self.game_session.selected_3d)
 
             result: CommandResult = CommandService.execute(
                 action, self.game_session, self.window

@@ -26,7 +26,7 @@ class InputHandler(ABC):
 
     @staticmethod
     @abstractmethod
-    def get() -> InputAction: ...
+    def get(action3d: bool = False) -> InputAction: ...
 
     @staticmethod
     @abstractmethod
