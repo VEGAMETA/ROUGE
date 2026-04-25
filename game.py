@@ -10,7 +10,7 @@ from infrastructure.random import set_seed
 
 
 def main() -> None:
-    locale.setlocale(locale.LC_CTYPE, "C")
+    locale.setlocale(locale.LC_ALL, "")
     set_seed(1)
     loop = GameLoop(DefaultWindow)
     try:
