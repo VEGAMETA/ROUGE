@@ -15,32 +15,19 @@ class Move(Command):
 
     def execute(self, context: GameSession, *args, **kwargs) -> CommandResult:
         if context.selected_3d:
+            rot = context.player.rotation
+            sin_r, cos_r = round(sin(rot)), round(cos(rot))
             match self.direction:
                 case Direction.UP:
-                    x = int(round(cos(context.player.rotation)))
-                    y = int(round(sin(context.player.rotation)))
-                    new_position = Position(
-                        context.player.position.x + x, context.player.position.y + y
-                    )
+                    d = Position(cos_r, sin_r)
                 case Direction.DOWN:
-                    x = int(round(cos(context.player.rotation)))
-                    y = int(round(sin(context.player.rotation)))
-                    new_position = Position(
-                        context.player.position.x - x, context.player.position.y - y
-                    )
+                    d = Position(-cos_r, -sin_r)
                 case Direction.LEFT:
-                    x = round(sin(context.player.rotation))
-                    y = round(cos(context.player.rotation))
-                    new_position = Position(
-                        context.player.position.x + x, context.player.position.y - y
-                    )
+                    d = Position(sin_r, -cos_r)
                 case Direction.RIGHT:
-                    x = round(sin(context.player.rotation))
-                    y = round(cos(context.player.rotation))
-                    new_position = Position(
-                        context.player.position.x - x, context.player.position.y + y
-                    )
-            context.player.direction = Position(x, y)
+                    d = Position(-sin_r, cos_r)
+            new_position = context.player.position + d
+            context.player.direction = d
         else:
             new_position = context.player.position + self.direction
             context.player.direction = self.direction

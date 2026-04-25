@@ -1,4 +1,3 @@
-from functools import lru_cache
 from math import atan2, cos, fabs, sin
 
 import numpy as np
@@ -6,7 +5,7 @@ import numpy as np
 from application.dto.game_state import GameStateDTO
 from domain.value_objects.enums import TileType
 from infrastructure.math import Constant
-from infrastructure.vector import Size, Vector2, Vector2i
+from infrastructure.vector import Size, Vector2
 from presentation.curses.render.render_map import CursesRenderData
 from presentation.curses.render.renderer import CursesRenderer
 from presentation.curses.render.renderer2d import CursesRenderer2D
@@ -19,7 +18,7 @@ class CursesRenderer3D(CursesRenderer):
         self.map_renderer: CursesRenderer2D = CursesRenderer2D()
         self.map_renderer.render_state = self.render_state
         self.depth: float = 16.0
-        self.FOV: float = Constant.PI_BY_3  # 60 degrees
+        self.FOV: float = Constant.PI_BY_3
         self.ONE_BY_FOV: float = 1 / self.FOV
         self.HALF_FOV: float = 0.5 * self.FOV
 
@@ -36,11 +35,11 @@ class CursesRenderer3D(CursesRenderer):
         self.scr_size: Size = self.map_size * 3 - 1
         self.depth_buffer = [0.0] * self.scr_size.width
         self.rowDistances_ceiling = {
-            y: 1 / (1 - 2 * y / self.scr_size.height)
+            y: 1 / max((1 - 2 * y / self.scr_size.height), 0.001)
             for y in range(self.scr_size.height)
         }
         self.rowDistances_floor = {
-            y: 1 / (2 * y / self.scr_size.height - 1)
+            y: 1 / max((2 * y / self.scr_size.height - 1), 0.001)
             for y in range(self.scr_size.height)
         }
         self.arr = np.zeros((self.scr_size.height, self.scr_size.width), dtype=np.int8)
@@ -51,13 +50,13 @@ class CursesRenderer3D(CursesRenderer):
 
     def get_shadow(self, surface_distance: float) -> str:
         ratio = self.depth - surface_distance
-        if ratio <= 4:
-            return " "
-        elif ratio < 8:
-            return "░"
-        elif ratio < 10:
-            return "▒"
-        return "\u2588"  # █
+        if ratio <= 3.5:
+            return "\u0020"  # \u0020
+        elif ratio < 7:
+            return "\u2591"  # ░ \u2591
+        elif ratio < 10.5:
+            return "\u2592"  # ▒ \u2592
+        return "\u2588"  # █ \u2588
 
     def print_sprite_(
         self,
@@ -71,18 +70,17 @@ class CursesRenderer3D(CursesRenderer):
         color = SpriteService.sample_sprite_color(sprite_type, sample_x, sample_y)
         self.add_data(x, y, CursesRenderData(self.get_shadow(distance), color))
 
-    @lru_cache(maxsize=10000)
     def cast_wall(
-        self, pos: Vector2, eye: Vector2, depth: float
+        self, pos_x: float, pos_y: float, eye_x: float, eye_y: float, depth: float
     ) -> tuple[float, float]:
-        delta_dist_x = abs(1 / eye.x) if eye.x != 0 else 1e6
-        delta_dist_y = abs(1 / eye.y) if eye.y != 0 else 1e6
-        map_x = int(pos.x)
-        map_y = int(pos.y)
-        step_x = 1 if eye.x > 0 else -1
-        step_y = 1 if eye.y > 0 else -1
-        side_dist_x = (map_x + 1 - pos.x if eye.x > 0 else pos.x - map_x) * delta_dist_x
-        side_dist_y = (map_y + 1 - pos.y if eye.y > 0 else pos.y - map_y) * delta_dist_y
+        delta_dist_x = abs(1 / eye_x) if eye_x != 0 else 1e6
+        delta_dist_y = abs(1 / eye_y) if eye_y != 0 else 1e6
+        map_x = int(pos_x)
+        map_y = int(pos_y)
+        step_x = 1 if eye_x > 0 else -1
+        step_y = 1 if eye_y > 0 else -1
+        side_dist_x = (map_x + 1 - pos_x if eye_x > 0 else pos_x - map_x) * delta_dist_x
+        side_dist_y = (map_y + 1 - pos_y if eye_y > 0 else pos_y - map_y) * delta_dist_y
         while True:
             if side_dist_x < side_dist_y:
                 side_dist_x += delta_dist_x
@@ -100,34 +98,46 @@ class CursesRenderer3D(CursesRenderer):
             if tile_type not in (TileType.WALL, TileType.VOID):
                 continue
             if hit_vertical:
-                wall_distance = (map_x - pos.x + (0 if step_x > 0 else 1)) / eye.x
-                sample_x = (pos.y + wall_distance * eye.y) % 1
+                wall_distance = (map_x - pos_x + (0 if step_x > 0 else 1)) / eye_x
+                sample_x = (pos_y + wall_distance * eye_y) % 1
             else:
-                wall_distance = (map_y - pos.y + (0 if step_y > 0 else 1)) / eye.y
-                sample_x = (pos.x + wall_distance * eye.x) % 1
+                wall_distance = (map_y - pos_y + (0 if step_y > 0 else 1)) / eye_y
+                sample_x = (pos_x + wall_distance * eye_x) % 1
             return wall_distance, sample_x
 
     def draw_column(
-        self, pos: Vector2, eye: Vector2, x: int, sample_x: float, wall_distance: float
+        self,
+        pos_x: float,
+        pos_y: float,
+        eye_x: float,
+        eye_y: float,
+        x: int,
+        sample_x: float,
+        wall_distance: float,
     ) -> None:
-        start = self.map_size.height + 1 if x < self.map_size.width else 0
+        start = self.map_size.height if x < self.map_size.width else 0
         ceiling = max(start, int(self.ceiling))
         floor = min(self.scr_size.height, int(self.floor))
         smf = self.floor - self.ceiling
-        smfb = self.ceiling / smf
+        smfb = self.ceiling / max(smf, 0.01)
         for y in range(ceiling, floor):
-            a = y / smf - smfb
+            a = y / max(smf, 0.01) - smfb if wall_distance < self.depth else 0
             self.print_sprite_(x, y, wall_distance, SpriteType.WALL_3, sample_x, a)
         for y in range(start, ceiling):
             rowDistance = self.rowDistances_ceiling[y]
-            f = pos + eye * rowDistance
-            f -= Vector2i(*f)
-            self.print_sprite_(x, y, rowDistance, SpriteType.CEILING_3, f.x, f.y)
+            f_x = pos_x + eye_x * rowDistance
+            f_y = pos_y + eye_y * rowDistance
+            self.print_sprite_(
+                x, y, rowDistance * 2.25, SpriteType.CEILING_3, f_x % 1, f_y % 1
+            )
+
         for y in range(floor, self.scr_size.height):
             rowDistance = self.rowDistances_floor[y]
-            f = pos + eye * rowDistance
-            f -= Vector2i(*f)
-            self.print_sprite_(x, y, rowDistance, SpriteType.FLOOR_3, f.x, f.y)
+            f_x = pos_x + eye_x * rowDistance
+            f_y = pos_y + eye_y * rowDistance
+            self.print_sprite_(
+                x, y, rowDistance * 1.85, SpriteType.FLOOR_3, f_x % 1, f_y % 1
+            )
 
     def render_enemies(
         self, game_state: GameStateDTO, pos: Vector2, player_angle: float
@@ -195,14 +205,17 @@ class CursesRenderer3D(CursesRenderer):
         self.init_rows(game_state)
         self.map_renderer.render(game_state)
         pos = Vector2(game_state.player.x, game_state.player.y) + 0.5
+        pos.x += 0.1 if int(pos.x) % 2 else -0.1
+        pos.y += 0.1 if int(pos.y) % 2 else -0.1
         angle = game_state.player.rotation
-
         for x in range(self.scr_size.width):
             ray_angle = angle + (x / self.scr_size.width - 0.5) * self.FOV
             eye: Vector2 = Vector2(cos(ray_angle), sin(ray_angle))
-            wall_distance, sample_x = self.cast_wall(pos, eye, self.depth)
-            self.ceiling = self.scr_size.height * (0.5 - 1 / wall_distance)
+            wall_distance, sample_x = self.cast_wall(
+                pos.x, pos.y, eye.x, eye.y, self.depth
+            )
+            self.ceiling = self.scr_size.height * (0.5 - 1 / max(wall_distance, 0.01))
             self.floor = self.scr_size.height - self.ceiling
             self.depth_buffer[x] = wall_distance
-            self.draw_column(pos, eye, x, sample_x, wall_distance)
+            self.draw_column(pos.x, pos.y, eye.x, eye.y, x, sample_x, wall_distance)
         self.render_enemies(game_state, pos, angle)
