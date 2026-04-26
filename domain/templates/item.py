@@ -161,19 +161,8 @@ TREASURE_TEMPLATES = {
     ),
 }
 
-AMULET_TEMPLATES = {
-    (ItemType.AMULET, ItemType.UNDEFINED): partial(
-        Item,
-        type=ItemType.AMULET,
-        name="Amulet of Yendor",
-        description="The legendary amulet",
-        value=1000,
-    ),
-}
-
 
 ITEM_TEMPLATES = {}
 ITEM_TEMPLATES.update(CONSUMABLE_TEMPLATES)
 ITEM_TEMPLATES.update(WEAPON_TEMPLATES)
 ITEM_TEMPLATES.update(TREASURE_TEMPLATES)
-ITEM_TEMPLATES.update(AMULET_TEMPLATES)

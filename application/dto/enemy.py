@@ -1,14 +1,13 @@
 from dataclasses import dataclass
 
 from domain.entities.enemy import Enemy
-from domain.value_objects.enums import EnemyType
 
 
 @dataclass
 class EnemyDTO:
     x: int
     y: int
-    type: EnemyType
+    type: int
 
 
 class EnemyMaper:
@@ -17,5 +16,5 @@ class EnemyMaper:
         return EnemyDTO(
             x=enemy.position.x,
             y=enemy.position.y,
-            type=enemy.type,
+            type=enemy.type.value,
         )

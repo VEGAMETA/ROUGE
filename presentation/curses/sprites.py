@@ -6,7 +6,7 @@ from typing import Optional
 
 from PIL import Image
 
-from domain.value_objects.enums import EnemyType, ItemType
+from domain.value_objects.enums import DoorType, EnemyType, ItemType, KeyType
 
 
 class SpriteType(IntEnum):
@@ -33,6 +33,7 @@ class SpriteType(IntEnum):
     TREASURE: int = auto()
     CONSUMABLES: int = auto()
     WEAPONS: int = auto()
+    DOOR_OPENED: int = auto()
     DOOR_RED: int = auto()
     DOOR_GREEN: int = auto()
     DOOR_BLUE: int = auto()
@@ -81,7 +82,19 @@ class SpriteMap:
         ItemType.CONSUMABLE: SpriteType.CONSUMABLES,
         ItemType.WEAPON: SpriteType.WEAPONS,
         ItemType.TREASURE: SpriteType.TREASURE,
-        ItemType.AMULET: SpriteType.UNDEFINED,
+    }
+
+    DOOR_MAP: dict[DoorType, SpriteType] = {
+        DoorType.RED: SpriteType.DOOR_RED,
+        DoorType.GREEN: SpriteType.DOOR_GREEN,
+        DoorType.BLUE: SpriteType.DOOR_BLUE,
+        DoorType.OPENED: SpriteType.DOOR_OPENED,
+    }
+
+    KEY_MAP: dict[KeyType, SpriteType] = {
+        KeyType.RED: SpriteType.KEY_RED,
+        KeyType.GREEN: SpriteType.KEY_GREEN,
+        KeyType.BLUE: SpriteType.KEY_BLUE,
     }
 
     SPRITE_PATHS: dict[SpriteType, Path] = {
@@ -105,6 +118,7 @@ class SpriteMap:
         SpriteType.TREASURE: Path("./static/sprites/items/treasure.png"),
         SpriteType.CONSUMABLES: Path("./static/sprites/items/consumables.png"),
         SpriteType.WEAPONS: Path("./static/sprites/items/weapons.png"),
+        SpriteType.DOOR_OPENED: Path("./static/sprites/interior/door_opened.png"),
         SpriteType.DOOR_RED: Path("./static/sprites/interior/door_red.png"),
         SpriteType.DOOR_GREEN: Path("./static/sprites/interior/door_green.png"),
         SpriteType.DOOR_BLUE: Path("./static/sprites/interior/door_blue.png"),

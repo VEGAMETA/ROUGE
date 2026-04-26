@@ -1,9 +1,12 @@
 from dataclasses import dataclass
 
-from domain.entities.door import Door
 from domain.entities.entity import Entity2D
+from domain.value_objects.enums import KeyType
+from domain.value_objects.position import Position
 
 
 @dataclass(eq=False)
 class Key(Entity2D):
-    door: Door = None
+    position: Position = Position(0, 0)
+    type: KeyType = KeyType.UNDEFINED
+    is_owned: bool = False
