@@ -2,7 +2,11 @@ from math import atan2, cos, fabs, sin
 
 import numpy as np
 
+from application.dto.door import DoorDTO
+from application.dto.enemy import EnemyDTO
 from application.dto.game_state import GameStateDTO
+from application.dto.item import ItemDTO
+from application.dto.key import KeyDTO
 from domain.value_objects.enums import TileType
 from infrastructure.math import Constant
 from infrastructure.vector import Size, Vector2
@@ -68,6 +72,8 @@ class CursesRenderer3D(CursesRenderer):
         sample_y: float = 0,
     ):
         color = SpriteService.sample_sprite_color(sprite_type, sample_x, sample_y)
+        if color is None:
+            return
         self.add_data(x, y, CursesRenderData(self.get_shadow(distance), color))
 
     def cast_wall(
@@ -130,7 +136,6 @@ class CursesRenderer3D(CursesRenderer):
             self.print_sprite_(
                 x, y, rowDistance * 2.25, SpriteType.CEILING_3, f_x % 1, f_y % 1
             )
-
         for y in range(floor, self.scr_size.height):
             rowDistance = self.rowDistances_floor[y]
             f_x = pos_x + eye_x * rowDistance
@@ -139,17 +144,30 @@ class CursesRenderer3D(CursesRenderer):
                 x, y, rowDistance * 1.85, SpriteType.FLOOR_3, f_x % 1, f_y % 1
             )
 
-    def render_enemies(
+    def render_entities(
         self, game_state: GameStateDTO, pos: Vector2, player_angle: float
     ) -> None:
         eye: Vector2 = Vector2(cos(player_angle), sin(player_angle))
         obj_eye: float = atan2(eye.x, eye.y)
-        game_state.enemies.sort(
+        entities = game_state.enemies.copy()
+        entities.extend([item for item in game_state.items if not item.is_owned])
+        entities.extend(game_state.doors)
+        entities.sort(
             key=lambda e: (Vector2(e.x, e.y) - pos + 0.5).length(), reverse=True
         )
-        for enemy in game_state.enemies:
-            sprite: SpriteType = SpriteService.sprites[SpriteMap.ENEMY_MAP[enemy.type]]
-            vec: Vector2 = Vector2(enemy.x, enemy.y) - pos + 0.5
+
+        for entity in entities:
+            mapa = {
+                EnemyDTO: SpriteMap.ENEMY_MAP,
+                ItemDTO: SpriteMap.ITEM_MAP,
+                DoorDTO: SpriteMap.DOOR_MAP,
+                KeyDTO: SpriteMap.KEY_MAP,
+            }.get(type(entity), None)
+            if not mapa:
+                continue
+            sprite: SpriteType = SpriteService.sprites[mapa[entity.type]]
+
+            vec: Vector2 = Vector2(entity.x, entity.y) - pos + 0.5
             distance = vec.length()
             object_angle = obj_eye - atan2(vec.x, vec.y)
             if object_angle < Constant.MINUS_PI:
@@ -163,7 +181,7 @@ class CursesRenderer3D(CursesRenderer):
             object_floor = self.scr_size.height - object_ceiling
             object_height = object_floor - object_ceiling
             aspect = sprite.width / sprite.height
-            object_width = int(object_height * aspect)
+            object_width = int(object_height * aspect) * 2
             middle_of_object = (
                 object_angle * self.ONE_BY_FOV + 0.5
             ) * self.scr_size.width
@@ -218,4 +236,4 @@ class CursesRenderer3D(CursesRenderer):
             self.floor = self.scr_size.height - self.ceiling
             self.depth_buffer[x] = wall_distance
             self.draw_column(pos.x, pos.y, eye.x, eye.y, x, sample_x, wall_distance)
-        self.render_enemies(game_state, pos, angle)
+        self.render_entities(game_state, pos, angle)

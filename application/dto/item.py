@@ -1,19 +1,18 @@
 from dataclasses import dataclass
 
 from domain.entities.item import Item
-from domain.value_objects.enums import ItemRarityType, ItemType
 
 
 @dataclass
 class ItemDTO:
     x: int
     y: int
-    type: ItemType
+    type: int
     is_owned: bool
     name: str
     description: str
     value: int
-    rarity: ItemRarityType
+    rarity: int
 
 
 class ItemMapper:
@@ -22,10 +21,10 @@ class ItemMapper:
         return ItemDTO(
             x=item.position.x,
             y=item.position.y,
-            type=item.type,
+            type=item.type.value,
             is_owned=item.is_owned,
             name=item.name,
             description=item.description,
             value=item.value,
-            rarity=item.rarity,
+            rarity=item.rarity.value,
         )

@@ -40,7 +40,7 @@ class CursesRenderer(Renderer):
 
     def add_data(self, x: int, y: int, data: CursesRenderData):
         pair = self._get_pair(data.color1, data.color2)
-        self.window.addstr(y, x, data.character, curses.color_pair(pair))
+        self.window.addch(y, x, data.character, curses.color_pair(pair))
 
     def insert_data(self, x: int, y: int, data: CursesRenderData):
         pair = self._get_pair(data.color1, data.color2)

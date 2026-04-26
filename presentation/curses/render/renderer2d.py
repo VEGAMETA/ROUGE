@@ -13,7 +13,7 @@ class CursesRenderer2D(CursesRenderer):
     old_pos: list[int] = []
 
     def hud(self, game_state: GameStateDTO) -> None:
-        level = game_state.player.level.value
+        level = game_state.player.level
         health = round(game_state.player.health)
         max_health = round(game_state.player.max_health)
         strength = game_state.player.strength
