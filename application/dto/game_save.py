@@ -4,7 +4,7 @@ from application.dto.item import ItemDTO, ItemMapper
 from application.dto.player import PlayerDTO, PlayerMapper
 from domain.entities.game_session import GameSession
 from domain.entities.item import Item
-from domain.value_objects.enums import ItemType
+from domain.value_objects.enums import ItemRarityType, ItemType
 from domain.value_objects.position import Position
 from infrastructure.persistence.save_load import SaverLoader
 
@@ -22,30 +22,23 @@ class GameSaveMapper:
     def to_dto(session: GameSession) -> GameSaveDTO:
         return GameSaveDTO(
             player=PlayerMapper.to_dto(session.player),
-            items=[ItemMapper.to_dto(item) for item in session.items if item.is_owned],
+            items=[ItemMapper.to_dto(i) for i in session.items if i.is_owned],
         )
 
     @staticmethod
     def to_dict(dto: GameSaveDTO) -> dict:
         return {
-            "player": {
-                "x": dto.player.x,
-                "y": dto.player.y,
-                "health": dto.player.health,
-                "max_health": dto.player.max_health,
-                "dexterity": dto.player.dexterity,
-                "strength": dto.player.strength,
-                "level": int(dto.player.level),
-                "rotation": dto.player.rotation,
-            },
+            "health": dto.player.health,
+            "max_health": dto.player.max_health,
+            "dexterity": dto.player.dexterity,
+            "strength": dto.player.strength,
+            "level": dto.player.level,
             "items": [
                 {
-                    "x": item.x,
-                    "y": item.y,
-                    "type": item.type.value,
-                    "is_owned": item.is_owned,
+                    "type": item.type,
                     "name": item.name,
                     "description": item.description,
+                    "rarity": item.rarity,
                     "value": item.value,
                 }
                 for item in dto.items
@@ -54,28 +47,27 @@ class GameSaveMapper:
 
     @staticmethod
     def from_dict(data: dict) -> GameSaveDTO:
-        player_data = data["player"]
         player = PlayerDTO(
-            x=player_data["x"],
-            y=player_data["y"],
-            health=player_data["health"],
-            max_health=player_data["max_health"],
-            dexterity=player_data["dexterity"],
-            strength=player_data["strength"],
-            level=player_data["level"],
-            rotation=player_data["rotation"],
+            x=0,
+            y=0,
+            health=data.get("health", 1),
+            max_health=data.get("max_health", 1),
+            dexterity=data.get("dexterity", 1),
+            strength=data.get("strength", 1),
+            level=data.get("level", 0),
         )
         items = [
             ItemDTO(
-                x=item_data["x"],
-                y=item_data["y"],
-                type=ItemType(item_data["type"]),
-                is_owned=item_data["is_owned"],
-                name=item_data["name"],
-                description=item_data["description"],
-                value=item_data["value"],
+                x=0,
+                y=0,
+                type=ItemType.get("type", ItemType.UNDEFINED),
+                name=item_data.get("name", "?"),
+                description=item_data.get("description", "?"),
+                value=item_data.get("value", 0),
+                rarity=item_data.get("rarity", ItemRarityType.COMMON),
+                is_owned=True,
             )
-            for item_data in data["items"]
+            for item_data in data.get("items")
         ]
         return GameSaveDTO(player=player, items=items)
 
@@ -89,23 +81,24 @@ class GameSaveMapper:
         data = SaverLoader.load(SAVE_FILE)
         dto = GameSaveMapper.from_dict(data)
         player = dto.player
-        session.player.position.x = player.x
-        session.player.position.y = player.y
         session.player.health = player.health
         session.player.max_health = player.max_health
         session.player.dexterity = player.dexterity
         session.player.strength = player.strength
         session.player.level = player.level
-        session.player.rotation = player.rotation
-        owned = [
-            Item(
-                position=Position(item_dto.x, item_dto.y),
-                type=item_dto.type,
-                is_owned=item_dto.is_owned,
-                name=item_dto.name,
-                description=item_dto.description,
-                value=item_dto.value,
-            )
-            for item_dto in dto.items
-        ]
-        session.items = [item for item in session.items if not item.is_owned] + owned
+        session.new_stage(player.level - 1)
+        session.items.extend(
+            [
+                Item(
+                    position=Position(),
+                    type=item_dto.type,
+                    name=item_dto.name,
+                    description=item_dto.description,
+                    value=item_dto.value,
+                    rarity=item_dto.rarity,
+                    is_owned=True,
+                )
+                for item_dto in dto.items
+                if item_dto.type != ItemType.UNDEFINED
+            ]
+        )

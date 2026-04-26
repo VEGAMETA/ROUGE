@@ -5,7 +5,7 @@ from domain.entities.item import Item
 from domain.entities.weapon import Weapon
 from domain.value_objects.enums import ConsumableType, ItemType, WeaponType
 
-ITEM_TEMPLATES = {
+CONSUMABLE_TEMPLATES = {
     (ItemType.CONSUMABLE, ConsumableType.HEALTH): partial(
         Consumable,
         subtype=ConsumableType.HEALTH,
@@ -83,6 +83,8 @@ ITEM_TEMPLATES = {
         strength=0,
         value=3,
     ),
+}
+WEAPON_TEMPLATES = {
     (ItemType.WEAPON, WeaponType.DAGGER): partial(
         Weapon,
         subtype=WeaponType.DAGGER,
@@ -147,6 +149,9 @@ ITEM_TEMPLATES = {
         damage=12,
         value=40,
     ),
+}
+
+TREASURE_TEMPLATES = {
     (ItemType.TREASURE, ItemType.UNDEFINED): partial(
         Item,
         type=ItemType.TREASURE,
@@ -154,6 +159,9 @@ ITEM_TEMPLATES = {
         description="Shiny treasure",
         value=25,
     ),
+}
+
+AMULET_TEMPLATES = {
     (ItemType.AMULET, ItemType.UNDEFINED): partial(
         Item,
         type=ItemType.AMULET,
@@ -162,3 +170,10 @@ ITEM_TEMPLATES = {
         value=1000,
     ),
 }
+
+
+ITEM_TEMPLATES = {}
+ITEM_TEMPLATES.update(CONSUMABLE_TEMPLATES)
+ITEM_TEMPLATES.update(WEAPON_TEMPLATES)
+ITEM_TEMPLATES.update(TREASURE_TEMPLATES)
+ITEM_TEMPLATES.update(AMULET_TEMPLATES)

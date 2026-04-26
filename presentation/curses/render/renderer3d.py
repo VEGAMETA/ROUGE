@@ -2,7 +2,9 @@ from math import atan2, cos, fabs, sin
 
 import numpy as np
 
+from application.dto.enemy import EnemyDTO
 from application.dto.game_state import GameStateDTO
+from application.dto.item import ItemDTO
 from domain.value_objects.enums import TileType
 from infrastructure.math import Constant
 from infrastructure.vector import Size, Vector2
@@ -68,6 +70,8 @@ class CursesRenderer3D(CursesRenderer):
         sample_y: float = 0,
     ):
         color = SpriteService.sample_sprite_color(sprite_type, sample_x, sample_y)
+        if color is None:
+            return
         self.add_data(x, y, CursesRenderData(self.get_shadow(distance), color))
 
     def cast_wall(
@@ -130,7 +134,6 @@ class CursesRenderer3D(CursesRenderer):
             self.print_sprite_(
                 x, y, rowDistance * 2.25, SpriteType.CEILING_3, f_x % 1, f_y % 1
             )
-
         for y in range(floor, self.scr_size.height):
             rowDistance = self.rowDistances_floor[y]
             f_x = pos_x + eye_x * rowDistance
@@ -144,12 +147,24 @@ class CursesRenderer3D(CursesRenderer):
     ) -> None:
         eye: Vector2 = Vector2(cos(player_angle), sin(player_angle))
         obj_eye: float = atan2(eye.x, eye.y)
-        game_state.enemies.sort(
+        entities = game_state.enemies.copy()
+        entities.extend([item for item in game_state.items if not item.is_owned])
+        entities.sort(
             key=lambda e: (Vector2(e.x, e.y) - pos + 0.5).length(), reverse=True
         )
-        for enemy in game_state.enemies:
-            sprite: SpriteType = SpriteService.sprites[SpriteMap.ENEMY_MAP[enemy.type]]
-            vec: Vector2 = Vector2(enemy.x, enemy.y) - pos + 0.5
+
+        for entity in entities:
+            if isinstance(entity, EnemyDTO):
+                sprite: SpriteType = SpriteService.sprites[
+                    SpriteMap.ENEMY_MAP[entity.type]
+                ]
+            elif isinstance(entity, ItemDTO):
+                sprite: SpriteType = SpriteService.sprites[
+                    SpriteMap.ITEM_MAP[entity.type]
+                ]
+            else:
+                continue
+            vec: Vector2 = Vector2(entity.x, entity.y) - pos + 0.5
             distance = vec.length()
             object_angle = obj_eye - atan2(vec.x, vec.y)
             if object_angle < Constant.MINUS_PI:
