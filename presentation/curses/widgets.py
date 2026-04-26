@@ -62,8 +62,6 @@ class Panel(Widget):
             self.compute_size()
             self.centerize(sw, sh)
         win = curses.newwin(self.h, self.w, self.y, self.x)
-        win.keypad(True)
-        win.clear()
         if self.border:
             win.box()
         self.set_widget_postions()
@@ -162,7 +160,6 @@ class VerticalMenu(Panel):
             title_x = max(1, (self.w - len(self.title)) // 2)
             try:
                 win.addstr(0, title_x, self.title)
-                win.refresh()
             except curses.error:
                 pass
         content_origin_y = (1 if self.border else 0) + self.padding_y

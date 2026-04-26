@@ -29,6 +29,8 @@ class CursesRenderer3D(CursesRenderer):
         self.rows_init: bool = False
         self.rowDistances_ceiling: dict[int, float] = {}
         self.rowDistances_floor: dict[int, float] = {}
+        self.old_angle: float = 0
+        self.old_pos: tuple[int, int] = (0, 0)
 
     def init_rows(self, game_state: GameStateDTO) -> None:
         if self.rows_init:
@@ -222,6 +224,11 @@ class CursesRenderer3D(CursesRenderer):
     def render(self, game_state: GameStateDTO) -> None:
         self.init_rows(game_state)
         self.map_renderer.render(game_state)
+        if (
+            self.old_pos == (game_state.player.x, game_state.player.y)
+            and self.old_angle == game_state.player.rotation
+        ):
+            return
         pos = Vector2(game_state.player.x, game_state.player.y) + 0.5
         pos.x += 0.1 if int(pos.x) % 2 else -0.1
         pos.y += 0.1 if int(pos.y) % 2 else -0.1
@@ -237,3 +244,5 @@ class CursesRenderer3D(CursesRenderer):
             self.depth_buffer[x] = wall_distance
             self.draw_column(pos.x, pos.y, eye.x, eye.y, x, sample_x, wall_distance)
         self.render_entities(game_state, pos, angle)
+        self.old_angle = angle
+        self.old_pos = (game_state.player.x, game_state.player.y)

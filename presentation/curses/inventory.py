@@ -4,11 +4,12 @@ from typing import Optional
 
 from domain.entities.game_session import GameSession
 from domain.entities.item import Item
+from domain.entities.weapon import Weapon
+from domain.rules.progression import MAX_LEVEL
 from domain.services.item import ItemService
 from domain.value_objects.enums import ConsumableType, ItemType, KeyType
 from presentation.curses.widgets import Label, VerticalMenu
 from presentation.views.inventory import InventoryView
-from domain.rules.progression import MAX_LEVEL
 
 
 class CursesInventoryView(InventoryView):
@@ -19,17 +20,15 @@ class CursesInventoryView(InventoryView):
     _ITEM_COL_W = 20
     _MAX_ITEMS = 9
     _TITLES = ["weapon", "food", "elixir", "scroll"]
-    _HEART_PAIR = 243
-    _KEY_BLUE_PAIR = 240
-    _KEY_GREEN_PAIR = 241
     _KEY_RED_PAIR = 242
+    _KEY_GREEN_PAIR = 241
+    _KEY_BLUE_PAIR = 240
 
     @staticmethod
     def _get_column_items(context: GameSession) -> list[list[Optional[Item]]]:
         owned = context.player.inventory.items
-        weapons = [i for i in owned if i.type == ItemType.WEAPON]
         return [
-            [None] + weapons,
+            [None] + [i for i in owned if i.type == ItemType.WEAPON],
             [
                 i
                 for i in owned
@@ -52,22 +51,22 @@ class CursesInventoryView(InventoryView):
         col_h: int,
         selected_idx: list[int],
     ) -> tuple[list[VerticalMenu], list[list[Optional[Item]]]]:
-        all_items = CursesInventoryView._get_column_items(context)
-        content_w = col_w - 2 * CursesInventoryView._PADDING_X - 2
+        all_items: list[list[Optional[Item]]] = CursesInventoryView._get_column_items(
+            context
+        )
+        content_w: int = col_w - 2 * CursesInventoryView._PADDING_X - 2
         columns: list[VerticalMenu] = []
         for i, (title, items) in enumerate(zip(CursesInventoryView._TITLES, all_items)):
             children: list[Label] = []
             for item in items:
-                if item is None:
-                    marker = " [E]" if context.player.weapon is None else ""
-                    children.append(Label(text=("Empty hands" + marker)[:content_w]))
-                else:
-                    marker = " [E]" if item is context.player.weapon else ""
-                    stack = f" x{item.count}" if item.count > 1 else ""
-                    children.append(
-                        Label(text=(item.name + stack + marker)[:content_w])
-                    )
-            col = VerticalMenu(
+                marker = " [E]" if context.player.weapon is item else ""
+                text = (
+                    item.name + (f" x{item.count}" if item.count > 1 else "")
+                    if item
+                    else "Empty hands"
+                )
+                children.append(Label(text=(text + marker)[:content_w]))
+            col: VerticalMenu = VerticalMenu(
                 title=title,
                 padding_x=CursesInventoryView._PADDING_X,
                 padding_y=CursesInventoryView._PADDING_Y,
@@ -90,11 +89,11 @@ class CursesInventoryView(InventoryView):
     @staticmethod
     def _item_info(item: Optional[Item], context: GameSession) -> tuple[str, str]:
         if item is None:
-            equipped = context.player.weapon
-            label = equipped.name if equipped else "nothing"
+            equipped: Optional[Weapon] = context.player.weapon
+            label: str = equipped.name if equipped else "nothing"
             return f"Unequip current weapon ({label})", ""
-        desc = item.description
-        parts = []
+        desc: str = item.description
+        parts: list[str] = []
         if hasattr(item, "damage"):
             parts.append(f"Damage: {item.damage}")
         if hasattr(item, "health") and item.health:
@@ -112,44 +111,34 @@ class CursesInventoryView(InventoryView):
         return desc, "  ".join(parts)
 
     @staticmethod
-    def _draw_stats(x: int, y: int, w: int, h: int, context: GameSession) -> None:
-        win = curses.newwin(h, w, y, x)
-        win.keypad(True)
-        win.clear()
+    def _draw_stats(win: curses.window, context: GameSession) -> None:
         elapsed = time.monotonic() - context.start_time
-        hh = int(elapsed) // 3600
-        mm = int(elapsed) % 3600 // 60
-        ss = int(elapsed) % 60
-        lv = int(context.player.level)
-        row = 1
-        win.addstr(row, 2, f"LEVEL     {lv}/{MAX_LEVEL}")
+        hh: int = int(elapsed) // 3600
+        mm: int = int(elapsed) % 3600 // 60
+        ss: int = int(elapsed) % 60
+        lv: int = int(context.player.level)
+        row: int = 2
+        lvl = f"{lv}/{MAX_LEVEL}"  #
+        win.addstr(row, 83, "LEVEL" + (13 - len(lvl)) * " " + lvl)
         row += 2
-        hp_str = (
-            f"HEALTH  {int(context.player.health)}/{int(context.player.max_health)}"
-        )
-        win.addstr(row, 2, hp_str)
-        win.addstr(
-            row,
-            2 + len(hp_str),
-            "♡",
-            curses.color_pair(CursesInventoryView._HEART_PAIR),
-        )
+        hp = f"{int(context.player.health)}/{int(context.player.max_health)}"
+        win.addstr(row, 83, "HEALTH" + (12 - len(hp)) * " " + hp)
         row += 2
-        win.addstr(row, 2, f"STRENGTH  {context.player.strength}")
+        win.addstr(row, 83, f"STRENGTH  {context.player.strength:8d}")
         row += 1
-        win.addstr(row, 2, f"DEXTERITY {context.player.dexterity}")
+        win.addstr(row, 83, f"DEXTERITY {context.player.dexterity:8d}")
         row += 2
-        win.addstr(row, 2, f"POINTS {context.points}")
+        win.addstr(row, 83, f"POINTS    {context.points:8d}")
         row += 2
-        win.addstr(row, 2, f"TIME   {hh:02d}:{mm:02d}:{ss:02d}")
+        win.addstr(row, 83, f"TIME      {hh:02d}:{mm:02d}:{ss:02d}")
         row += 2
         owned_types = {k.type for k in context.keys if k.is_owned}
-        win.addstr(row, 2, f"KEYS   {len(owned_types)}/3")
+        win.addstr(row, 83, f"KEYS   {len(owned_types)}/3")
         row += 2
         slots = [
-            (KeyType.BLUE,  CursesInventoryView._KEY_BLUE_PAIR),
+            (KeyType.BLUE, CursesInventoryView._KEY_BLUE_PAIR),
             (KeyType.GREEN, CursesInventoryView._KEY_GREEN_PAIR),
-            (KeyType.RED,   CursesInventoryView._KEY_RED_PAIR),
+            (KeyType.RED, CursesInventoryView._KEY_RED_PAIR),
         ]
         col = 2
         for kt, pair in slots:
@@ -158,7 +147,7 @@ class CursesInventoryView(InventoryView):
             else:
                 win.addstr(row, col, " ")
             col += 6
-        win.refresh()
+        # win.refresh()
 
     @staticmethod
     def show(window: curses.window, context: GameSession) -> None:
@@ -188,10 +177,15 @@ class CursesInventoryView(InventoryView):
         start_y = outer_y + 1 + padding
         stats_x = start_x + n * item_col_w
 
-        curses.init_pair(CursesInventoryView._HEART_PAIR,    curses.COLOR_RED,   curses.COLOR_BLACK)
-        curses.init_pair(CursesInventoryView._KEY_BLUE_PAIR,  curses.COLOR_BLUE,  curses.COLOR_BLACK)
-        curses.init_pair(CursesInventoryView._KEY_GREEN_PAIR, curses.COLOR_GREEN, curses.COLOR_BLACK)
-        curses.init_pair(CursesInventoryView._KEY_RED_PAIR,   curses.COLOR_RED,   curses.COLOR_BLACK)
+        curses.init_pair(
+            CursesInventoryView._KEY_BLUE_PAIR, curses.COLOR_BLUE, curses.COLOR_BLACK
+        )
+        curses.init_pair(
+            CursesInventoryView._KEY_GREEN_PAIR, curses.COLOR_GREEN, curses.COLOR_BLACK
+        )
+        curses.init_pair(
+            CursesInventoryView._KEY_RED_PAIR, curses.COLOR_RED, curses.COLOR_BLACK
+        )
 
         active_col = 0
         selected_idx = [0, 0, 0, 0]
@@ -200,107 +194,88 @@ class CursesInventoryView(InventoryView):
         columns, all_items = CursesInventoryView._make_columns(
             context, start_x, start_y, item_col_w, col_h, selected_idx
         )
+        outer_win.refresh()
+        outer_win.timeout(1000)
+        while True:
+            outer_win.box()
+            outer_win.refresh()
 
-        window.timeout(1000)
-        try:
-            while True:
-                outer_win.clear()
-                outer_win.box()
-                outer_win.refresh()
+            for i, col in enumerate(columns):
+                win = col.draw(outer_win)
+                if i == active_col:
+                    try:
+                        title_x = max(1, (col.w - len(col.title)) // 2)
+                        win.addstr(
+                            0, title_x, col.title, curses.A_BOLD | curses.A_REVERSE
+                        )
+                        win.refresh()
+                    except curses.error:
+                        pass
 
-                for i, col in enumerate(columns):
-                    win = col.draw(window)
-                    if i == active_col:
-                        try:
-                            title_x = max(1, (col.w - len(col.title)) // 2)
-                            win.addstr(
-                                0, title_x, col.title, curses.A_BOLD | curses.A_REVERSE
-                            )
-                            win.refresh()
-                        except curses.error:
-                            pass
+            CursesInventoryView._draw_stats(outer_win, context)
 
-                CursesInventoryView._draw_stats(
-                    stats_x, start_y, stats_w, stats_h, context
-                )
+            items_in_col = all_items[active_col]
+            idx = selected_idx[active_col]
+            sel = (
+                items_in_col[idx]
+                if items_in_col and 0 <= idx < len(items_in_col)
+                else None
+            )
+            desc_line, stats_line = CursesInventoryView._item_info(sel, context)
+            desc_w = CursesInventoryView._NUM_ITEM_COLS * item_col_w
+            try:
+                outer_win.addstr(15, 3, desc_line[: desc_w - 2])
+                if stats_line:
+                    outer_win.addstr(16, 3, stats_line[: desc_w - 2])
+            except curses.error:
+                pass
 
-                items_in_col = all_items[active_col]
+            key = outer_win.getch()
+
+            if key in (27, 9):
+                break
+            elif key in (curses.KEY_UP, "w", ord("w"), ord("W")):
+                col = columns[active_col]
+                if col.children:
+                    col.prev_widget()
+                    selected_idx[active_col] = col.children.index(col.selected_widget)
+            elif key in (curses.KEY_DOWN, ord("s"), ord("S")):
+                col = columns[active_col]
+                if col.children:
+                    col.next_widget()
+                    selected_idx[active_col] = col.children.index(col.selected_widget)
+            elif key in (curses.KEY_LEFT, ord("a"), ord("A")):
+                active_col = (active_col - 1) % CursesInventoryView._NUM_ITEM_COLS
+            elif key in (curses.KEY_RIGHT, ord("d"), ord("D")):
+                active_col = (active_col + 1) % CursesInventoryView._NUM_ITEM_COLS
+            elif key == ord("e"):
+                items = all_items[active_col]
                 idx = selected_idx[active_col]
-                sel = (
-                    items_in_col[idx]
-                    if items_in_col and 0 <= idx < len(items_in_col)
-                    else None
-                )
-                desc_line, stats_line = CursesInventoryView._item_info(sel, context)
-                desc_w = CursesInventoryView._NUM_ITEM_COLS * item_col_w
-                desc_win = curses.newwin(3, desc_w, start_y + col_h, start_x)
-                desc_win.clear()
-                try:
-                    desc_win.addstr(0, 1, desc_line[: desc_w - 2])
-                    if stats_line:
-                        desc_win.addstr(1, 1, stats_line[: desc_w - 2])
-                except curses.error:
-                    pass
-                desc_win.refresh()
-
-                key = window.getch()
-
-                if key in (27, 9):
-                    break
-
-                elif key in (curses.KEY_UP, ord("w")):
-                    col = columns[active_col]
-                    if col.children:
-                        col.prev_widget()
-                        selected_idx[active_col] = col.children.index(
-                            col.selected_widget
-                        )
-
-                elif key in (curses.KEY_DOWN, ord("s")):
-                    col = columns[active_col]
-                    if col.children:
-                        col.next_widget()
-                        selected_idx[active_col] = col.children.index(
-                            col.selected_widget
-                        )
-
-                elif key in (curses.KEY_LEFT, ord("a"), ord("A")):
-                    active_col = (active_col - 1) % CursesInventoryView._NUM_ITEM_COLS
-
-                elif key in (curses.KEY_RIGHT, ord("d"), ord("D")):
-                    active_col = (active_col + 1) % CursesInventoryView._NUM_ITEM_COLS
-
-                elif key == ord("e"):
-                    items = all_items[active_col]
-                    idx = selected_idx[active_col]
-                    if items and 0 <= idx < len(items):
-                        item = items[idx]
-                        if item is None:
+                if items and 0 <= idx < len(items):
+                    item = items[idx]
+                    if item is None:
+                        context.player.weapon = None
+                    else:
+                        ItemService.use(item, context)
+                    columns, all_items = CursesInventoryView._make_columns(
+                        context, start_x, start_y, item_col_w, col_h, selected_idx
+                    )
+            elif key == ord("x"):
+                items = all_items[active_col]
+                idx = selected_idx[active_col]
+                if items and 0 <= idx < len(items):
+                    item = items[idx]
+                    if item is not None:
+                        if item is context.player.weapon:
                             context.player.weapon = None
-                        else:
-                            ItemService.use(item, context)
+                        context.player.inventory.remove_item(item)
                         columns, all_items = CursesInventoryView._make_columns(
-                            context, start_x, start_y, item_col_w, col_h, selected_idx
+                            context,
+                            start_x,
+                            start_y,
+                            item_col_w,
+                            col_h,
+                            selected_idx,
                         )
-
-                elif key == ord("x"):
-                    items = all_items[active_col]
-                    idx = selected_idx[active_col]
-                    if items and 0 <= idx < len(items):
-                        item = items[idx]
-                        if item is not None:
-                            if item is context.player.weapon:
-                                context.player.weapon = None
-                            context.player.inventory.remove_item(item)
-                            columns, all_items = CursesInventoryView._make_columns(
-                                context,
-                                start_x,
-                                start_y,
-                                item_col_w,
-                                col_h,
-                                selected_idx,
-                            )
-        finally:
-            window.timeout(0)
-            window.touchwin()
-            window.refresh()
+            outer_win.refresh()
+        window.touchwin()

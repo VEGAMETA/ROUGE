@@ -1,4 +1,4 @@
-# TODO: Autosave, fog of war, items, backpack, stairs
+# TODO: Autosave, fog of war, stairs, menu, leaderboard, death/win screen
 import time
 from multiprocessing import SimpleQueue
 

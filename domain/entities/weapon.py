@@ -11,3 +11,4 @@ class Weapon(Item):
     damage: int = 1
     required_dexterity: int = 1
     required_strength: int = 1
+    equiped: bool = False

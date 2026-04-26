@@ -1,3 +1,5 @@
+from typing import Any
+
 from application.dto.game_state import GameStateDTO
 from presentation.input_handler import InputAction, InputHandler
 from presentation.renderer import Renderer
@@ -20,14 +22,15 @@ class Window:
         self.notificator: Notificator = notificator
         self.menu: Menu = menu
         self.inventory_view: InventoryView = inventory_view
+        self.window: Any = None
 
     def get_size(self) -> tuple[int, int]: ...
 
     def action(self, action3d: bool = False) -> InputAction:
         return self.input_handler.get(self.window, action3d)
 
-    def draw(self, game_state: GameStateDTO) -> None:
-        self.renderer.render(game_state)
+    def draw(self, context: GameStateDTO) -> None:
+        self.renderer.render(context)
 
     def notify(
         self,
@@ -43,7 +46,7 @@ class Window:
         self.menu.show(self.window, duration)
         self.input_handler.flush()
 
-    def show_inventory(self, context) -> None:
+    def show_inventory(self, context: GameStateDTO) -> None:
         self.inventory_view.show(self.window, context)
         self.input_handler.flush()
 
