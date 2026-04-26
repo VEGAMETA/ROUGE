@@ -32,6 +32,16 @@ class ItemType(IntEnum):
     CONSUMABLE: int = auto()
     WEAPON: int = auto()
     TREASURE: int = auto()
+    SCROLL: int = auto()
+
+
+class TreasureType(IntEnum):
+    UNDEFINED: int = auto()
+    COINS: int = auto()
+    SILVER: int = auto()
+    GEM: int = auto()
+    RUBY: int = auto()
+    SAPPHIRE: int = auto()
 
 
 class ConsumableType(IntEnum):

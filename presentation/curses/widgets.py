@@ -20,6 +20,7 @@ class Panel(Widget):
         spacing: int = 1,
         border: bool = True,
         children: list[Widget] = [],
+        fixed: bool = False,
         **kwargs,
     ) -> None:
         super().__init__(**kwargs)
@@ -28,6 +29,7 @@ class Panel(Widget):
         self.spacing: int = spacing
         self.border: bool = border
         self.children: list[Widget] = children
+        self.fixed: bool = fixed
 
     def centerize(self, screen_w: int, screen_h: int) -> None:
         self.y = (screen_h - self.h) // 2 if screen_h >= self.h else 0
@@ -55,9 +57,10 @@ class Panel(Widget):
                 row_y += 1 + self.spacing
 
     def draw(self, parent_win: curses.window) -> curses.window:
-        sh, sw = parent_win.getmaxyx()
-        self.compute_size()
-        self.centerize(sw, sh)
+        if not self.fixed:
+            sh, sw = parent_win.getmaxyx()
+            self.compute_size()
+            self.centerize(sw, sh)
         win = curses.newwin(self.h, self.w, self.y, self.x)
         win.keypad(True)
         win.clear()
@@ -146,14 +149,22 @@ class Slider(Button):
 
 
 class VerticalMenu(Panel):
-    def __init__(self, **kwargs) -> None:
+    def __init__(self, title: str = "", **kwargs) -> None:
         super().__init__(**kwargs)
+        self.title: str = title
         self.selected_widget: Optional[Widget] = (
             self.children[0] if self.children else None
         )
 
     def draw(self, parent_win: curses.window):
         win = super().draw(parent_win)
+        if self.title and self.border:
+            title_x = max(1, (self.w - len(self.title)) // 2)
+            try:
+                win.addstr(0, title_x, self.title)
+                win.refresh()
+            except curses.error:
+                pass
         content_origin_y = (1 if self.border else 0) + self.padding_y
         content_origin_x = (1 if self.border else 0) + self.padding_x
         for wdg in self.children:

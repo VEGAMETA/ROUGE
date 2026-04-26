@@ -33,6 +33,7 @@ class SpriteType(IntEnum):
     TREASURE: int = auto()
     CONSUMABLES: int = auto()
     WEAPONS: int = auto()
+    SCROLL: int = auto()
     DOOR_OPENED: int = auto()
     DOOR_RED: int = auto()
     DOOR_GREEN: int = auto()
@@ -82,6 +83,7 @@ class SpriteMap:
         ItemType.CONSUMABLE: SpriteType.CONSUMABLES,
         ItemType.WEAPON: SpriteType.WEAPONS,
         ItemType.TREASURE: SpriteType.TREASURE,
+        ItemType.SCROLL: SpriteType.SCROLL,
     }
 
     DOOR_MAP: dict[DoorType, SpriteType] = {
@@ -118,6 +120,7 @@ class SpriteMap:
         SpriteType.TREASURE: Path("./static/sprites/items/treasure.png"),
         SpriteType.CONSUMABLES: Path("./static/sprites/items/consumables.png"),
         SpriteType.WEAPONS: Path("./static/sprites/items/weapons.png"),
+        SpriteType.SCROLL: Path("./static/sprites/interior/scroll.png"),
         SpriteType.DOOR_OPENED: Path("./static/sprites/interior/door_opened.png"),
         SpriteType.DOOR_RED: Path("./static/sprites/interior/door_red.png"),
         SpriteType.DOOR_GREEN: Path("./static/sprites/interior/door_green.png"),

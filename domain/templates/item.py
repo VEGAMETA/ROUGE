@@ -2,8 +2,14 @@ from functools import partial
 
 from domain.entities.consumables import Consumable
 from domain.entities.item import Item
+from domain.entities.scroll import Scroll
 from domain.entities.weapon import Weapon
-from domain.value_objects.enums import ConsumableType, ItemType, WeaponType
+from domain.value_objects.enums import (
+    ConsumableType,
+    ItemType,
+    TreasureType,
+    WeaponType,
+)
 
 CONSUMABLE_TEMPLATES = {
     (ItemType.CONSUMABLE, ConsumableType.HEALTH): partial(
@@ -84,6 +90,7 @@ CONSUMABLE_TEMPLATES = {
         value=3,
     ),
 }
+
 WEAPON_TEMPLATES = {
     (ItemType.WEAPON, WeaponType.DAGGER): partial(
         Weapon,
@@ -128,7 +135,7 @@ WEAPON_TEMPLATES = {
     (ItemType.WEAPON, WeaponType.TWO_HANDED_SWORD): partial(
         Weapon,
         subtype=WeaponType.TWO_HANDED_SWORD,
-        name="Two-Handed Sword",
+        name="Greatsword",
         description="A massive sword for powerful strikes",
         damage=25,
         value=80,
@@ -152,17 +159,108 @@ WEAPON_TEMPLATES = {
 }
 
 TREASURE_TEMPLATES = {
-    (ItemType.TREASURE, ItemType.UNDEFINED): partial(
+    (ItemType.TREASURE, TreasureType.COINS): partial(
         Item,
         type=ItemType.TREASURE,
+        subtype=TreasureType.COINS,
         name="Gold Coins",
-        description="Shiny treasure",
-        value=25,
+        description="Shiny gold coins",
+        value=10,
+    ),
+    (ItemType.TREASURE, TreasureType.SILVER): partial(
+        Item,
+        type=ItemType.TREASURE,
+        subtype=TreasureType.SILVER,
+        name="Silver Coins",
+        description="Shiny silver coins",
+        value=5,
+    ),
+    (ItemType.TREASURE, TreasureType.GEM): partial(
+        Item,
+        type=ItemType.TREASURE,
+        subtype=TreasureType.GEM,
+        name="Gemstone",
+        description="A sparkling gemstone",
+        value=30,
+    ),
+    (ItemType.TREASURE, TreasureType.RUBY): partial(
+        Item,
+        type=ItemType.TREASURE,
+        subtype=TreasureType.RUBY,
+        name="Ruby",
+        description="A precious ruby",
+        value=50,
+    ),
+    (ItemType.TREASURE, TreasureType.SAPPHIRE): partial(
+        Item,
+        type=ItemType.TREASURE,
+        subtype=TreasureType.SAPPHIRE,
+        name="Sapphire",
+        description="A brilliant sapphire",
+        value=60,
     ),
 }
 
+SCROLL_TEMPLATES = {
+    (ItemType.SCROLL, ConsumableType.STRENGTH): partial(
+        Scroll,
+        subtype=ConsumableType.STRENGTH,
+        name="Scroll of Strength",
+        description="Permanently increases strength by 5",
+        health=0,
+        max_health=0,
+        dexterity=0,
+        strength=5,
+        value=12,
+    ),
+    (ItemType.SCROLL, ConsumableType.MAX_STRENGTH): partial(
+        Scroll,
+        subtype=ConsumableType.MAX_STRENGTH,
+        name="Scroll of Power",
+        description="Permanently increases strength by 10",
+        health=0,
+        max_health=0,
+        dexterity=0,
+        strength=10,
+        value=20,
+    ),
+    (ItemType.SCROLL, ConsumableType.DEXTERITY): partial(
+        Scroll,
+        subtype=ConsumableType.DEXTERITY,
+        name="Scroll of Agility",
+        description="Permanently increases dexterity by 5",
+        health=0,
+        max_health=0,
+        dexterity=5,
+        strength=0,
+        value=12,
+    ),
+    (ItemType.SCROLL, ConsumableType.HEALTH): partial(
+        Scroll,
+        subtype=ConsumableType.HEALTH,
+        name="Scroll of Healing",
+        description="Restores 30 HP",
+        health=30,
+        max_health=0,
+        dexterity=0,
+        strength=0,
+        value=8,
+    ),
+    (ItemType.SCROLL, ConsumableType.MAX_HEALTH): partial(
+        Scroll,
+        subtype=ConsumableType.MAX_HEALTH,
+        name="Scroll of Vitality",
+        description="Permanently increases max HP by 15",
+        health=0,
+        max_health=15,
+        dexterity=0,
+        strength=0,
+        value=18,
+    ),
+}
 
 ITEM_TEMPLATES = {}
 ITEM_TEMPLATES.update(CONSUMABLE_TEMPLATES)
 ITEM_TEMPLATES.update(WEAPON_TEMPLATES)
 ITEM_TEMPLATES.update(TREASURE_TEMPLATES)
+ITEM_TEMPLATES.update(SCROLL_TEMPLATES)

@@ -1,3 +1,4 @@
+import time
 from dataclasses import dataclass
 from multiprocessing import SimpleQueue
 from random import choice
@@ -47,6 +48,8 @@ class GameSession(Entity):
         )
         self.cached_obstacle_map: list[list[bool]] = []
         self.sounds: SimpleQueue = sounds
+        self.start_time: float = time.monotonic()
+        self.points: int = 0
         self.items = []
         self.doors = []
         self.keys = []

@@ -16,3 +16,4 @@ class Item(Entity2D):
     value: int = 0
     level: Level = Level.LEVEL_1
     rarity: ItemRarityType = ItemRarityType.COMMON
+    count: int = 1

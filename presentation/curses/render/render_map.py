@@ -57,6 +57,7 @@ class CursesRenderMap:
         ItemType.CONSUMABLE: CursesRenderData("c"),
         ItemType.WEAPON: CursesRenderData("w"),
         ItemType.TREASURE: CursesRenderData("t"),
+        ItemType.SCROLL: CursesRenderData("s", COLOR_CYAN),
     }
 
     KEY_RENDER_MAP = {

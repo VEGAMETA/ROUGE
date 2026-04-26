@@ -57,9 +57,9 @@ class GameLoop:
             for enemy in self.game_session.enemies:  # 0.00-0.01 s
                 EnemyAI.action(enemy, self.game_session)
 
-            # if self.game_session.player.health <= 0:
-            #     self.game_session.sounds.put(SoundType.DEATH)
-            #     self.game_session.process = False
+            if self.game_session.player.health <= 0:
+                self.game_session.sounds.put(SoundType.DEATH)
+                self.game_session.process = False
             tick_t = time.perf_counter() - tick_timer
 
         self.mixer.join(0.1)
