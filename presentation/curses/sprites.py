@@ -41,6 +41,7 @@ class SpriteType(IntEnum):
     KEY_RED: int = auto()
     KEY_GREEN: int = auto()
     KEY_BLUE: int = auto()
+    STAIRCASE: int = auto()
 
 
 class ThemeType(IntEnum):
@@ -128,6 +129,7 @@ class SpriteMap:
         SpriteType.KEY_RED: Path("./static/sprites/items/key_red.png"),
         SpriteType.KEY_GREEN: Path("./static/sprites/items/key_green.png"),
         SpriteType.KEY_BLUE: Path("./static/sprites/items/key_blue.png"),
+        SpriteType.STAIRCASE: Path("./static/sprites/staircase.png"),
     }
 
     THEME_MAP: dict[ThemeType, dict[SpriteType, SpriteType]] = {

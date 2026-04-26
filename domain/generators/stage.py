@@ -1,3 +1,4 @@
+from collections import deque
 from random import randint, sample
 
 from domain.entities.corridor import Corridor
@@ -24,6 +25,7 @@ class StageFactory:
         StageFactory._create_room_graph(stage)
         StageFactory._create_doors(stage)
         StageFactory._create_corridors(stage)
+        StageFactory._create_keys(stage)
         return stage
 
     @staticmethod
@@ -122,3 +124,153 @@ class StageFactory:
                 else:
                     continue
                 room.doors.append(Door(position=position, side=side))
+
+    @staticmethod
+    def _create_keys(stage: Stage) -> None:
+        keys_count = randint(0, 3)
+        if keys_count == 0:
+            return
+        start_room = 0
+        # двери/замки:
+        # будем считать что lock_id == key_id
+        # например:
+        # door.lock_id = 1
+        # room.keys.append(1)
+
+        for key_id in range(1, keys_count + 1):
+            reachable = StageFactory._get_reachable_rooms(
+                stage=stage,
+                start=start_room,
+                obtained_keys=set(range(1, key_id)),
+            )
+
+            candidates = []
+
+            for room_id in reachable:
+                for neighbor in stage.graph[room_id]:
+                    if neighbor not in reachable:
+                        candidates.append((room_id, neighbor))
+
+            if not candidates:
+                break
+            from_room, locked_room = sample(candidates, 1)[0]
+            StageFactory._lock_connection(
+                stage=stage,
+                room_a=from_room,
+                room_b=locked_room,
+                key_id=key_id,
+            )
+            key_room = sample(list(reachable), 1)[0]
+            stage.rooms[key_room].keys.append(key_id)
+        if not StageFactory._all_rooms_accessible(stage, start_room):
+            raise RuntimeError("Invalid key generation: soft-lock detected")
+
+    @staticmethod
+    def _get_reachable_rooms(
+        stage: Stage,
+        start: int,
+        obtained_keys: set[int],
+    ) -> set[int]:
+        """
+        BFS с учетом закрытых дверей
+        """
+
+        visited = set()
+        queue = deque([start])
+
+        while queue:
+            room_id = queue.popleft()
+
+            if room_id in visited:
+                continue
+
+            visited.add(room_id)
+
+            for neighbor in stage.graph[room_id]:
+                if StageFactory._can_pass(
+                    stage,
+                    room_id,
+                    neighbor,
+                    obtained_keys,
+                ):
+                    queue.append(neighbor)
+
+        return visited
+
+    @staticmethod
+    def _can_pass(
+        stage: Stage,
+        room_a: int,
+        room_b: int,
+        obtained_keys: set[int],
+    ) -> bool:
+        """
+        Проверка можно ли пройти между комнатами
+        """
+
+        room = stage.rooms[room_a]
+
+        for door in room.doors:
+            if getattr(door, "to_room", None) != room_b:
+                continue
+
+            lock_id = getattr(door, "lock_id", None)
+
+            if lock_id is None:
+                return True
+
+            return lock_id in obtained_keys
+
+        return True
+
+    @staticmethod
+    def _lock_connection(
+        stage: Stage,
+        room_a: int,
+        room_b: int,
+        key_id: int,
+    ) -> None:
+        """
+        Двусторонне закрываем проход
+        """
+
+        for room_id, target in [(room_a, room_b), (room_b, room_a)]:
+            room = stage.rooms[room_id]
+
+            for door in room.doors:
+                if getattr(door, "to_room", None) == target:
+                    door.lock_id = key_id
+
+    @staticmethod
+    def _all_rooms_accessible(
+        stage: Stage,
+        start: int,
+    ) -> bool:
+        """
+        Итеративный BFS + сбор ключей
+        """
+
+        obtained_keys = set()
+        changed = True
+        reachable = set()
+
+        while changed:
+            changed = False
+
+            current = StageFactory._get_reachable_rooms(
+                stage=stage,
+                start=start,
+                obtained_keys=obtained_keys,
+            )
+
+            if current != reachable:
+                reachable = current
+                changed = True
+
+            for room_id in reachable:
+                for key in getattr(stage.rooms[room_id], "keys", []):
+                    if key not in obtained_keys:
+                        obtained_keys.add(key)
+                        changed = True
+
+        return len(reachable) == len(stage.rooms)
