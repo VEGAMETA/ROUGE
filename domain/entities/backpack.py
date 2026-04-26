@@ -11,8 +11,6 @@ class Backpack(Entity):
         self.items = items if items is not None else []
 
     def add_item(self, item: Item) -> None:
-        if len(self.items) >= self.capacity:
-            raise Exception("Backpack is full")
         self.items.append(item)
 
     def remove_item(self, item: Item) -> None:

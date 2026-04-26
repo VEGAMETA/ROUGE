@@ -7,6 +7,5 @@ class Inventory(Command):
     def execute(
         self, context: GameSession, window: Window, *args, **kwargs
     ) -> CommandResult:
-        context
-        window.notify("NA", "Menu", duration=2.0)
-        return CommandResult.OK
+        window.show_inventory(context)
+        return CommandResult.NO_ACTION

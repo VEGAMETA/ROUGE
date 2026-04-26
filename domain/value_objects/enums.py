@@ -32,7 +32,16 @@ class ItemType(IntEnum):
     CONSUMABLE: int = auto()
     WEAPON: int = auto()
     TREASURE: int = auto()
-    AMULET: int = auto()
+    SCROLL: int = auto()
+
+
+class TreasureType(IntEnum):
+    UNDEFINED: int = auto()
+    COINS: int = auto()
+    SILVER: int = auto()
+    GEM: int = auto()
+    RUBY: int = auto()
+    SAPPHIRE: int = auto()
 
 
 class ConsumableType(IntEnum):
@@ -72,6 +81,8 @@ class EnemyType(IntEnum):
     GHOST: int = auto()
     OGRE: int = auto()
     SNAKE_MAGE: int = auto()
+    MIMIC1: int = auto()
+    MIMIC2: int = auto()
 
 
 class EnemyAction(IntEnum):
@@ -87,6 +98,21 @@ class ItemRarityType(IntEnum):
     RARE: int = auto()
     EPIC: int = auto()
     LEGENDARY: int = auto()
+
+
+class DoorType(IntEnum):
+    UNDEFINED: int = auto()
+    RED: int = auto()
+    GREEN: int = auto()
+    BLUE: int = auto()
+    OPENED: int = auto()
+
+
+class KeyType(IntEnum):
+    UNDEFINED: int = auto()
+    RED: int = auto()
+    GREEN: int = auto()
+    BLUE: int = auto()
 
 
 class SoundType(IntEnum):

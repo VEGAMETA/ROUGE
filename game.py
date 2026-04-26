@@ -6,12 +6,10 @@ import traceback
 
 from application.game_loop import GameLoop
 from config.options import DefaultWindow
-from infrastructure.random import set_seed
 
 
 def main() -> None:
     locale.setlocale(locale.LC_ALL, "")
-    set_seed(1)
     loop = GameLoop(DefaultWindow)
     try:
         loop.run()

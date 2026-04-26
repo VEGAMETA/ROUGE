@@ -39,6 +39,7 @@ class Move(Command):
         context.sounds.put(SoundType.MOVE)
         for item in context.items:
             if not item.is_owned and item.position == context.player.position:
-                ItemService.pickup(item, context)
+                if ItemService.pickup(item, context):
+                    context.sounds.put(SoundType.ITEM_PICK)
                 break
         return CommandResult.OK

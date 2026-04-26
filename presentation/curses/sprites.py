@@ -6,7 +6,7 @@ from typing import Optional
 
 from PIL import Image
 
-from domain.value_objects.enums import EnemyType
+from domain.value_objects.enums import DoorType, EnemyType, ItemType, KeyType
 
 
 class SpriteType(IntEnum):
@@ -28,6 +28,19 @@ class SpriteType(IntEnum):
     GHOST: int = auto()
     OGRE: int = auto()
     SNAKE_MAGE: int = auto()
+    MIMIC1: int = auto()
+    MIMIC2: int = auto()
+    TREASURE: int = auto()
+    CONSUMABLES: int = auto()
+    WEAPONS: int = auto()
+    SCROLL: int = auto()
+    DOOR_OPENED: int = auto()
+    DOOR_RED: int = auto()
+    DOOR_GREEN: int = auto()
+    DOOR_BLUE: int = auto()
+    KEY_RED: int = auto()
+    KEY_GREEN: int = auto()
+    KEY_BLUE: int = auto()
 
 
 class ThemeType(IntEnum):
@@ -58,14 +71,36 @@ class SpriteMap:
     }
 
     ENEMY_MAP: dict[EnemyType, SpriteType] = {
+        EnemyType.UNDEFINED: SpriteType.UNDEFINED,
         EnemyType.ZOMBIE: SpriteType.ZOMBIE,
         EnemyType.VAMPIRE: SpriteType.VAMPIRE,
         EnemyType.GHOST: SpriteType.GHOST,
         EnemyType.OGRE: SpriteType.OGRE,
         EnemyType.SNAKE_MAGE: SpriteType.SNAKE_MAGE,
     }
+    ITEM_MAP: dict[EnemyType, SpriteType] = {
+        ItemType.UNDEFINED: SpriteType.UNDEFINED,
+        ItemType.CONSUMABLE: SpriteType.CONSUMABLES,
+        ItemType.WEAPON: SpriteType.WEAPONS,
+        ItemType.TREASURE: SpriteType.TREASURE,
+        ItemType.SCROLL: SpriteType.SCROLL,
+    }
+
+    DOOR_MAP: dict[DoorType, SpriteType] = {
+        DoorType.RED: SpriteType.DOOR_RED,
+        DoorType.GREEN: SpriteType.DOOR_GREEN,
+        DoorType.BLUE: SpriteType.DOOR_BLUE,
+        DoorType.OPENED: SpriteType.DOOR_OPENED,
+    }
+
+    KEY_MAP: dict[KeyType, SpriteType] = {
+        KeyType.RED: SpriteType.KEY_RED,
+        KeyType.GREEN: SpriteType.KEY_GREEN,
+        KeyType.BLUE: SpriteType.KEY_BLUE,
+    }
 
     SPRITE_PATHS: dict[SpriteType, Path] = {
+        SpriteType.UNDEFINED: Path("./static/sprites/error.png"),
         SpriteType.WALL_1: Path("./static/sprites/interior/wall_1.png"),
         SpriteType.WALL_2: Path("./static/sprites/interior/wall_2.png"),
         SpriteType.WALL_3: Path("./static/sprites/interior/wall_3.png"),
@@ -80,6 +115,19 @@ class SpriteMap:
         SpriteType.VAMPIRE: Path("./static/sprites/enemies/vampire.png"),
         SpriteType.GHOST: Path("./static/sprites/enemies/ghost.png"),
         SpriteType.SNAKE_MAGE: Path("./static/sprites/enemies/snake-mage.png"),
+        SpriteType.MIMIC1: Path("./static/sprites/enemies/mimic1.png"),
+        SpriteType.MIMIC2: Path("./static/sprites/enemies/mimic2.png"),
+        SpriteType.TREASURE: Path("./static/sprites/items/treasure.png"),
+        SpriteType.CONSUMABLES: Path("./static/sprites/items/consumables.png"),
+        SpriteType.WEAPONS: Path("./static/sprites/items/weapons.png"),
+        SpriteType.SCROLL: Path("./static/sprites/interior/scroll.png"),
+        SpriteType.DOOR_OPENED: Path("./static/sprites/interior/door_opened.png"),
+        SpriteType.DOOR_RED: Path("./static/sprites/interior/door_red.png"),
+        SpriteType.DOOR_GREEN: Path("./static/sprites/interior/door_green.png"),
+        SpriteType.DOOR_BLUE: Path("./static/sprites/interior/door_blue.png"),
+        SpriteType.KEY_RED: Path("./static/sprites/items/key_red.png"),
+        SpriteType.KEY_GREEN: Path("./static/sprites/items/key_green.png"),
+        SpriteType.KEY_BLUE: Path("./static/sprites/items/key_blue.png"),
     }
 
     THEME_MAP: dict[ThemeType, dict[SpriteType, SpriteType]] = {
@@ -151,7 +199,7 @@ class Sprites:
         sprite_type: SpriteType,
         u: float,
         v: float,
-        default_color: Optional[int] = None,
+        default_color: int = None,
         theme: Optional[ThemeType] = None,
     ) -> Optional[int]:
         if theme:
