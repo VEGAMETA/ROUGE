@@ -8,6 +8,7 @@ class ItemDTO:
     x: int
     y: int
     type: int
+    subtype: int
     is_owned: bool
     name: str
     description: str
@@ -22,6 +23,7 @@ class ItemMapper:
             x=item.position.x,
             y=item.position.y,
             type=item.type.value,
+            subtype=int(item.subtype),
             is_owned=item.is_owned,
             name=item.name,
             description=item.description,

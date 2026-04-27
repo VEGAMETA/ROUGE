@@ -1,28 +1,42 @@
 import curses
+from typing import Optional
 
-from infrastructure.timers import Timer
-from presentation.curses.widgets import Button, Checkbox, Label, Slider, VerticalMenu
-from presentation.views.menu import Menu
+from presentation.curses.widgets import Button, VerticalMenu
+from presentation.views.menu import Menu, MenuAction
+
+_ACTIONS = [MenuAction.CONTINUE, MenuAction.SAVE, MenuAction.LOAD, MenuAction.EXIT]
 
 
 class CursesMenu(Menu):
     @staticmethod
-    def show(window: curses.window, duration: float = 0.0) -> None:
+    def show(window: curses.window) -> Optional[MenuAction]:
         curses.curs_set(0)
-        # window.clear()
-        # window.refresh()
         menu = VerticalMenu(
             children=[
-                Label(text="Continue"),
+                Button(text="Continue"),
+                Button(text="Save"),
+                Button(text="Load"),
                 Button(text="Exit"),
-                Checkbox(text="3d"),
-                Slider(text="Sound"),
             ]
         )
-        menu.draw(window)
-        if duration:
-            Timer.sleep_for(duration)
-        # window.clear()
-        window.refresh()
+        win = menu.draw(window)
 
-    def hide(window: curses.window) -> None: ...
+        result: Optional[MenuAction] = MenuAction.CONTINUE
+        while True:
+            key = win.getch()
+            if key == 27:
+                result = MenuAction.CONTINUE
+                break
+            elif key in (ord("w"), curses.KEY_UP):
+                menu.prev_widget()
+                win = menu.draw(window)
+            elif key in (ord("s"), curses.KEY_DOWN):
+                menu.next_widget()
+                win = menu.draw(window)
+            elif key in (ord("e"), curses.KEY_ENTER, 10, 13):
+                result = _ACTIONS[menu.children.index(menu.selected_widget)]
+                break
+
+        window.touchwin()
+        window.refresh()
+        return result
