@@ -93,11 +93,10 @@ class EnemyAction(IntEnum):
 
 
 class ItemRarityType(IntEnum):
-    UNDEFINED: int = auto()
-    COMMON: int = auto()
-    RARE: int = auto()
-    EPIC: int = auto()
-    LEGENDARY: int = auto()
+    COMMON: int = 0
+    RARE: int = 2
+    EPIC: int = 5
+    LEGENDARY: int = 10
 
 
 class DoorType(IntEnum):

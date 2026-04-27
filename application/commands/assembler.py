@@ -8,6 +8,7 @@ from application.commands.move import Move
 from application.commands.quit import Quit
 from application.commands.rotate import Rotate
 from application.commands.use_elixir import UseElixir
+from application.commands.use_scroll import UseScroll
 from domain.value_objects.position import Direction
 from infrastructure.math import Constant
 from presentation.input_handler import InputAction
@@ -33,4 +34,5 @@ class CommandAssembler:
         CommandService.register(InputAction.INVENTORY, lambda: Inventory())
         CommandService.register(InputAction.USE_FOOD, lambda: EatFood())
         CommandService.register(InputAction.USE_WEAPON, lambda: EquipWeapon())
+        CommandService.register(InputAction.USE_SCROLL, lambda: UseScroll())
         CommandService.register(InputAction.USE_ELIXIR, lambda: UseElixir())

@@ -223,6 +223,7 @@ class CursesInventoryView(InventoryView):
                 pass
 
             key = outer_win.getch()
+            outer_win.clear()
 
             if key in (27, 9):
                 break
@@ -243,7 +244,7 @@ class CursesInventoryView(InventoryView):
             elif key == ord("e"):
                 items = all_items[active_col]
                 idx = selected_idx[active_col]
-                if items and 0 <= idx < len(items):
+                if items and 0 <= idx and idx < len(items):
                     item = items[idx]
                     if item is None:
                         context.player.weapon = None

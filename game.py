@@ -2,7 +2,6 @@
 
 import locale
 import sys
-import traceback
 
 from application.game_loop import GameLoop
 from config.options import DefaultWindow
@@ -13,9 +12,8 @@ def main() -> None:
     loop = GameLoop(DefaultWindow, selected_3d=True)
     try:
         loop.run()
-    except Exception as e:
-        print(e)
-        traceback.print_exc()
+    except KeyboardInterrupt:
+        pass
 
 
 if __name__ == "__main__":

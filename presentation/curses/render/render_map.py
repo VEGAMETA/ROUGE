@@ -76,7 +76,7 @@ class CursesRenderMap:
     }
 
     RARITY_MAP = {
-        ItemRarityType.COMMON: COLOR_WHITE,
+        ItemRarityType.COMMON: COLOR_BLACK,
         ItemRarityType.RARE: COLOR_BLUE,
         ItemRarityType.EPIC: COLOR_MAGENTA,
         ItemRarityType.LEGENDARY: COLOR_YELLOW,

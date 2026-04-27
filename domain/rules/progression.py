@@ -1,6 +1,7 @@
 from enum import IntEnum
 
-ENEMY_LEVEL_FACTOR = 0.5
+ENEMY_HEALTH_FACTOR = 1.2
+ENEMY_STATS_FACTOR = 5.6
 
 
 class Level(IntEnum):

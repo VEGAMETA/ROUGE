@@ -1,3 +1,4 @@
+from domain.entities.consumables import Consumable
 from domain.entities.game_session import GameSession
 from domain.entities.item import Item
 from domain.value_objects.enums import ConsumableType, ItemType, SoundType
@@ -56,7 +57,7 @@ class ItemService:
     @staticmethod
     def use(item: Item, context: GameSession) -> bool:
         if item.type == ItemType.CONSUMABLE:
-            ItemService._apply_consumable(item, context)
+            ItemService._apply_consumable(item, context, True)
             if item.subtype == ConsumableType.FOOD and item.count > 1:
                 item.count -= 1
             else:
@@ -70,16 +71,21 @@ class ItemService:
         return True
 
     @staticmethod
-    def _apply_consumable(item: Item, context: GameSession) -> None:
+    def _apply_consumable(
+        item: Consumable, context: GameSession, temporarily: bool = False
+    ) -> None:
         match item.subtype:
-            case ConsumableType.HEALTH | ConsumableType.FOOD:
+            case ConsumableType.FOOD | ConsumableType.HEALTH:
                 context.player.health = min(
                     context.player.health + item.health, context.player.max_health
                 )
             case ConsumableType.STRENGTH | ConsumableType.MAX_STRENGTH:
                 context.player.strength += item.strength
+                context.player.temp_strength += temporarily * item.strength
             case ConsumableType.DEXTERITY | ConsumableType.MAX_DEXTERITY:
                 context.player.dexterity += item.dexterity
+                context.player.temp_dexterity += temporarily * item.dexterity
             case ConsumableType.MAX_HEALTH:
                 context.player.max_health += item.max_health
-                context.player.health += item.max_health
+                context.player.health = context.player.max_health
+                context.player.temp_max_health += temporarily * item.max_health

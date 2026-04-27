@@ -11,7 +11,9 @@ from domain.value_objects.stats import EnemyStats
 class EnemyFactory:
     @staticmethod
     def create_random(position: Position, level: Level = Level.LEVEL_1) -> Enemy:
-        return EnemyFactory.create(choice(list(ENEMY_TEMPLATES.keys())), position)
+        return EnemyFactory.create(
+            choice(list(ENEMY_TEMPLATES.keys())), position, level
+        )
 
     @staticmethod
     def create(

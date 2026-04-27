@@ -1,4 +1,4 @@
-# TODO: Autosave, fog of war, stairs, menu, leaderboard, death/win screen
+# TODO: Autosave, fog of war, menu, leaderboard, death/win screen
 import time
 from multiprocessing import SimpleQueue
 
@@ -36,29 +36,20 @@ class GameLoop:
         tick_t: float = 0
         while self.game_session.process:
             tick_timer = time.perf_counter()
-
             game_state: GameStateDTO = GameMapper.to_dto(self.game_session)
-
             self.window.draw(game_state, tick_t)  # 0.004 s
-
             action: InputAction = self.window.action(self.game_session.selected_3d)
-
             result: CommandResult = CommandService.execute(
                 action, self.game_session, self.window
             )
             if result == CommandResult.NO_ACTION:
                 tick_t = time.perf_counter() - tick_timer
                 continue
-
             for enemy in self.game_session.enemies:  # 0.00-0.01 s
                 EnemyAI.action(enemy, self.game_session)
-
             if self.game_session.player.health <= 0:
                 self.game_session.sounds.put(SoundType.DEATH)
                 self.game_session.process = False
-            if self.game_session.player.position == self.game_session.stairs.position:
-                self.game_session.sounds.put(SoundType.LEVEL_UP)
-                self.game_session.new_stage()
             tick_t = time.perf_counter() - tick_timer
 
         self.mixer.join(0.1)

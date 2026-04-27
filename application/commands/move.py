@@ -33,13 +33,15 @@ class Move(Command):
             context.player.direction = self.direction
         if not MovementService.move(context.player, new_position, context):
             if CombatService.attack(context):
-                context.sounds.put(SoundType.SWING)
                 return CommandResult.SWAP_ACTION
             return CommandResult.NO_ACTION
         context.sounds.put(SoundType.MOVE)
         for item in context.items:
-            if not item.is_owned and item.position == context.player.position:
+            if not item.is_owned and context.player.position == item.position:
                 if ItemService.pickup(item, context):
                     context.sounds.put(SoundType.ITEM_PICK)
                 break
+        if context.player.position == context.stairs.position:
+            context.sounds.put(SoundType.LEVEL_UP)
+            context.new_stage()
         return CommandResult.OK
