@@ -14,9 +14,9 @@ class CursesWindow(Window):
     def _get_curses_window(window: curses.window) -> curses.window:
         return window
 
-    def __init__(self):
+    def __init__(self, selected_3d: bool = False):
         super().__init__(
-            CursesRenderer3D(),
+            CursesRenderer3D() if selected_3d else CursesRenderer2D(),
             CursesInputHandler,
             CursesNotificator,
             CursesMenu,

@@ -6,7 +6,13 @@ from typing import Optional
 
 from PIL import Image
 
-from domain.value_objects.enums import DoorType, EnemyType, ItemType, KeyType
+from domain.value_objects.enums import (
+    DoorType,
+    EnemyType,
+    ItemType,
+    KeyType,
+    StairsType,
+)
 
 
 class SpriteType(IntEnum):
@@ -100,6 +106,12 @@ class SpriteMap:
         KeyType.BLUE: SpriteType.KEY_BLUE,
     }
 
+    STAIRS_MAP: dict[int, SpriteType] = {
+        StairsType.UNDEFINED: SpriteType.STAIRCASE,
+        StairsType.UP: SpriteType.STAIRCASE,
+        StairsType.DOWN: SpriteType.STAIRCASE,
+    }
+
     SPRITE_PATHS: dict[SpriteType, Path] = {
         SpriteType.UNDEFINED: Path("./static/sprites/error.png"),
         SpriteType.WALL_1: Path("./static/sprites/interior/wall_1.png"),
@@ -121,7 +133,7 @@ class SpriteMap:
         SpriteType.TREASURE: Path("./static/sprites/items/treasure.png"),
         SpriteType.CONSUMABLES: Path("./static/sprites/items/consumables.png"),
         SpriteType.WEAPONS: Path("./static/sprites/items/weapons.png"),
-        SpriteType.SCROLL: Path("./static/sprites/interior/scroll.png"),
+        SpriteType.SCROLL: Path("./static/sprites/items/scroll.png"),
         SpriteType.DOOR_OPENED: Path("./static/sprites/interior/door_opened.png"),
         SpriteType.DOOR_RED: Path("./static/sprites/interior/door_red.png"),
         SpriteType.DOOR_GREEN: Path("./static/sprites/interior/door_green.png"),

@@ -54,7 +54,7 @@ class CursesKeymap:
 
 class CursesInputHandler(InputHandler):
     @staticmethod
-    def get(window: curses.window, action3d: bool = False) -> InputAction:
+    def get(window: curses.window, selected_3d: bool = False) -> InputAction:
         if not isinstance(window, curses.window):
             return InputAction.UNDEFINED
 
@@ -66,7 +66,7 @@ class CursesInputHandler(InputHandler):
         except _curses.error:
             return InputAction.UNDEFINED
 
-        actions = CursesKeymap.ACTIONS_3D if action3d else CursesKeymap.ACTIONS
+        actions = CursesKeymap.ACTIONS_3D if selected_3d else CursesKeymap.ACTIONS
         return actions.get(
             ord(key) if isinstance(key, str) else key, InputAction.UNDEFINED
         )

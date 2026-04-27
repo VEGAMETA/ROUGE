@@ -21,12 +21,12 @@ class CursesRenderer2D(CursesRenderer):
         curses.init_pair(255, curses.COLOR_BLACK, curses.COLOR_BLACK)
         self.window.addstr(
             0,
-            0,
+            10,
             f"↓{level:2d}/{len(Level)}    ♥{health:4d}/{max_health}    S {strength}  D {dexterity}",
             curses.color_pair(255) | curses.A_REVERSE | curses.A_BLINK | curses.A_DIM,
         )
 
-    def render(self, game_state: GameStateDTO) -> None:
+    def render(self, game_state: GameStateDTO, tick_time: float) -> None:
         # visible: set[tuple[int, int]] = set()
         toprint: dict[tuple[int, int], str] = {}
         for row in game_state.tile_map:
@@ -78,10 +78,18 @@ class CursesRenderer2D(CursesRenderer):
         toprint[t] = CursesRenderMap.PLAYER_RENDER_DATA
         self.old_pos.append(hash(t))
 
+        t = (game_state.stairs.x, game_state.stairs.y)
+        toprint[t] = CursesRenderMap.STAIRS_RENDER_DATA
+
         max_height = len(game_state.tile_map) - 1
         max_width = len(game_state.tile_map[0]) - 1
 
         toprint.pop((max_width, max_height), None)
         for t, data in toprint.items():
             self.add_data(t[0], t[1], data)
-        self.hud(game_state)
+        # self.hud(game_state)
+        self.fps(tick_time)
+
+    def fps(self, tick_time: float) -> None:
+        self.window.addstr(0, 0, f"{1 / max(tick_time, 0.0001):4.0f} fps")
+        self.window.refresh()

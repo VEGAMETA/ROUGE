@@ -10,7 +10,7 @@ from config.options import DefaultWindow
 
 def main() -> None:
     locale.setlocale(locale.LC_ALL, "")
-    loop = GameLoop(DefaultWindow)
+    loop = GameLoop(DefaultWindow, selected_3d=True)
     try:
         loop.run()
     except Exception as e:

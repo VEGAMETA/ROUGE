@@ -104,6 +104,8 @@ class StageFactory:
 
         stage.corridors.append(Corridor(path=path))
 
+    # def _create_stairs(stage: Stage) -> None:
+
     @staticmethod
     def _create_doors(stage: Stage) -> None:
         for idx, room in enumerate(stage.rooms):

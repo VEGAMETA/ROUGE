@@ -115,6 +115,12 @@ class KeyType(IntEnum):
     BLUE: int = auto()
 
 
+class StairsType(IntEnum):
+    UNDEFINED: int = auto()
+    UP: int = auto()
+    DOWN: int = auto()
+
+
 class SoundType(IntEnum):
     MUSIC: int = auto()
     UI: int = auto()

@@ -7,6 +7,7 @@ from application.dto.enemy import EnemyDTO
 from application.dto.game_state import GameStateDTO
 from application.dto.item import ItemDTO
 from application.dto.key import KeyDTO
+from application.dto.stairs import StairsDTO
 from domain.value_objects.enums import TileType
 from infrastructure.math import Constant
 from infrastructure.vector import Size, Vector2
@@ -30,7 +31,8 @@ class CursesRenderer3D(CursesRenderer):
         self.rowDistances_ceiling: dict[int, float] = {}
         self.rowDistances_floor: dict[int, float] = {}
         self.old_angle: float = 0
-        self.old_pos: tuple[int, int] = (0, 0)
+        self.old_enemies: int = 0
+        self.old_pos: list[tuple[int, int]] = []
 
     def init_rows(self, game_state: GameStateDTO) -> None:
         if self.rows_init:
@@ -48,10 +50,6 @@ class CursesRenderer3D(CursesRenderer):
             y: 1 / max((2 * y / self.scr_size.height - 1), 0.001)
             for y in range(self.scr_size.height)
         }
-        self.arr = np.zeros((self.scr_size.height, self.scr_size.width), dtype=np.int8)
-        for y in range(self.map_size.height):
-            for x in range(self.map_size.width):
-                self.arr[y, x] = game_state.tile_map[y][x].type.value
         self.rows_init = True
 
     def get_shadow(self, surface_distance: float) -> str:
@@ -79,7 +77,13 @@ class CursesRenderer3D(CursesRenderer):
         self.add_data(x, y, CursesRenderData(self.get_shadow(distance), color))
 
     def cast_wall(
-        self, pos_x: float, pos_y: float, eye_x: float, eye_y: float, depth: float
+        self,
+        pos_x: float,
+        pos_y: float,
+        eye_x: float,
+        eye_y: float,
+        depth: float,
+        game_state: GameStateDTO,
     ) -> tuple[float, float]:
         delta_dist_x = abs(1 / eye_x) if eye_x != 0 else 1e6
         delta_dist_y = abs(1 / eye_y) if eye_y != 0 else 1e6
@@ -102,7 +106,7 @@ class CursesRenderer3D(CursesRenderer):
                 return depth, 0.0
             if map_x < 0 or map_y < 0:
                 return depth, 0.0
-            tile_type = self.arr[map_y][map_x]
+            tile_type = game_state.tile_map[map_y][map_x].type.value
             if tile_type not in (TileType.WALL, TileType.VOID):
                 continue
             if hit_vertical:
@@ -154,20 +158,22 @@ class CursesRenderer3D(CursesRenderer):
         entities = game_state.enemies.copy()
         entities.extend([item for item in game_state.items if not item.is_owned])
         entities.extend(game_state.doors)
+        entities.append(game_state.stairs)
         entities.sort(
             key=lambda e: (Vector2(e.x, e.y) - pos + 0.5).length(), reverse=True
         )
 
         for entity in entities:
-            mapa = {
+            e_map = {
                 EnemyDTO: SpriteMap.ENEMY_MAP,
                 ItemDTO: SpriteMap.ITEM_MAP,
                 DoorDTO: SpriteMap.DOOR_MAP,
                 KeyDTO: SpriteMap.KEY_MAP,
+                StairsDTO: SpriteMap.STAIRS_MAP,
             }.get(type(entity), None)
-            if not mapa:
+            if not e_map:
                 continue
-            sprite: SpriteType = SpriteService.sprites[mapa[entity.type]]
+            sprite: SpriteType = SpriteService.sprites[e_map[entity.type]]
 
             vec: Vector2 = Vector2(entity.x, entity.y) - pos + 0.5
             distance = vec.length()
@@ -221,14 +227,24 @@ class CursesRenderer3D(CursesRenderer):
                         col, y, CursesRenderData(self.get_shadow(distance), color)
                     )
 
-    def render(self, game_state: GameStateDTO) -> None:
+    def render(self, game_state: GameStateDTO, tick_time: float) -> None:
         self.init_rows(game_state)
-        self.map_renderer.render(game_state)
+        self.map_renderer.render(game_state, tick_time)
         if (
-            self.old_pos == (game_state.player.x, game_state.player.y)
+            (
+                game_state.player.x,
+                game_state.player.y,
+            )
+            in self.old_pos
             and self.old_angle == game_state.player.rotation
+            and self.old_enemies == len(game_state.enemies)
         ):
-            return
+            for enemy in game_state.enemies:
+                if (enemy.x, enemy.y) not in self.old_pos:
+                    break
+            else:
+                return
+
         pos = Vector2(game_state.player.x, game_state.player.y) + 0.5
         pos.x += 0.1 if int(pos.x) % 2 else -0.1
         pos.y += 0.1 if int(pos.y) % 2 else -0.1
@@ -237,7 +253,7 @@ class CursesRenderer3D(CursesRenderer):
             ray_angle = angle + (x / self.scr_size.width - 0.5) * self.FOV
             eye: Vector2 = Vector2(cos(ray_angle), sin(ray_angle))
             wall_distance, sample_x = self.cast_wall(
-                pos.x, pos.y, eye.x, eye.y, self.depth
+                pos.x, pos.y, eye.x, eye.y, self.depth, game_state
             )
             self.ceiling = self.scr_size.height * (0.5 - 1 / max(wall_distance, 0.01))
             self.floor = self.scr_size.height - self.ceiling
@@ -245,4 +261,6 @@ class CursesRenderer3D(CursesRenderer):
             self.draw_column(pos.x, pos.y, eye.x, eye.y, x, sample_x, wall_distance)
         self.render_entities(game_state, pos, angle)
         self.old_angle = angle
-        self.old_pos = (game_state.player.x, game_state.player.y)
+        self.old_pos = [(game_state.player.x, game_state.player.y)]
+        self.old_pos.extend([(enemy.x, enemy.y) for enemy in game_state.enemies])
+        self.old_enemies = len(game_state.enemies)

@@ -118,36 +118,29 @@ class CursesInventoryView(InventoryView):
         ss: int = int(elapsed) % 60
         lv: int = int(context.player.level)
         row: int = 2
+        col: int = 83
         lvl = f"{lv}/{MAX_LEVEL}"  #
-        win.addstr(row, 83, "LEVEL" + (13 - len(lvl)) * " " + lvl)
-        row += 2
         hp = f"{int(context.player.health)}/{int(context.player.max_health)}"
-        win.addstr(row, 83, "HEALTH" + (12 - len(hp)) * " " + hp)
-        row += 2
-        win.addstr(row, 83, f"STRENGTH  {context.player.strength:8d}")
-        row += 1
-        win.addstr(row, 83, f"DEXTERITY {context.player.dexterity:8d}")
-        row += 2
-        win.addstr(row, 83, f"POINTS    {context.points:8d}")
-        row += 2
-        win.addstr(row, 83, f"TIME      {hh:02d}:{mm:02d}:{ss:02d}")
-        row += 2
         owned_types = {k.type for k in context.keys if k.is_owned}
-        win.addstr(row, 83, f"KEYS   {len(owned_types)}/3")
-        row += 2
+        win.addstr(row, col, "LEVEL" + (13 - len(lvl)) * " " + lvl)
+        win.addstr(row + 2, col, "HEALTH" + (12 - len(hp)) * " " + hp)
+        win.addstr(row + 4, col, f"STRENGTH  {context.player.strength:8d}")
+        win.addstr(row + 5, col, f"DEXTERITY {context.player.dexterity:8d}")
+        win.addstr(row + 7, col, f"POINTS    {context.points:8d}")
+        win.addstr(row + 9, col, f"TIME      {hh:02d}:{mm:02d}:{ss:02d}")
+        win.addstr(row + 11, col, f"KEYS   {len(owned_types):9d}/3")
         slots = [
             (KeyType.BLUE, CursesInventoryView._KEY_BLUE_PAIR),
             (KeyType.GREEN, CursesInventoryView._KEY_GREEN_PAIR),
             (KeyType.RED, CursesInventoryView._KEY_RED_PAIR),
         ]
-        col = 2
+        col += 2
         for kt, pair in slots:
             if kt in owned_types:
-                win.addstr(row, col, "⚿", curses.color_pair(pair))
+                win.addstr(row + 13, col, "⚿", curses.color_pair(pair))
             else:
-                win.addstr(row, col, " ")
+                win.addstr(row + 13, col, " ")
             col += 6
-        # win.refresh()
 
     @staticmethod
     def show(window: curses.window, context: GameSession) -> None:
@@ -175,7 +168,6 @@ class CursesInventoryView(InventoryView):
         outer_y = max(0, (sh - outer_h) // 2)
         start_x = outer_x + 1 + padding
         start_y = outer_y + 1 + padding
-        stats_x = start_x + n * item_col_w
 
         curses.init_pair(
             CursesInventoryView._KEY_BLUE_PAIR, curses.COLOR_BLUE, curses.COLOR_BLACK

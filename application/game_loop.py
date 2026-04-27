@@ -16,13 +16,14 @@ from presentation.window import Window
 
 
 class GameLoop:
-    def __init__(self, window: Window) -> None:
-        self.window: Window = window()
+    def __init__(self, window: Window, selected_3d: bool = False) -> None:
+        self.window: Window = window(selected_3d)
         size: Size = Size(*self.window.get_size())
-        size /= 3  # 3D
+        if selected_3d:
+            size /= 3
         self.stage: int = 0
         self.game_session: GameSession = GameSession(size, SimpleQueue())
-        self.game_session.selected_3d = True  # 3D
+        self.game_session.selected_3d = selected_3d
         self.game_session.new_stage()
         self.mixer: Mixer = Mixer(self.game_session.sounds)
         self.mixer.start()
@@ -38,12 +39,7 @@ class GameLoop:
 
             game_state: GameStateDTO = GameMapper.to_dto(self.game_session)
 
-            self.window.draw(game_state)  # 0.004 s
-
-            self.window.renderer.window.addstr(
-                0, 0, f"{1 / max(tick_t, 0.0001):3.0f} fps"
-            )
-            self.window.renderer.window.refresh()
+            self.window.draw(game_state, tick_t)  # 0.004 s
 
             action: InputAction = self.window.action(self.game_session.selected_3d)
 
@@ -60,9 +56,12 @@ class GameLoop:
             if self.game_session.player.health <= 0:
                 self.game_session.sounds.put(SoundType.DEATH)
                 self.game_session.process = False
+            if self.game_session.player.position == self.game_session.stairs.position:
+                self.game_session.sounds.put(SoundType.LEVEL_UP)
+                self.game_session.new_stage()
             tick_t = time.perf_counter() - tick_timer
 
         self.mixer.join(0.1)
         if self.stage < len(Level):
-            self.window.draw(GameMapper.to_dto(self.game_session))
+            self.window.draw(GameMapper.to_dto(self.game_session), tick_t)
             self.window.game_over(time.monotonic() - game_timer)

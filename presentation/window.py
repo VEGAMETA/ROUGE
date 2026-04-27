@@ -26,11 +26,11 @@ class Window:
 
     def get_size(self) -> tuple[int, int]: ...
 
-    def action(self, action3d: bool = False) -> InputAction:
-        return self.input_handler.get(self.window, action3d)
+    def action(self, selected_3d: bool = False) -> InputAction:
+        return self.input_handler.get(self.window, selected_3d)
 
-    def draw(self, context: GameStateDTO) -> None:
-        self.renderer.render(context)
+    def draw(self, context: GameStateDTO, tick_time: float) -> None:
+        self.renderer.render(context, tick_time)
 
     def notify(
         self,

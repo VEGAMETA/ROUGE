@@ -11,6 +11,7 @@ from domain.entities.item import Item
 from domain.entities.key import Key
 from domain.entities.player import Player
 from domain.entities.stage import Stage
+from domain.entities.stairs import Stairs
 from domain.entities.tile import OBSTACLES, Tile
 from domain.generators.enemy import EnemyFactory
 from domain.generators.item import ItemFactory
@@ -32,6 +33,7 @@ class GameSession(Entity):
     tile_map: list[list[Tile]]
     keys: list[Key]
     doors: list[Door]
+    stairs: Stairs
     process: bool = True
     selected_3d: bool = False
 
@@ -68,23 +70,20 @@ class GameSession(Entity):
             self.player.health = self.player.max_health
             self.player.dexterity = round(self.player.dexterity * 1.1)
             self.player.strength = round(self.player.strength * 1.1)
+            self.player.rotation = Constant.PI_BY_MINUS_2
+
         self.items = [item for item in self.items if item.is_owned]
         self.player.level += 1
+        rooms_no_player = [room for room in self.stage.rooms if room != player_room]
         self.enemies = {
-            EnemyFactory.create_random(room.get_random_inbound())
-            for room in self.stage.rooms
-            if room != player_room
+            EnemyFactory.create_random(room.get_random_inbound(), self.player.level)
+            for room in rooms_no_player
         }
-        for room in self.stage.rooms:
-            if room != player_room:
-                self.items += [
-                    ItemFactory.create_random(
-                        room.get_random_inbound(), self.player.level
-                    ),
-                    ItemFactory.create_random(
-                        room.get_random_inbound(), self.player.level
-                    ),
-                ]
+        self.items = [item for item in self.items if item.is_owned] + [
+            ItemFactory.create_random(room.get_random_inbound(), self.player.level)
+            for room in rooms_no_player
+        ]
+        self.stairs = Stairs(choice(rooms_no_player).get_random_inbound())
 
     def find_enemy(self) -> Optional[Enemy]:
         enemy_position = self.player.position + self.player.direction

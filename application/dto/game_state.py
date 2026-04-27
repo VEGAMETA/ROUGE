@@ -5,6 +5,7 @@ from application.dto.enemy import EnemyDTO, EnemyMaper
 from application.dto.item import ItemDTO, ItemMapper
 from application.dto.key import KeyDTO, KeyMapper
 from application.dto.player import PlayerDTO, PlayerMapper
+from application.dto.stairs import StairsDTO, StairsMapper
 from application.dto.tile import TileDTO, TileMapMapper
 from domain.entities.game_session import GameSession
 
@@ -17,6 +18,7 @@ class GameStateDTO:
     items: list[ItemDTO]
     doors: list[DoorDTO]
     keys: list[KeyDTO]
+    stairs: StairsDTO
 
 
 class GameMapper:
@@ -28,4 +30,5 @@ class GameMapper:
             items=[ItemMapper.to_dto(item) for item in context.items],
             doors=[DoorMapper.to_dto(door) for door in context.doors],
             keys=[KeyMapper.to_dto(key) for key in context.keys],
+            stairs=StairsMapper.to_dto(context.stairs),
         )
