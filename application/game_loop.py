@@ -1,4 +1,4 @@
-# TODO: Autosave, fog of war, menu, leaderboard, death/win screen
+# TODO: Autosave, fog of war, leaderboard, death/win screen
 import time
 from multiprocessing import SimpleQueue
 
@@ -17,18 +17,19 @@ from presentation.window import Window
 
 class GameLoop:
     def __init__(self, window: Window, selected_3d: bool = False) -> None:
+        self.selected_3d: bool = selected_3d
         self.window: Window = window(selected_3d)
-        size: Size = Size(*self.window.get_size())
+        self.size: Size = Size(*self.window.get_size())
         if selected_3d:
-            size /= 3
+            self.size /= 3
         self.stage: int = 0
-        self.game_session: GameSession = GameSession(size, SimpleQueue())
+        self.game_session: GameSession = GameSession(self.size, SimpleQueue())
         self.game_session.selected_3d = selected_3d
         self.game_session.new_stage()
         self.mixer: Mixer = Mixer(self.game_session.sounds)
         self.mixer.start()
 
-    def run(self) -> None:
+    def run(self) -> bool:
         CommandAssembler.assemble_commands()
         self.game_session.sounds.put(SoundType.MUSIC)
         game_timer: float = time.monotonic()
@@ -56,3 +57,5 @@ class GameLoop:
         if self.stage < len(Level):
             self.window.draw(GameMapper.to_dto(self.game_session), tick_t)
             self.window.game_over(time.monotonic() - game_timer)
+            return False
+        return True

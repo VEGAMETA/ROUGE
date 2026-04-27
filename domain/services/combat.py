@@ -31,6 +31,12 @@ class CombatService:
         attack = CombatService.hit(context.player, defender)
         context.sounds.put(SoundType.HIT if attack else SoundType.SWING)
         if defender.health <= 0:
+            context.points += int(
+                defender.level.value * 10
+                + defender.strength
+                + defender.dexterity
+                + defender.max_health
+            )
             context.enemies.remove(defender)
             context.sounds.put(SoundType.KILL)
             if random() < 0.4:
