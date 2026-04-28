@@ -63,6 +63,7 @@ class CursesRenderer2D(CursesRenderer):
             t = (item.x, item.y)
             toprint[t] = CursesRenderData(
                 CursesRenderMap.ITEM_RENDER_MAP[item.type].character,
+                CursesRenderMap.ITEM_RENDER_MAP[item.type].color1,
                 CursesRenderMap.RARITY_MAP[item.rarity],
             )
             self.old_pos.append(hash(t))

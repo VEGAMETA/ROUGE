@@ -140,14 +140,6 @@ WEAPON_TEMPLATES = {
         damage=25,
         value=80,
     ),
-    (ItemType.WEAPON, WeaponType.BOW): partial(
-        Weapon,
-        subtype=WeaponType.BOW,
-        name="Short Bow",
-        description="A ranged weapon",
-        damage=10,
-        value=35,
-    ),
     (ItemType.WEAPON, WeaponType.STAFF): partial(
         Weapon,
         subtype=WeaponType.STAFF,

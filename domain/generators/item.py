@@ -12,10 +12,10 @@ class ItemFactory:
     @staticmethod
     def create(key: tuple, position: Position, level: Level = Level.LEVEL_1) -> Item:
         item: Item = ITEM_TEMPLATES[key](position=position, level=level)
-
-        if item is Weapon:
+        if isinstance(item, Weapon):
             w: dict[ItemRarityWeights, int] = ItemRarityWeights.get(level)
             item.rarity = choices(list(w.keys()), weights=list(w.values()))[0]
+            item.damage *= 1 + item.rarity.value * 0.1
         return item
 
     @staticmethod

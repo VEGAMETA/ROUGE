@@ -19,6 +19,7 @@ class InputAction(IntEnum):
     USE_FOOD: int = auto()
     USE_WEAPON: int = auto()
     USE_ELIXIR: int = auto()
+    USE_SCROLL: int = auto()
 
 
 class InputHandler(ABC):
