@@ -1,4 +1,5 @@
-# TODO: Autosave, fog of war, leaderboard, death/win screen
+# TODO: Autosave, fog of war, death/win screen
+import getpass
 import time
 from multiprocessing import SimpleQueue
 
@@ -10,6 +11,7 @@ from domain.rules.progression import Level
 from domain.services.ai import EnemyAI
 from domain.value_objects.enums import SoundType
 from infrastructure.audio.mixer import Mixer
+from infrastructure.persistence.leaderboard import Leaderboard
 from infrastructure.vector import Size
 from presentation.input_handler import InputAction
 from presentation.window import Window
@@ -50,6 +52,7 @@ class GameLoop:
                 EnemyAI.action(enemy, self.game_session)
             if self.game_session.player.health <= 0:
                 self.game_session.sounds.put(SoundType.DEATH)
+                Leaderboard.append(getpass.getuser(), self.game_session.points)
                 self.game_session.process = False
             tick_t = time.perf_counter() - tick_timer
 

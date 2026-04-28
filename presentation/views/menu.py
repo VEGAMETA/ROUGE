@@ -5,6 +5,7 @@ from typing import Any, Optional
 
 class MenuAction(IntEnum):
     CONTINUE = auto()
+    LEADERBOARD = auto()
     SAVE = auto()
     LOAD = auto()
     EXIT = auto()

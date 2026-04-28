@@ -2,6 +2,7 @@ import curses
 
 from presentation.curses.input_handler import CursesInputHandler
 from presentation.curses.inventory import CursesInventoryView
+from presentation.curses.leaderboard import CursesLeaderboardView
 from presentation.curses.menu import CursesMenu
 from presentation.curses.notificator import CursesNotificator
 from presentation.curses.render.renderer2d import CursesRenderer2D
@@ -21,6 +22,7 @@ class CursesWindow(Window):
             CursesNotificator,
             CursesMenu,
             CursesInventoryView,
+            CursesLeaderboardView,
         )
         # import os
 

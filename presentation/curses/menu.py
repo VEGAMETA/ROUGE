@@ -4,7 +4,13 @@ from typing import Optional
 from presentation.curses.widgets import Button, VerticalMenu
 from presentation.views.menu import Menu, MenuAction
 
-_ACTIONS = [MenuAction.CONTINUE, MenuAction.SAVE, MenuAction.LOAD, MenuAction.EXIT]
+_ACTIONS = [
+    MenuAction.CONTINUE,
+    MenuAction.LEADERBOARD,
+    MenuAction.SAVE,
+    MenuAction.LOAD,
+    MenuAction.EXIT,
+]
 
 
 class CursesMenu(Menu):
@@ -14,6 +20,7 @@ class CursesMenu(Menu):
         menu = VerticalMenu(
             children=[
                 Button(text="Continue"),
+                Button(text="Leaderboard"),
                 Button(text="Save"),
                 Button(text="Load"),
                 Button(text="Exit"),
