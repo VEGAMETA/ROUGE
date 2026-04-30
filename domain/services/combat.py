@@ -27,12 +27,14 @@ class CombatService:
 
     @staticmethod
     def attack(context: GameSession) -> bool:
+        context.statistics.attacks_made += 1
         defender = context.find_enemy()
         if not defender:
             return False
         attack = CombatService.hit(context.player, defender)
         context.sounds.put(SoundType.HIT if attack else SoundType.SWING)
         if defender.health <= 0:
+            context.statistics.enemies_defeated += 1
             context.points += int(
                 defender.level * 10
                 + defender.strength

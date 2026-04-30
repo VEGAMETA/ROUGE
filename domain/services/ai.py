@@ -1,4 +1,4 @@
-from random import random
+from random import choice, random
 
 from domain.entities.enemy import Enemy
 from domain.entities.game_session import GameSession
@@ -20,10 +20,13 @@ class EnemyAI:
     def action(enemy: "Enemy", context: "GameSession") -> EnemyAction:
         if enemy.type == EnemyType.MIMIC1:
             return EnemyAction.UNDEFINED
+        home_room = context.stage.rooms[enemy.home_room_index]
         ai_cls = EnemyAI.REGISTRY.get(enemy.type, EnemyAI)
         dx = abs(enemy.position.x - context.player.position.x)
         dy = abs(enemy.position.y - context.player.position.y)
-        if max(dx, dy) > enemy.hostility:
+        if max(dx, dy) > enemy.hostility or not home_room.is_inbound(
+            context.player.position
+        ):
             return ai_cls.idle(enemy, context)
         return ai_cls.act(enemy, context)
 
@@ -204,6 +207,7 @@ class OgreAI(EnemyAI):
 
 class SnakeMageAI(EnemyAI):
     SLEEP_CHANCE: float = 0.3
+    DIAGONAL_DIRECTIONS: list[tuple[int, int]] = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
 
     @staticmethod
     def act(enemy: "Enemy", context: "GameSession") -> EnemyAction:
@@ -214,7 +218,7 @@ class SnakeMageAI(EnemyAI):
 
     @staticmethod
     def idle(enemy: "Enemy", context: "GameSession") -> EnemyAction:
-        return EnemyAI.idle(enemy, context)
+        return SnakeMageAI.move(enemy, context)
 
     @staticmethod
     def attack(enemy: "Enemy", context: "GameSession") -> EnemyAction:
@@ -234,8 +238,8 @@ class SnakeMageAI(EnemyAI):
             return EnemyAction.UNDEFINED
 
         home_room = context.stage.rooms[enemy.home_room_index]
-        dx, dy = enemy.diagonal_dir
-        enemy.diagonal_dir = (-dx, dy)
+        directions = SnakeMageAI.DIAGONAL_DIRECTIONS
+        dx, dy = choice(directions)
         new_pos = Position(enemy.position.x + dx, enemy.position.y + dy)
         obstacle_map = context.get_obstacle_map()
         if (
@@ -245,8 +249,7 @@ class SnakeMageAI(EnemyAI):
         ):
             MovementService.move(enemy, new_pos, context)
             enemy.path.clear()
-            return EnemyAction.MOVE
-        return EnemyAI.move(enemy, context)
+        return EnemyAction.MOVE
 
 
 EnemyAI.REGISTRY = {
