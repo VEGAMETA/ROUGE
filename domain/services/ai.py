@@ -46,7 +46,9 @@ class EnemyAI:
                 path.pop(0)
                 enemy.path = path
         if enemy.path:
-            MovementService.move(enemy, Position(*enemy.path.pop(0)), context)
+            next_pos = Position(*enemy.path.pop(0))
+            if home_room.is_inbound(next_pos):
+                MovementService.move(enemy, next_pos, context)
         return EnemyAction.UNDEFINED
 
     @staticmethod
@@ -70,7 +72,8 @@ class EnemyAI:
             path.pop(0)
             enemy.path = path
         if enemy.path:
-            MovementService.move(enemy, Position(*enemy.path.pop(0)), context)
+            next_pos = Position(*enemy.path.pop(0))
+            MovementService.move(enemy, next_pos, context)
         return EnemyAction.UNDEFINED
 
 
@@ -128,8 +131,12 @@ class GhostAI(EnemyAI):
             return EnemyAction.UNDEFINED
         home_room = context.stage.rooms[enemy.home_room_index]
         target = home_room.get_random_inbound()
-        obstacle_map = context.get_cached_obstacle_map()
-        if not obstacle_map[target.y][target.x] and target != context.player.position:
+        obstacle_map = context.get_obstacle_map()
+        if (
+            home_room.is_inbound(target)
+            and not obstacle_map[target.y][target.x]
+            and target != context.player.position
+        ):
             enemy.position = target
             enemy.path.clear()
         return EnemyAction.MOVE
@@ -188,7 +195,9 @@ class OgreAI(EnemyAI):
                 path.pop(0)
                 enemy.path = path
         if enemy.path:
-            MovementService.move(enemy, Position(*enemy.path.pop(0)), context)
+            next_pos = Position(*enemy.path.pop(0))
+            if home_room.is_inbound(next_pos):
+                MovementService.move(enemy, next_pos, context)
 
 
 class SnakeMageAI(EnemyAI):
@@ -203,7 +212,7 @@ class SnakeMageAI(EnemyAI):
 
     @staticmethod
     def idle(enemy: "Enemy", context: "GameSession") -> EnemyAction:
-        return SnakeMageAI.move(enemy, context)
+        return EnemyAI.idle(enemy, context)
 
     @staticmethod
     def attack(enemy: "Enemy", context: "GameSession") -> EnemyAction:
@@ -217,14 +226,20 @@ class SnakeMageAI(EnemyAI):
 
     @staticmethod
     def move(enemy: "Enemy", context: "GameSession") -> EnemyAction:
+        if enemy.home_room_index < 0 or enemy.home_room_index >= len(
+            context.stage.rooms
+        ):
+            return EnemyAction.UNDEFINED
+
+        home_room = context.stage.rooms[enemy.home_room_index]
         dx, dy = enemy.diagonal_dir
         enemy.diagonal_dir = (-dx, dy)
         new_pos = Position(enemy.position.x + dx, enemy.position.y + dy)
         obstacle_map = context.get_obstacle_map()
         if (
-            0 <= new_pos.y < len(obstacle_map)
-            and 0 <= new_pos.x < len(obstacle_map[0])
+            home_room.is_inbound(new_pos)
             and not obstacle_map[new_pos.y][new_pos.x]
+            and new_pos != context.player.position
         ):
             MovementService.move(enemy, new_pos, context)
             enemy.path.clear()

@@ -35,6 +35,11 @@ class Shape2D(Entity2D):
             randint(*(Position(1, self.size.height - 1) + self.position.y)),
         )
 
+    def is_inbound(self, pos: Position) -> bool:
+        x_min, x_max = self.position.x + 1, self.position.x + self.size.width - 1
+        y_min, y_max = self.position.y + 1, self.position.y + self.size.height - 1
+        return x_min <= pos.x <= x_max and y_min <= pos.y <= y_max
+
 
 @dataclass(eq=False)
 class Character(Entity2D):
