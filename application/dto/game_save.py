@@ -12,7 +12,7 @@ from domain.entities.item import Item
 from domain.generators.item import ItemFactory
 from domain.rules.progression import Level
 from domain.templates.item import ITEM_TEMPLATES
-from domain.value_objects.enums import EnemyType, Hostility, ItemRarityType, ItemType
+from domain.value_objects.enums import EnemyType, ItemRarityType, ItemType
 from domain.value_objects.position import Position
 from infrastructure.persistence.save_load import SaverLoader
 
@@ -241,7 +241,7 @@ class GameSaveMapper:
                     strength=ed.strength,
                     level=Level(ed.level),
                     path=[],
-                    hostility=Hostility(ed.hostility),
+                    hostility=ed.hostility,
                     home_room_index=ed.home_room_index,
                 )
             )

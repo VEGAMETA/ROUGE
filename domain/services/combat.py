@@ -1,21 +1,17 @@
 from random import random
 
-from domain.entities.enemy import Enemy
 from domain.entities.entity import Character
 from domain.entities.game_session import GameSession
 from domain.entities.player import Player
+from domain.generators.enemy import EnemyFactory
 from domain.generators.item import ItemFactory
-from domain.value_objects.enums import EnemyType, SoundType
+from domain.templates.item import ENEMY_DROP
+from domain.value_objects.enums import SoundType
 
 
 class CombatService:
     @staticmethod
     def hit(attacker: Character, defender: Character) -> bool:
-        if isinstance(attacker, Player) and isinstance(defender, Enemy):
-            if defender.type == EnemyType.VAMPIRE and defender.times_hit == 0:
-                defender.times_hit += 1
-                return False
-
         strength = attacker.strength + attacker.dexterity * 0.5
         hitchance = -defender.dexterity
         if isinstance(attacker, Player):
@@ -31,28 +27,32 @@ class CombatService:
 
     @staticmethod
     def attack(context: GameSession) -> bool:
-        context.statistics.attacks_made += 1
         defender = context.find_enemy()
         if not defender:
             return False
         attack = CombatService.hit(context.player, defender)
         context.sounds.put(SoundType.HIT if attack else SoundType.SWING)
         if defender.health <= 0:
-            context.statistics.enemies_defeated += 1
             context.points += int(
-                defender.level.value * 10
+                defender.level * 10
                 + defender.strength
                 + defender.dexterity
                 + defender.max_health
             )
             context.enemies.remove(defender)
+
+            if defender.type == defender.type.MIMIC1:
+                mimic = EnemyFactory.create(
+                    defender.type.MIMIC2, defender.position, context.player.level
+                )
+                context.enemies.add(mimic)
+                return False
             context.sounds.put(SoundType.KILL)
+            context.dds += 0.07
             if random() < 0.4:
                 context.items.append(
-                    ItemFactory.create_random(defender.position, context.player.level)
+                    ItemFactory.create_random(
+                        defender.position, context.player.level, ENEMY_DROP
+                    )
                 )
-            return True
-        if attack and isinstance(defender, Enemy) and defender.health > 0:
-            if defender.type == EnemyType.OGRE and not defender.resting:
-                defender.counter_queued = True
         return True

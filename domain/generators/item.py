@@ -19,5 +19,9 @@ class ItemFactory:
         return item
 
     @staticmethod
-    def create_random(position: Position, level: Level = Level.LEVEL_1) -> Item:
-        return ItemFactory.create(choice(list(ITEM_TEMPLATES.keys())), position, level)
+    def create_random(
+        position: Position,
+        level: Level = Level.LEVEL_1,
+        template: dict = ITEM_TEMPLATES,
+    ) -> Item:
+        return ItemFactory.create(choice(list(template.keys())), position, level)

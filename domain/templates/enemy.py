@@ -1,52 +1,74 @@
 from functools import partial
 
 from domain.entities.enemy import Enemy
-from domain.value_objects.enums import EnemyType, Hostility
+from domain.value_objects.enums import EnemyType
 
 ENEMY_TEMPLATES = {
     EnemyType.ZOMBIE: partial(
         Enemy,
         type=EnemyType.ZOMBIE,
-        hostility=Hostility.HOSTILE,
-        health=25,
-        max_health=25,
+        hostility=7,
+        health=30,
+        max_health=30,
         dexterity=3,
-        strength=10,
+        strength=7,
     ),
     EnemyType.VAMPIRE: partial(
         Enemy,
         type=EnemyType.VAMPIRE,
-        hostility=Hostility.HOSTILE,
-        health=20,
-        max_health=20,
-        dexterity=15,
-        strength=5,
+        hostility=10,
+        health=30,
+        max_health=30,
+        dexterity=10,
+        strength=7,
     ),
     EnemyType.GHOST: partial(
         Enemy,
         type=EnemyType.GHOST,
-        hostility=Hostility.NEUTRAL,
+        hostility=5,
         health=10,
         max_health=10,
         dexterity=10,
-        strength=5,
+        strength=3,
     ),
     EnemyType.OGRE: partial(
         Enemy,
         type=EnemyType.OGRE,
-        hostility=Hostility.HOSTILE,
-        health=45,
-        max_health=45,
-        dexterity=2,
-        strength=10,
+        hostility=7,
+        health=40,
+        max_health=40,
+        dexterity=3,
+        strength=15,
     ),
     EnemyType.SNAKE_MAGE: partial(
         Enemy,
         type=EnemyType.SNAKE_MAGE,
-        hostility=Hostility.HOSTILE,
+        hostility=10,
         health=40,
         max_health=40,
         dexterity=15,
         strength=1,
     ),
+    EnemyType.MIMIC1: partial(
+        Enemy,
+        type=EnemyType.MIMIC1,
+        hostility=0,
+        health=1,
+        max_health=1,
+        dexterity=0,
+        strength=0,
+    ),
+    EnemyType.MIMIC2: partial(
+        Enemy,
+        type=EnemyType.MIMIC2,
+        hostility=3,
+        health=30,
+        max_health=30,
+        dexterity=10,
+        strength=3,
+    ),
 }
+
+SPAWN_ENEMIES = {}
+SPAWN_ENEMIES.update(ENEMY_TEMPLATES)
+SPAWN_ENEMIES.pop(EnemyType.MIMIC2)

@@ -84,6 +84,8 @@ class SpriteMap:
         EnemyType.GHOST: SpriteType.GHOST,
         EnemyType.OGRE: SpriteType.OGRE,
         EnemyType.SNAKE_MAGE: SpriteType.SNAKE_MAGE,
+        EnemyType.MIMIC1: SpriteType.MIMIC1,
+        EnemyType.MIMIC2: SpriteType.MIMIC2,
     }
     ITEM_MAP: dict[EnemyType, SpriteType] = {
         ItemType.UNDEFINED: SpriteType.UNDEFINED,

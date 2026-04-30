@@ -67,25 +67,6 @@ class WeaponType(IntEnum):
     TWO_HANDED_SWORD: int = auto()
 
 
-_HOSTILE_RANGE: int = 8
-_NEUTRAL_RANGE: int = 1
-
-
-class Hostility(IntEnum):
-    UNDEFINED: int = auto()
-    NEUTRAL: int = auto()
-    HOSTILE: int = auto()
-    FRIENDLY: int = auto()
-
-    @property
-    def range(self) -> int:
-        if self == Hostility.HOSTILE:
-            return _HOSTILE_RANGE
-        if self == Hostility.NEUTRAL:
-            return _NEUTRAL_RANGE
-        return 0
-
-
 class EnemyType(IntEnum):
     UNDEFINED: int = auto()
     ZOMBIE: int = auto()
@@ -112,7 +93,6 @@ class ItemRarityType(IntEnum):
 
 
 class DoorType(IntEnum):
-    UNDEFINED: int = auto()
     RED: int = auto()
     GREEN: int = auto()
     BLUE: int = auto()
@@ -120,7 +100,6 @@ class DoorType(IntEnum):
 
 
 class KeyType(IntEnum):
-    UNDEFINED: int = auto()
     RED: int = auto()
     GREEN: int = auto()
     BLUE: int = auto()

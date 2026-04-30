@@ -44,11 +44,11 @@ class CursesRenderMap:
         EnemyType.UNDEFINED: CursesRenderData("?"),
         EnemyType.ZOMBIE: CursesRenderData("z", COLOR_GREEN),
         EnemyType.VAMPIRE: CursesRenderData("v", COLOR_RED),
-        EnemyType.GHOST: CursesRenderData("g", COLOR_BLUE),
-        EnemyType.OGRE: CursesRenderData("o", COLOR_MAGENTA),
-        EnemyType.SNAKE_MAGE: CursesRenderData("s", COLOR_CYAN),
+        EnemyType.GHOST: CursesRenderData("g", COLOR_WHITE),
+        EnemyType.OGRE: CursesRenderData("o", COLOR_YELLOW),
+        EnemyType.SNAKE_MAGE: CursesRenderData("s", COLOR_WHITE),
         EnemyType.MIMIC1: CursesRenderData("ŧ", COLOR_WHITE),
-        EnemyType.MIMIC2: CursesRenderData("m", COLOR_YELLOW),
+        EnemyType.MIMIC2: CursesRenderData("m", COLOR_WHITE),
     }
 
     ITEM_RENDER_MAP = {
@@ -60,7 +60,6 @@ class CursesRenderMap:
     }
 
     KEY_RENDER_MAP = {
-        KeyType.UNDEFINED: CursesRenderData("k", COLOR_WHITE),
         KeyType.RED: CursesRenderData("k", COLOR_RED),
         KeyType.GREEN: CursesRenderData("k", COLOR_GREEN),
         KeyType.BLUE: CursesRenderData("k", COLOR_BLUE),
@@ -69,7 +68,7 @@ class CursesRenderMap:
     _door_char = TILE_RENDER_MAP[TileType.DOOR].character
 
     DOOR_RENDER_MAP = {
-        DoorType.UNDEFINED: CursesRenderData(_door_char, COLOR_WHITE),
+        DoorType.OPENED: CursesRenderData(_door_char, COLOR_WHITE),
         DoorType.RED: CursesRenderData(_door_char, COLOR_RED),
         DoorType.GREEN: CursesRenderData(_door_char, COLOR_GREEN),
         DoorType.BLUE: CursesRenderData(_door_char, COLOR_BLUE),

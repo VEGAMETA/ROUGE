@@ -1,7 +1,7 @@
 import time
 from dataclasses import dataclass
 from multiprocessing import SimpleQueue
-from random import choice
+from random import choice, random
 from typing import Optional
 
 from domain.entities.door import Door
@@ -28,9 +28,9 @@ from infrastructure.vector import Size
 class GameSession(Entity):
     stage: Stage
     player: Player
-    enemies: list[Enemy]
+    enemies: set[Enemy]
     tiles: list[Tile]
-    items: list[Item]
+    items: set[Item]
     tile_map: list[list[Tile]]
     keys: list[Key]
     doors: list[Door]
@@ -54,6 +54,8 @@ class GameSession(Entity):
         self.start_time: float = time.monotonic()
         self.points: int = 0
         self.statistics: Statistics = Statistics()
+        self.default_dds: float = 0.3
+        self.dds: float = 0.3  # Dynamic Difficalty System
         self.items = []
         self.doors = []
         self.keys = []
@@ -87,16 +89,18 @@ class GameSession(Entity):
         rooms_no_player = [room for room in self.stage.rooms if room != player_room]
         self.enemies = set()
         for room in rooms_no_player:
-            enemy = EnemyFactory.create_random(
-                room.get_random_inbound(), self.player.level
-            )
-            enemy.home_room_index = next(
-                i for i, r in enumerate(self.stage.rooms) if r is room
-            )
-            self.enemies.add(enemy)
+            if random() < self.dds:
+                enemy = EnemyFactory.create_random(
+                    room.get_random_inbound(), self.player.level
+                )
+                enemy.home_room_index = next(
+                    i for i, r in enumerate(self.stage.rooms) if r is room
+                )
+                self.enemies.add(enemy)
         self.items = [item for item in self.items if item.is_owned] + [
             ItemFactory.create_random(room.get_random_inbound(), self.player.level)
             for room in rooms_no_player
+            if random() > self.dds
         ]
         self.stairs = Stairs(choice(rooms_no_player).get_random_inbound())
         self.player.level += 1
@@ -104,6 +108,7 @@ class GameSession(Entity):
         if int(self.player.level) > len(Level):
             self.process = False
             return
+        self.dds = self.default_dds
 
     def find_enemy(self) -> Optional[Enemy]:
         enemy_position = self.player.position + self.player.direction

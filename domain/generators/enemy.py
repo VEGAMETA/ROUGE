@@ -2,7 +2,7 @@ from random import choice
 
 from domain.entities.enemy import Enemy
 from domain.rules.progression import Level
-from domain.templates.enemy import ENEMY_TEMPLATES
+from domain.templates.enemy import ENEMY_TEMPLATES, SPAWN_ENEMIES
 from domain.value_objects.enums import EnemyType
 from domain.value_objects.position import Position
 from domain.value_objects.stats import EnemyStats
@@ -11,9 +11,7 @@ from domain.value_objects.stats import EnemyStats
 class EnemyFactory:
     @staticmethod
     def create_random(position: Position, level: Level = Level.LEVEL_1) -> Enemy:
-        return EnemyFactory.create(
-            choice(list(ENEMY_TEMPLATES.keys())), position, level
-        )
+        return EnemyFactory.create(choice(list(SPAWN_ENEMIES.keys())), position, level)
 
     @staticmethod
     def create(
@@ -29,6 +27,6 @@ class EnemyFactory:
             strength=strength,
             level=level,
             type=enemy_type,
-            path=[],
+            path=template.path,
             hostility=template.hostility,
         )

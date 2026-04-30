@@ -237,7 +237,7 @@ class CursesRenderer3D(CursesRenderer):
             )
             in self.old_pos
             and self.old_angle == game_state.player.rotation
-            and self.old_enemies == len(game_state.enemies)
+            and self.old_enemies == sum([e.health for e in game_state.enemies])
         ):
             for enemy in game_state.enemies:
                 if (enemy.x, enemy.y) not in self.old_pos:
@@ -263,4 +263,4 @@ class CursesRenderer3D(CursesRenderer):
         self.old_angle = angle
         self.old_pos = [(game_state.player.x, game_state.player.y)]
         self.old_pos.extend([(enemy.x, enemy.y) for enemy in game_state.enemies])
-        self.old_enemies = len(game_state.enemies)
+        self.old_enemies = sum([e.health for e in game_state.enemies])

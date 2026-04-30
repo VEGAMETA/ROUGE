@@ -21,7 +21,7 @@ class EnemyAI:
         ai_cls = EnemyAI.REGISTRY.get(enemy.type, EnemyAI)
         dx = abs(enemy.position.x - context.player.position.x)
         dy = abs(enemy.position.y - context.player.position.y)
-        if max(dx, dy) > enemy.hostility.range:
+        if max(dx, dy) > enemy.hostility:
             return ai_cls.idle(enemy, context)
         return ai_cls.act(enemy, context)
 
