@@ -9,5 +9,5 @@ OBSTACLES: tuple[TileType] = (TileType.WALL, TileType.VOID, TileType.UNDEFINED)
 @dataclass(eq=False)
 class Tile(Entity2D):
     type: TileType
-    explored: bool = True
+    explored: bool = False
     visible: bool = False

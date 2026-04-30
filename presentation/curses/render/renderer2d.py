@@ -27,21 +27,9 @@ class CursesRenderer2D(CursesRenderer):
         )
 
     def render(self, game_state: GameStateDTO, tick_time: float) -> None:
-        # visible: set[tuple[int, int]] = set()
         toprint: dict[tuple[int, int], str] = {}
         for row in game_state.tile_map:
             for tile in row:
-                # tile.show_type = tile.type if tile.explored else TileType.VOID
-
-                # if tile.visible:
-                # elif tile.type == TileType.FLOOR or (
-                #     tile.type in (TileType.WALL, TileType.DOOR, TileType.CORRIDOR)
-                #     and tile.explored
-                # ):
-                # data = CursesRenderMap.TILE_RENDER_MAP[TileType.VOID]
-                # tile.show_type = TileType.VOID
-                # else:
-                # tile.show_type = tile.type
                 t = (tile.x, tile.y)
                 if tile.changed or hash(t) in self.old_pos:
                     toprint[t] = CursesRenderMap.TILE_RENDER_MAP[tile.show_type]
@@ -60,6 +48,8 @@ class CursesRenderer2D(CursesRenderer):
         for item in game_state.items:
             if item.is_owned:
                 continue
+            if not game_state.tile_map[item.y][item.x].visible:
+                continue
             t = (item.x, item.y)
             toprint[t] = CursesRenderData(
                 CursesRenderMap.ITEM_RENDER_MAP[item.type].character,
@@ -69,8 +59,8 @@ class CursesRenderer2D(CursesRenderer):
             self.old_pos.append(hash(t))
 
         for enemy in game_state.enemies:
-            # if (enemy.x, enemy.y) not in visible:
-            #     continue
+            if not game_state.tile_map[enemy.y][enemy.x].visible:
+                continue
             t = (enemy.x, enemy.y)
             toprint[t] = CursesRenderMap.ENEMY_RENDER_MAP[enemy.type]
             self.old_pos.append(hash(t))
@@ -79,8 +69,10 @@ class CursesRenderer2D(CursesRenderer):
         toprint[t] = CursesRenderMap.PLAYER_RENDER_DATA
         self.old_pos.append(hash(t))
 
-        t = (game_state.stairs.x, game_state.stairs.y)
-        toprint[t] = CursesRenderMap.STAIRS_RENDER_DATA
+        stairs_tile = game_state.tile_map[game_state.stairs.y][game_state.stairs.x]
+        if stairs_tile.visible or stairs_tile.explored:
+            t = (game_state.stairs.x, game_state.stairs.y)
+            toprint[t] = CursesRenderMap.STAIRS_RENDER_DATA
 
         max_height = len(game_state.tile_map) - 1
         max_width = len(game_state.tile_map[0]) - 1

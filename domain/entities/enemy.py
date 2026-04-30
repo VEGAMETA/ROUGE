@@ -15,3 +15,4 @@ class Enemy(Character):
     home_room_index: int = -1
     diagonal_dir: tuple = (1, 1)
     hostility: int = 0
+    chasing: bool = False

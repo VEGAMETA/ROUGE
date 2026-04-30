@@ -24,10 +24,12 @@ class EnemyAI:
         ai_cls = EnemyAI.REGISTRY.get(enemy.type, EnemyAI)
         dx = abs(enemy.position.x - context.player.position.x)
         dy = abs(enemy.position.y - context.player.position.y)
-        if max(dx, dy) > enemy.hostility or not home_room.is_inbound(
-            context.player.position
-        ):
+        if max(dx, dy) > enemy.hostility:
+            enemy.chasing = False
             return ai_cls.idle(enemy, context)
+        if not enemy.chasing and not home_room.is_inbound(context.player.position):
+            return ai_cls.idle(enemy, context)
+        enemy.chasing = True
         return ai_cls.act(enemy, context)
 
     @staticmethod
@@ -78,6 +80,9 @@ class EnemyAI:
             enemy.path = path
         if enemy.path:
             next_pos = Position(*enemy.path.pop(0))
+            if next_pos == context.player.position:
+                enemy.path.clear()
+                return EnemyAction.UNDEFINED
             MovementService.move(enemy, next_pos, context)
         return EnemyAction.UNDEFINED
 
@@ -120,7 +125,7 @@ class GhostAI(EnemyAI):
             enemy.invisible = False
             enemy.path.clear()
             return EnemyAI.attack(enemy, context)
-        return GhostAI.move(enemy, context)
+        return EnemyAI.move(enemy, context)
 
     @staticmethod
     def idle(enemy: "Enemy", context: "GameSession") -> EnemyAction:
