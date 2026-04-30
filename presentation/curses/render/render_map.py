@@ -48,7 +48,7 @@ class CursesRenderMap:
         EnemyType.OGRE: CursesRenderData("o", COLOR_YELLOW),
         EnemyType.SNAKE_MAGE: CursesRenderData("s", COLOR_WHITE),
         EnemyType.MIMIC1: CursesRenderData("ŧ", COLOR_WHITE),
-        EnemyType.MIMIC2: CursesRenderData("m", COLOR_YELLOW),
+        EnemyType.MIMIC2: CursesRenderData("m", COLOR_WHITE),
     }
 
     ITEM_RENDER_MAP = {

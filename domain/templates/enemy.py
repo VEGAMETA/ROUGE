@@ -49,4 +49,26 @@ ENEMY_TEMPLATES = {
         dexterity=15,
         strength=1,
     ),
+    EnemyType.MIMIC1: partial(
+        Enemy,
+        type=EnemyType.MIMIC1,
+        hostility=0,
+        health=1,
+        max_health=1,
+        dexterity=0,
+        strength=0,
+    ),
+    EnemyType.MIMIC2: partial(
+        Enemy,
+        type=EnemyType.MIMIC2,
+        hostility=3,
+        health=30,
+        max_health=30,
+        dexterity=10,
+        strength=3,
+    ),
 }
+
+SPAWN_ENEMIES = {}
+SPAWN_ENEMIES.update(ENEMY_TEMPLATES)
+SPAWN_ENEMIES.pop(EnemyType.MIMIC2)

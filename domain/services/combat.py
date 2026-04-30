@@ -3,6 +3,7 @@ from random import random
 from domain.entities.entity import Character
 from domain.entities.game_session import GameSession
 from domain.entities.player import Player
+from domain.generators.enemy import EnemyFactory
 from domain.generators.item import ItemFactory
 from domain.templates.item import ENEMY_DROP
 from domain.value_objects.enums import SoundType
@@ -39,6 +40,13 @@ class CombatService:
                 + defender.max_health
             )
             context.enemies.remove(defender)
+
+            if defender.type == defender.type.MIMIC1:
+                mimic = EnemyFactory.create(
+                    defender.type.MIMIC2, defender.position, context.player.level
+                )
+                context.enemies.add(mimic)
+                return False
             context.sounds.put(SoundType.KILL)
             context.dds += 0.07
             if random() < 0.4:

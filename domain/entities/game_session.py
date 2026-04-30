@@ -27,9 +27,9 @@ from infrastructure.vector import Size
 class GameSession(Entity):
     stage: Stage
     player: Player
-    enemies: list[Enemy]
+    enemies: set[Enemy]
     tiles: list[Tile]
-    items: list[Item]
+    items: set[Item]
     tile_map: list[list[Tile]]
     keys: list[Key]
     doors: list[Door]
@@ -53,7 +53,7 @@ class GameSession(Entity):
         self.start_time: float = time.monotonic()
         self.points: int = 0
         self.default_dds: float = 0.3
-        self.dds: float = 0.3  # Dynamic Dificalty System
+        self.dds: float = 0.3  # Dynamic Difficalty System
         self.items = []
         self.doors = []
         self.keys = []

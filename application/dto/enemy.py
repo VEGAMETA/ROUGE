@@ -8,6 +8,7 @@ class EnemyDTO:
     x: int
     y: int
     type: int
+    health: int
 
 
 class EnemyMaper:
@@ -17,4 +18,5 @@ class EnemyMaper:
             x=enemy.position.x,
             y=enemy.position.y,
             type=enemy.type.value,
+            health=enemy.health,
         )
