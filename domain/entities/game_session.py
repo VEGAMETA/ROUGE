@@ -1,7 +1,7 @@
 import time
 from dataclasses import dataclass
 from multiprocessing import SimpleQueue
-from random import choice, random
+from random import random
 from typing import Optional
 
 from domain.entities.door import Door

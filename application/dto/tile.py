@@ -46,7 +46,9 @@ class TileMapper:
     @staticmethod
     def refresh(tile: Tile, dto: TileDTO) -> None:
         new_show = show_type(tile)
-        if dto.show_type != new_show:
+        if new_show == TileType.VOID and dto.show_type == TileType.UNDEFINED:
+            pass
+        elif dto.show_type != new_show:
             dto.show_type = new_show
             dto.changed = True
         dto.visible = tile.visible

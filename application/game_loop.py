@@ -6,6 +6,7 @@ from multiprocessing import SimpleQueue
 
 from application.commands.assembler import CommandAssembler
 from application.commands.command import CommandResult, CommandService
+from application.dto.game_save import GameSaveMapper
 from application.dto.game_state import GameMapper, GameStateDTO
 from domain.entities.game_session import GameSession
 from domain.rules.progression import Level
@@ -56,6 +57,8 @@ class GameLoop:
         game_timer: float = time.monotonic()
         tick_timer: float = time.perf_counter()
         tick_t: float = 0
+        if GameSaveMapper.file_exists():
+            CommandService.execute(InputAction.MENU, self.game_session, self.window)
         while self.game_session.process:
             tick_timer = time.perf_counter()
             if self.game_session.player.sleep_turns > 0:
@@ -98,8 +101,7 @@ class GameLoop:
             self.window.game_over(
                 elapsed, self.game_session.statistics, self.game_session.points
             )
-            return False
-        if int(self.game_session.player.level) > len(Level):
+        elif int(self.game_session.player.level) > len(Level):
             Leaderboard.append(
                 GameLoop.build_record(self.game_session, getpass.getuser())
             )
@@ -107,4 +109,5 @@ class GameLoop:
             self.window.victory(
                 elapsed, self.game_session.statistics, self.game_session.points
             )
-        return True
+            return True
+        return False

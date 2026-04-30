@@ -165,6 +165,8 @@ class CursesRenderer3D(CursesRenderer):
         )
 
         for entity in entities:
+            if isinstance(entity, EnemyDTO) and entity.invisible:
+                continue
             e_map = {
                 EnemyDTO: SpriteMap.ENEMY_MAP,
                 ItemDTO: SpriteMap.ITEM_MAP,

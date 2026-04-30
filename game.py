@@ -9,9 +9,9 @@ from config.options import DefaultWindow
 
 def main() -> None:
     locale.setlocale(locale.LC_ALL, "")
-    loop = GameLoop(DefaultWindow, selected_3d=True)
     try:
-        loop.run()
+        while not GameLoop(DefaultWindow, selected_3d=True).run():
+            pass
     except KeyboardInterrupt:
         pass
 

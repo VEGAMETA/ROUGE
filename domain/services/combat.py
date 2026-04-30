@@ -6,7 +6,7 @@ from domain.entities.player import Player
 from domain.generators.enemy import EnemyFactory
 from domain.generators.item import ItemFactory
 from domain.templates.item import ENEMY_DROP
-from domain.value_objects.enums import SoundType
+from domain.value_objects.enums import EnemyType, SoundType
 
 
 class CombatService:
@@ -31,6 +31,10 @@ class CombatService:
         defender = context.find_enemy()
         if not defender:
             return False
+        if defender.type == EnemyType.VAMPIRE and defender.times_hit == 0:
+            defender.times_hit += 1
+            context.sounds.put(SoundType.SWING)
+            return True
         attack = CombatService.hit(context.player, defender)
         context.sounds.put(SoundType.HIT if attack else SoundType.SWING)
         if defender.health <= 0:

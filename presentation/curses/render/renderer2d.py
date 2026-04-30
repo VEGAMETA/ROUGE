@@ -30,17 +30,6 @@ class CursesRenderer2D(CursesRenderer):
         toprint: dict[tuple[int, int], str] = {}
         for row in game_state.tile_map:
             for tile in row:
-                # tile.show_type = tile.type if tile.explored else TileType.VOID
-
-                # if tile.visible:
-                # elif tile.type == TileType.FLOOR or (
-                #     tile.type in (TileType.WALL, TileType.DOOR, TileType.CORRIDOR)
-                #     and tile.explored
-                # ):
-                # data = CursesRenderMap.TILE_RENDER_MAP[TileType.VOID]
-                # tile.show_type = TileType.VOID
-                # else:
-                # tile.show_type = tile.type
                 if tile.type == TileType.DOOR:
                     continue
                 t = (tile.x, tile.y)
@@ -48,7 +37,7 @@ class CursesRenderer2D(CursesRenderer):
                 if tile.changed or hash(t) in self.old_pos:
                     toprint[t] = CursesRenderMap.TILE_RENDER_MAP[tile.show_type]
                     tile.changed = False
-                if tile.show_type == TileType.VOID:
+                if tile.show_type == TileType.VOID and not tile.explored:
                     if random() < Visuals.GLIMP_DENSITY_M:
                         tile.show_type = TileType.UNDEFINED
                         tile.changed = True
@@ -87,7 +76,7 @@ class CursesRenderer2D(CursesRenderer):
             self.old_pos.append(hash(t))
 
         for enemy in game_state.enemies:
-            if not game_state.tile_map[enemy.y][enemy.x].visible:
+            if not game_state.tile_map[enemy.y][enemy.x].visible or enemy.invisible:
                 continue
             t = (enemy.x, enemy.y)
             toprint[t] = CursesRenderMap.ENEMY_RENDER_MAP[enemy.type]

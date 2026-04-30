@@ -61,7 +61,7 @@ ENEMY_TEMPLATES = {
     EnemyType.MIMIC2: partial(
         Enemy,
         type=EnemyType.MIMIC2,
-        hostility=3,
+        hostility=5,
         health=30,
         max_health=30,
         dexterity=10,
