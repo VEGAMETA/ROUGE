@@ -159,6 +159,7 @@ class CursesRenderer3D(CursesRenderer):
         entities.extend([item for item in game_state.items if not item.is_owned])
         entities.extend(game_state.doors)
         entities.append(game_state.stairs)
+        entities.extend(game_state.keys)
         entities.sort(
             key=lambda e: (Vector2(e.x, e.y) - pos + 0.5).length(), reverse=True
         )

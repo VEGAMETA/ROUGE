@@ -21,6 +21,7 @@ FILES: Dict[SoundType, Path] = {
     SoundType.KILL: Path("./static/audio/sfx/kill.wav"),
     SoundType.LEVEL_UP: Path("./static/audio/sfx/stairs.wav"),
     SoundType.UI: Path("./static/audio/sfx/ui.wav"),
+    SoundType.DOOR: Path("./static/audio/sfx/door.wav"),
 }
 
 

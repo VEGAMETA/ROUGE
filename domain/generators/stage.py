@@ -1,11 +1,13 @@
 from collections import deque
-from random import randint, sample
+from random import choice, randint, sample
+from typing import Optional
 
 from domain.entities.corridor import Corridor
 from domain.entities.door import Door
+from domain.entities.key import Key
 from domain.entities.room import Room
 from domain.entities.stage import Stage
-from domain.value_objects.enums import DoorSide, KeyType
+from domain.value_objects.enums import DoorSide, DoorType, KeyType
 from domain.value_objects.position import Position
 from infrastructure.math import build_grid_graph
 from infrastructure.vector import Size
@@ -15,17 +17,18 @@ class StageFactory:
     @staticmethod
     def create_stage(size: Size) -> Stage:
         stage: Stage = Stage(
-            position=Position(),
-            size=size,
-            corridors=[],
-            rooms=[],
-            graph=[],
+            position=Position(), size=size, corridors=[], rooms=[], graph=[], keys=[]
         )
         StageFactory._create_rooms(stage)
         StageFactory._create_room_graph(stage)
         StageFactory._create_doors(stage)
         StageFactory._create_corridors(stage)
+        stage.start_room = choice(stage.rooms)
+        stage.end_room = choice(
+            [room for room in stage.rooms if room != stage.start_room]
+        )
         StageFactory._create_keys(stage)
+
         return stage
 
     @staticmethod
@@ -129,150 +132,72 @@ class StageFactory:
 
     @staticmethod
     def _create_keys(stage: Stage) -> None:
-        keys_count = randint(1, len(KeyType))
-        if keys_count == 0:
+        """
+        Lock a random subset of cross-room doors and spawn keys for them,
+        guaranteeing every room (and every key) is reachable from start_room.
+
+        Strategy (BFS over the room graph):
+        - Maintain a set of 'accessible' rooms, seeded with start_room.
+        - Each time we discover an edge accessible→unvisited, we flip a coin:
+            • heads  → lock that door pair, place a key in a random accessible room.
+            • tails  → leave open, mark room accessible immediately.
+        - Because the key always lands in an already-accessible room, the player
+            can always collect it before they need to open the door.
+        """
+        if not stage.rooms or stage.start_room is None:
             return
-        start_room = 0
-        # двери/замки:
-        # будем считать что lock_id == key_id
-        # например:
-        # door.lock_id = 1
-        # room.keys.append(1)
 
-        for key_id in range(1, keys_count + 1):
-            reachable = StageFactory._get_reachable_rooms(
-                stage=stage,
-                start=start_room,
-                obtained_keys=set(range(1, key_id)),
-            )
+        rooms = stage.rooms
+        start_idx = rooms.index(stage.start_room)
 
-            candidates = []
+        accessible: set[int] = {start_idx}
+        visited: set[int] = {start_idx}
+        queue: deque[int] = deque([start_idx])
 
-            for room_id in reachable:
-                for neighbor in stage.graph[room_id]:
-                    if neighbor not in reachable:
-                        candidates.append((room_id, neighbor))
-
-            if not candidates:
-                break
-            from_room, locked_room = sample(candidates, 1)[0]
-            StageFactory._lock_connection(
-                stage=stage,
-                room_a=from_room,
-                room_b=locked_room,
-                key_id=key_id,
-            )
-            key_room = sample(list(reachable), 1)[0]
-            stage.rooms[key_room].keys.append(key_id)
-        if not StageFactory._all_rooms_accessible(stage, start_room):
-            raise RuntimeError("Invalid key generation: soft-lock detected")
-
-    @staticmethod
-    def _get_reachable_rooms(
-        stage: Stage,
-        start: int,
-        obtained_keys: set[int],
-    ) -> set[int]:
-        """
-        BFS с учетом закрытых дверей
-        """
-
-        visited = set()
-        queue = deque([start])
+        key_types = list(KeyType)
 
         while queue:
-            room_id = queue.popleft()
+            current = queue.popleft()
+            for neighbor in stage.graph[current]:
+                if neighbor in visited:
+                    continue
+                visited.add(neighbor)
+                door_out = StageFactory._find_connecting_door(
+                    rooms[current], current, neighbor
+                )
+                door_in = StageFactory._find_connecting_door(
+                    rooms[neighbor], neighbor, current
+                )
+                should_lock = (
+                    door_out is not None
+                    and door_in is not None
+                    and choice([True, False])
+                )
+                if should_lock:
+                    if not key_types:
+                        break
+                    key_type = key_types.pop()
+                    door_out.is_locked = True
+                    door_in.is_locked = True
+                    host_room = rooms[choice(list(accessible))]
+                    key_pos = host_room.get_random_inbound()
+                    stage.keys.append(Key(position=key_pos, type=key_type))
+                    door_out.type = DoorType(key_type.value)
+                    door_in.type = DoorType(key_type.value)
+                accessible.add(neighbor)
+                queue.append(neighbor)
 
-            if room_id in visited:
-                continue
-
-            visited.add(room_id)
-
-            for neighbor in stage.graph[room_id]:
-                if StageFactory._can_pass(
-                    stage,
-                    room_id,
-                    neighbor,
-                    obtained_keys,
-                ):
-                    queue.append(neighbor)
-
-        return visited
-
-    @staticmethod
-    def _can_pass(
-        stage: Stage,
-        room_a: int,
-        room_b: int,
-        obtained_keys: set[int],
-    ) -> bool:
-        """
-        Проверка можно ли пройти между комнатами
-        """
-
-        room = stage.rooms[room_a]
-
-        for door in room.doors:
-            if getattr(door, "to_room", None) != room_b:
-                continue
-
-            lock_id = getattr(door, "lock_id", None)
-
-            if lock_id is None:
-                return True
-
-            return lock_id in obtained_keys
-
-        return True
-
-    @staticmethod
-    def _lock_connection(
-        stage: Stage,
-        room_a: int,
-        room_b: int,
-        key_id: int,
-    ) -> None:
-        """
-        Двусторонне закрываем проход
-        """
-
-        for room_id, target in [(room_a, room_b), (room_b, room_a)]:
-            room = stage.rooms[room_id]
-
-            for door in room.doors:
-                if getattr(door, "to_room", None) == target:
-                    door.lock_id = key_id
-
-    @staticmethod
-    def _all_rooms_accessible(
-        stage: Stage,
-        start: int,
-    ) -> bool:
-        """
-        Итеративный BFS + сбор ключей
-        """
-
-        obtained_keys = set()
-        changed = True
-        reachable = set()
-
-        while changed:
-            changed = False
-
-            current = StageFactory._get_reachable_rooms(
-                stage=stage,
-                start=start,
-                obtained_keys=obtained_keys,
-            )
-
-            if current != reachable:
-                reachable = current
-                changed = True
-
-            for room_id in reachable:
-                for key in getattr(stage.rooms[room_id], "keys", []):
-                    if key not in obtained_keys:
-                        obtained_keys.add(key)
-                        changed = True
-
-        return len(reachable) == len(stage.rooms)
+    def _find_connecting_door(
+        room_src: Room, src_idx: int, dst_idx: int
+    ) -> Optional[Door]:
+        if dst_idx == src_idx + 1:
+            side = DoorSide.RIGHT
+        elif dst_idx == src_idx - 1:
+            side = DoorSide.LEFT
+        elif dst_idx == src_idx + 3:
+            side = DoorSide.BOTTOM
+        elif dst_idx == src_idx - 3:
+            side = DoorSide.TOP
+        else:
+            return None
+        return next((d for d in room_src.doors if d.side == side), None)

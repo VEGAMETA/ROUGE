@@ -8,7 +8,6 @@ class KeyDTO:
     x: int
     y: int
     type: int
-    is_owned: bool
 
 
 class KeyMapper:
@@ -18,5 +17,4 @@ class KeyMapper:
             x=key.position.x,
             y=key.position.y,
             type=key.type.value,
-            is_owned=key.is_owned,
         )

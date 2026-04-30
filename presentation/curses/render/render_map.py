@@ -68,7 +68,7 @@ class CursesRenderMap:
     _door_char = TILE_RENDER_MAP[TileType.DOOR].character
 
     DOOR_RENDER_MAP = {
-        DoorType.OPENED: CursesRenderData(_door_char, COLOR_WHITE),
+        DoorType.OPENED: CursesRenderData(_door_char, COLOR_YELLOW),
         DoorType.RED: CursesRenderData(_door_char, COLOR_RED),
         DoorType.GREEN: CursesRenderData(_door_char, COLOR_GREEN),
         DoorType.BLUE: CursesRenderData(_door_char, COLOR_BLUE),

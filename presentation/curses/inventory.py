@@ -121,7 +121,7 @@ class CursesInventoryView(InventoryView):
         col: int = 83
         lvl = f"{lv}/{MAX_LEVEL}"  #
         hp = f"{int(context.player.health)}/{int(context.player.max_health)}"
-        owned_types = {k.type for k in context.keys if k.is_owned}
+        owned_types = {k.type for k in context.owned_keys}
         win.addstr(row, col, "LEVEL" + (13 - len(lvl)) * " " + lvl)
         win.addstr(row + 2, col, "HEALTH" + (12 - len(hp)) * " " + hp)
         win.addstr(row + 4, col, f"STRENGTH  {context.player.strength:8d}")
@@ -130,9 +130,9 @@ class CursesInventoryView(InventoryView):
         win.addstr(row + 9, col, f"TIME      {hh:02d}:{mm:02d}:{ss:02d}")
         win.addstr(row + 11, col, f"KEYS   {len(owned_types):9d}/3")
         slots = [
-            (KeyType.BLUE, CursesInventoryView._KEY_BLUE_PAIR),
-            (KeyType.GREEN, CursesInventoryView._KEY_GREEN_PAIR),
             (KeyType.RED, CursesInventoryView._KEY_RED_PAIR),
+            (KeyType.GREEN, CursesInventoryView._KEY_GREEN_PAIR),
+            (KeyType.BLUE, CursesInventoryView._KEY_BLUE_PAIR),
         ]
         col += 2
         for kt, pair in slots:
