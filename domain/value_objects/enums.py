@@ -122,3 +122,4 @@ class SoundType(IntEnum):
     ITEM_USE: int = auto()
     KILL: int = auto()
     LEVEL_UP: int = auto()
+    DOOR: int = auto()

@@ -42,7 +42,10 @@ class CursesRenderer2D(CursesRenderer):
                 # tile.show_type = TileType.VOID
                 # else:
                 # tile.show_type = tile.type
+                if tile.type == TileType.DOOR:
+                    continue
                 t = (tile.x, tile.y)
+
                 if tile.changed or hash(t) in self.old_pos:
                     toprint[t] = CursesRenderMap.TILE_RENDER_MAP[tile.show_type]
                     tile.changed = False
@@ -56,6 +59,16 @@ class CursesRenderer2D(CursesRenderer):
                         tile.changed = True
 
         self.old_pos.clear()
+
+        for door in game_state.doors:
+            t = (door.x, door.y)
+            toprint[t] = CursesRenderMap.DOOR_RENDER_MAP[door.type]
+            self.old_pos.append(hash(t))
+
+        for key in game_state.keys:
+            t = (key.x, key.y)
+            toprint[t] = CursesRenderMap.KEY_RENDER_MAP[key.type]
+            self.old_pos.append(hash(t))
 
         for item in game_state.items:
             if item.is_owned:

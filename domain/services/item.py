@@ -1,6 +1,7 @@
 from domain.entities.consumables import Consumable
 from domain.entities.game_session import GameSession
 from domain.entities.item import Item
+from domain.entities.key import Key
 from domain.value_objects.enums import ConsumableType, ItemType, SoundType
 
 _PER_TYPE_LIMIT = 9
@@ -16,6 +17,12 @@ class ItemService:
                 if i.type == ItemType.CONSUMABLE and i.subtype != ConsumableType.FOOD
             )
         return sum(1 for i in items if i.type == item.type)
+
+    @staticmethod
+    def pickup_key(key: Key, context: GameSession) -> bool:
+        context.owned_keys.append(key)
+        context.keys.remove(key)
+        return True
 
     @staticmethod
     def pickup(item: Item, context: GameSession) -> bool:

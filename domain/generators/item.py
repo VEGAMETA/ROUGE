@@ -10,8 +10,13 @@ from domain.value_objects.stats import ItemRarityWeights
 
 class ItemFactory:
     @staticmethod
-    def create(key: tuple, position: Position, level: Level = Level.LEVEL_1) -> Item:
-        item: Item = ITEM_TEMPLATES[key](position=position, level=level)
+    def create(
+        key: tuple,
+        position: Position,
+        level: Level = Level.LEVEL_1,
+        template: dict = ITEM_TEMPLATES,
+    ) -> Item:
+        item: Item = template[key](position=position, level=level)
         if isinstance(item, Weapon):
             w: dict[ItemRarityWeights, int] = ItemRarityWeights.get(level)
             item.rarity = choices(list(w.keys()), weights=list(w.values()))[0]
@@ -24,4 +29,9 @@ class ItemFactory:
         level: Level = Level.LEVEL_1,
         template: dict = ITEM_TEMPLATES,
     ) -> Item:
-        return ItemFactory.create(choice(list(template.keys())), position, level)
+        return ItemFactory.create(
+            choice(list(template.keys())),
+            position,
+            level,
+            template,
+        )

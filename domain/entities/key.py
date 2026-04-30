@@ -9,4 +9,3 @@ from domain.value_objects.position import Position
 class Key(Entity2D):
     type: KeyType = KeyType.RED
     position: Position = Position(0, 0)
-    is_owned: bool = False

@@ -32,6 +32,7 @@ class GameSession(Entity):
     items: set[Item]
     tile_map: list[list[Tile]]
     keys: list[Key]
+    owned_keys: list[Key]
     doors: list[Door]
     stairs: Stairs
     process: bool = True
@@ -57,15 +58,17 @@ class GameSession(Entity):
         self.items = []
         self.doors = []
         self.keys = []
+        self.owned_keys = []
 
     def new_stage(self) -> None:
         self.stage = StageFactory.create_stage(self.size)
         self.doors = [door for room in self.stage.rooms for door in room.doors]
-        # self.keys = [key for room in self.stage.rooms for key in room.keys]
+        self.keys = self.stage.keys
+        self.owned_keys = []
         self.tiles = TileFactory.get_tiles(self.stage)
         self.tile_map = TileFactory.get_tile_map(self.stage, self.tiles)
         self.get_cached_obstacle_map()
-        player_room = choice(self.stage.rooms)
+        player_room = self.stage.start_room
         self.player.position = player_room.get_random_inbound()
         if self.player.level:
             self.player.max_health = round(
@@ -95,7 +98,7 @@ class GameSession(Entity):
             for room in rooms_no_player
             if random() > self.dds
         ]
-        self.stairs = Stairs(choice(rooms_no_player).get_random_inbound())
+        self.stairs = Stairs(self.stage.end_room.get_random_inbound())
         self.player.level += 1
         self.dds = self.default_dds
 
