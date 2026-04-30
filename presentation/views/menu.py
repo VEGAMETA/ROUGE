@@ -1,8 +1,16 @@
 from abc import ABC, abstractmethod
-from typing import Any
+from enum import IntEnum, auto
+from typing import Any, Optional
+
+
+class MenuAction(IntEnum):
+    CONTINUE = auto()
+    SAVE = auto()
+    LOAD = auto()
+    EXIT = auto()
 
 
 class Menu(ABC):
     @staticmethod
     @abstractmethod
-    def show(window: Any, duration: float = 0.0) -> None: ...
+    def show(window: Any) -> Optional[MenuAction]: ...

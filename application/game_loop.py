@@ -54,7 +54,7 @@ class GameLoop:
             tick_t = time.perf_counter() - tick_timer
 
         self.mixer.join(0.1)
-        if self.stage < len(Level):
+        if self.game_session.player.health <= 0 and self.stage < len(Level):
             self.window.draw(GameMapper.to_dto(self.game_session), tick_t)
             self.window.game_over(time.monotonic() - game_timer)
             return False

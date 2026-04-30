@@ -1,0 +1,43 @@
+{
+  "health": 143.0,
+  "max_health": 160,
+  "dexterity": 19,
+  "strength": 24,
+  "level": 4,
+  "points": 60,
+  "time": 208.667628985997,
+  "items": [
+    {
+      "type": 3,
+      "subtype": 2,
+      "name": "Iron Sword",
+      "description": "A sturdy iron sword",
+      "rarity": 2,
+      "value": 50
+    },
+    {
+      "type": 3,
+      "subtype": 7,
+      "name": "Mace",
+      "description": "A heavy blunt weapon",
+      "rarity": 2,
+      "value": 25
+    },
+    {
+      "type": 3,
+      "subtype": 9,
+      "name": "Greatsword",
+      "description": "A massive sword for powerful strikes",
+      "rarity": 2,
+      "value": 80
+    },
+    {
+      "type": 3,
+      "subtype": 3,
+      "name": "War Axe",
+      "description": "A brutal axe",
+      "rarity": 2,
+      "value": 45
+    }
+  ]
+}

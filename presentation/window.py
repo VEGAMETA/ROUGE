@@ -1,10 +1,10 @@
-from typing import Any
+from typing import Any, Optional
 
 from application.dto.game_state import GameStateDTO
 from presentation.input_handler import InputAction, InputHandler
 from presentation.renderer import Renderer
 from presentation.views.inventory import InventoryView
-from presentation.views.menu import Menu
+from presentation.views.menu import Menu, MenuAction
 from presentation.views.notificator import NotificationType, Notificator
 
 
@@ -42,9 +42,10 @@ class Window:
         self.notificator.show(self.window, message, title, duration, style)
         self.input_handler.flush()
 
-    def show_menu(self, duration: float = 0.0) -> None:
-        self.menu.show(self.window, duration)
+    def show_menu(self) -> Optional[MenuAction]:
+        result = self.menu.show(self.window)
         self.input_handler.flush()
+        return result
 
     def show_inventory(self, context: GameStateDTO) -> None:
         self.inventory_view.show(self.window, context)
