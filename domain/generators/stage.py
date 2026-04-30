@@ -5,7 +5,7 @@ from domain.entities.corridor import Corridor
 from domain.entities.door import Door
 from domain.entities.room import Room
 from domain.entities.stage import Stage
-from domain.value_objects.enums import DoorSide
+from domain.value_objects.enums import DoorSide, KeyType
 from domain.value_objects.position import Position
 from infrastructure.math import build_grid_graph
 from infrastructure.vector import Size
@@ -25,7 +25,7 @@ class StageFactory:
         StageFactory._create_room_graph(stage)
         StageFactory._create_doors(stage)
         StageFactory._create_corridors(stage)
-        StageFactory._create_keys(stage)
+        # StageFactory._create_keys(stage)
         return stage
 
     @staticmethod
@@ -129,7 +129,7 @@ class StageFactory:
 
     @staticmethod
     def _create_keys(stage: Stage) -> None:
-        keys_count = randint(0, 3)
+        keys_count = randint(1, len(KeyType))
         if keys_count == 0:
             return
         start_room = 0

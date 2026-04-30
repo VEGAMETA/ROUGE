@@ -67,13 +67,6 @@ class WeaponType(IntEnum):
     TWO_HANDED_SWORD: int = auto()
 
 
-class Hostility(IntEnum):
-    UNDEFINED: int = auto()
-    NEUTRAL: int = auto()
-    HOSTILE: int = auto()
-    FRIENDLY: int = auto()
-
-
 class EnemyType(IntEnum):
     UNDEFINED: int = auto()
     ZOMBIE: int = auto()
@@ -100,7 +93,6 @@ class ItemRarityType(IntEnum):
 
 
 class DoorType(IntEnum):
-    UNDEFINED: int = auto()
     RED: int = auto()
     GREEN: int = auto()
     BLUE: int = auto()
@@ -108,7 +100,6 @@ class DoorType(IntEnum):
 
 
 class KeyType(IntEnum):
-    UNDEFINED: int = auto()
     RED: int = auto()
     GREEN: int = auto()
     BLUE: int = auto()

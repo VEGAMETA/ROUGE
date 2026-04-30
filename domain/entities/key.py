@@ -7,6 +7,6 @@ from domain.value_objects.position import Position
 
 @dataclass(eq=False)
 class Key(Entity2D):
+    type: KeyType = KeyType.RED
     position: Position = Position(0, 0)
-    type: KeyType = KeyType.UNDEFINED
     is_owned: bool = False
