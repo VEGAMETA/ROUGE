@@ -18,6 +18,8 @@ class EnemyAI:
 
     @staticmethod
     def action(enemy: "Enemy", context: "GameSession") -> EnemyAction:
+        if enemy.type == EnemyType.MIMIC1:
+            return EnemyAction.UNDEFINED
         ai_cls = EnemyAI.REGISTRY.get(enemy.type, EnemyAI)
         dx = abs(enemy.position.x - context.player.position.x)
         dy = abs(enemy.position.y - context.player.position.y)
