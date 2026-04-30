@@ -1,12 +1,15 @@
 from typing import Any, Optional
 
 from application.dto.game_state import GameStateDTO
+from domain.entities.statistics import Statistics
+from infrastructure.persistence.leaderboard import LeaderboardRecord
 from presentation.input_handler import InputAction, InputHandler
 from presentation.renderer import Renderer
 from presentation.views.inventory import InventoryView
 from presentation.views.leaderboard import LeaderboardView
 from presentation.views.menu import Menu, MenuAction
 from presentation.views.notificator import NotificationType, Notificator
+from presentation.views.summary import RunSummary
 
 
 class Window:
@@ -54,13 +57,29 @@ class Window:
         self.inventory_view.show(self.window, context)
         self.input_handler.flush()
 
-    def show_leaderboard(self, entries: list[str]) -> None:
-        self.leaderboard_view.show(self.window, entries)
+    def show_leaderboard(self, records: list[LeaderboardRecord]) -> None:
+        self.leaderboard_view.show(self.window, records)
         self.input_handler.flush()
 
-    def game_over(self, time: float) -> None:
+    TITLE_GAME_OVER: str = "GAME OVER ☠"
+    TITLE_VICTORY: str = "VICTORY ♚"
+
+    def game_over(self, time: float, statistics: Statistics, points: int) -> None:
         self.notificator.show(
-            self.window, "GAME OVER", f"{time:.2f}", 0.0, NotificationType.ERROR
+            self.window,
+            RunSummary.format(statistics, points, time),
+            Window.TITLE_GAME_OVER,
+            0.0,
+            NotificationType.ERROR,
+        )
+
+    def victory(self, time: float, statistics: Statistics, points: int) -> None:
+        self.notificator.show(
+            self.window,
+            RunSummary.format(statistics, points, time),
+            Window.TITLE_VICTORY,
+            0.0,
+            NotificationType.OK,
         )
 
     def close(self) -> None: ...

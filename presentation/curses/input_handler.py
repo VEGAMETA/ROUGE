@@ -13,11 +13,10 @@ def unite_dicts(dict1: dict, dict2: dict) -> dict:
 class CursesKeymap:
     BASE_ACTIONS: dict[int, InputAction] = {
         ord("q"): InputAction.QUIT,
-        ord("e"): InputAction.INTERACT,
         ord("h"): InputAction.USE_WEAPON,
         ord("j"): InputAction.USE_FOOD,
         ord("k"): InputAction.USE_ELIXIR,
-        ord("l"): InputAction.USE_SCROLL,
+        ord("e"): InputAction.USE_SCROLL,
         curses.KEY_ENTER: InputAction.INTERACT,
         9: InputAction.INVENTORY,
         32: InputAction.PASS,

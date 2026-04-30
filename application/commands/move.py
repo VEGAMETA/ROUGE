@@ -1,6 +1,7 @@
 from math import cos, sin
 
 from application.commands.command import Command, CommandResult
+from application.dto.game_save import GameSaveMapper
 from domain.entities.game_session import GameSession
 from domain.services.combat import CombatService
 from domain.services.item import ItemService
@@ -44,4 +45,5 @@ class Move(Command):
         if context.player.position == context.stairs.position:
             context.sounds.put(SoundType.LEVEL_UP)
             context.new_stage()
+            GameSaveMapper.save(context)
         return CommandResult.OK

@@ -1,15 +1,21 @@
 from random import random
 
+from domain.entities.enemy import Enemy
 from domain.entities.entity import Character
 from domain.entities.game_session import GameSession
 from domain.entities.player import Player
 from domain.generators.item import ItemFactory
-from domain.value_objects.enums import SoundType
+from domain.value_objects.enums import EnemyType, SoundType
 
 
 class CombatService:
     @staticmethod
     def hit(attacker: Character, defender: Character) -> bool:
+        if isinstance(attacker, Player) and isinstance(defender, Enemy):
+            if defender.type == EnemyType.VAMPIRE and defender.times_hit == 0:
+                defender.times_hit += 1
+                return False
+
         strength = attacker.strength + attacker.dexterity * 0.5
         hitchance = -defender.dexterity
         if isinstance(attacker, Player):
@@ -25,12 +31,14 @@ class CombatService:
 
     @staticmethod
     def attack(context: GameSession) -> bool:
+        context.statistics.attacks_made += 1
         defender = context.find_enemy()
         if not defender:
             return False
         attack = CombatService.hit(context.player, defender)
         context.sounds.put(SoundType.HIT if attack else SoundType.SWING)
         if defender.health <= 0:
+            context.statistics.enemies_defeated += 1
             context.points += int(
                 defender.level.value * 10
                 + defender.strength
@@ -43,4 +51,8 @@ class CombatService:
                 context.items.append(
                     ItemFactory.create_random(defender.position, context.player.level)
                 )
+            return True
+        if attack and isinstance(defender, Enemy) and defender.health > 0:
+            if defender.type == EnemyType.OGRE and not defender.resting:
+                defender.counter_queued = True
         return True

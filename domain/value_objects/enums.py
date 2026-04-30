@@ -67,11 +67,23 @@ class WeaponType(IntEnum):
     TWO_HANDED_SWORD: int = auto()
 
 
+_HOSTILE_RANGE: int = 8
+_NEUTRAL_RANGE: int = 1
+
+
 class Hostility(IntEnum):
     UNDEFINED: int = auto()
     NEUTRAL: int = auto()
     HOSTILE: int = auto()
     FRIENDLY: int = auto()
+
+    @property
+    def range(self) -> int:
+        if self == Hostility.HOSTILE:
+            return _HOSTILE_RANGE
+        if self == Hostility.NEUTRAL:
+            return _NEUTRAL_RANGE
+        return 0
 
 
 class EnemyType(IntEnum):

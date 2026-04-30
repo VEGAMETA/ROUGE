@@ -12,6 +12,7 @@ from domain.entities.key import Key
 from domain.entities.player import Player
 from domain.entities.stage import Stage
 from domain.entities.stairs import Stairs
+from domain.entities.statistics import Statistics
 from domain.entities.tile import OBSTACLES, Tile
 from domain.generators.enemy import EnemyFactory
 from domain.generators.item import ItemFactory
@@ -52,6 +53,7 @@ class GameSession(Entity):
         self.sounds: SimpleQueue = sounds
         self.start_time: float = time.monotonic()
         self.points: int = 0
+        self.statistics: Statistics = Statistics()
         self.items = []
         self.doors = []
         self.keys = []
@@ -83,16 +85,25 @@ class GameSession(Entity):
 
         self.items = [item for item in self.items if item.is_owned]
         rooms_no_player = [room for room in self.stage.rooms if room != player_room]
-        self.enemies = {
-            EnemyFactory.create_random(room.get_random_inbound(), self.player.level)
-            for room in rooms_no_player
-        }
+        self.enemies = set()
+        for room in rooms_no_player:
+            enemy = EnemyFactory.create_random(
+                room.get_random_inbound(), self.player.level
+            )
+            enemy.home_room_index = next(
+                i for i, r in enumerate(self.stage.rooms) if r is room
+            )
+            self.enemies.add(enemy)
         self.items = [item for item in self.items if item.is_owned] + [
             ItemFactory.create_random(room.get_random_inbound(), self.player.level)
             for room in rooms_no_player
         ]
         self.stairs = Stairs(choice(rooms_no_player).get_random_inbound())
         self.player.level += 1
+        self.statistics.level_reached = int(self.player.level)
+        if int(self.player.level) > len(Level):
+            self.process = False
+            return
 
     def find_enemy(self) -> Optional[Enemy]:
         enemy_position = self.player.position + self.player.direction

@@ -13,6 +13,7 @@ class PlayerDTO:
     strength: int
     level: int
     rotation: float
+    weapon_name: str = ""
 
 
 class PlayerMapper:
@@ -27,4 +28,5 @@ class PlayerMapper:
             strength=player.strength,
             level=player.level,
             rotation=player.rotation,
+            weapon_name=player.weapon.name if player.weapon else "",
         )

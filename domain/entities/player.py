@@ -12,6 +12,7 @@ class Player(Character):
     temp_strength: int = 0
     temp_dexterity: int = 0
     temp_max_health: int = 0
+    sleep_turns: int = 0
     weapon: Optional[Weapon] = None
     inventory: Backpack = Backpack()
     rotation: float = -3.14159 / 2.0

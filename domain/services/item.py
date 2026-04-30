@@ -23,6 +23,7 @@ class ItemService:
 
         if item.type == ItemType.TREASURE:
             context.points += item.value
+            context.statistics.treasure_collected += item.value
             item.is_owned = True
             return True
 
@@ -62,9 +63,14 @@ class ItemService:
                 item.count -= 1
             else:
                 context.player.inventory.remove_item(item)
+            if item.subtype == ConsumableType.FOOD:
+                context.statistics.food_consumed += 1
+            else:
+                context.statistics.elixirs_used += 1
         elif item.type == ItemType.SCROLL:
             ItemService._apply_consumable(item, context)
             context.player.inventory.remove_item(item)
+            context.statistics.scrolls_read += 1
         elif item.type == ItemType.WEAPON:
             context.player.weapon = item
         context.sounds.put(SoundType.ITEM_USE)
