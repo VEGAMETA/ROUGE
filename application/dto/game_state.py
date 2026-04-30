@@ -34,7 +34,7 @@ class GameMapper:
             tile_map=tile_map_dto,
             items=[ItemMapper.to_dto(item) for item in context.items],
             doors=[DoorMapper.to_dto(door) for door in context.doors],
-            keys=[KeyMapper.to_dto(key) for key in [k for k in context.keys if not k.is_owned]],
+            keys=[KeyMapper.to_dto(key) for key in context.keys],
             stairs=StairsMapper.to_dto(context.stairs),
             points=context.points,
         )

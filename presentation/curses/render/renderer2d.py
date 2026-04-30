@@ -60,11 +60,15 @@ class CursesRenderer2D(CursesRenderer):
         self.old_pos.clear()
 
         for door in game_state.doors:
+            if not game_state.tile_map[door.y][door.x].visible:
+                continue
             t = (door.x, door.y)
             toprint[t] = CursesRenderMap.DOOR_RENDER_MAP[door.type]
             self.old_pos.append(hash(t))
 
         for key in game_state.keys:
+            if not game_state.tile_map[key.y][key.x].visible:
+                continue
             t = (key.x, key.y)
             toprint[t] = CursesRenderMap.KEY_RENDER_MAP[key.type]
             self.old_pos.append(hash(t))
