@@ -1,7 +1,7 @@
 import time
 from dataclasses import dataclass
 from multiprocessing import SimpleQueue
-from random import choice
+from random import choice, random
 from typing import Optional
 
 from domain.entities.door import Door
@@ -52,6 +52,8 @@ class GameSession(Entity):
         self.sounds: SimpleQueue = sounds
         self.start_time: float = time.monotonic()
         self.points: int = 0
+        self.default_dds: float = 0.3
+        self.dds: float = 0.3  # Dynamic Dificalty System
         self.items = []
         self.doors = []
         self.keys = []
@@ -86,13 +88,16 @@ class GameSession(Entity):
         self.enemies = {
             EnemyFactory.create_random(room.get_random_inbound(), self.player.level)
             for room in rooms_no_player
+            if random() < self.dds
         }
         self.items = [item for item in self.items if item.is_owned] + [
             ItemFactory.create_random(room.get_random_inbound(), self.player.level)
             for room in rooms_no_player
+            if random() > self.dds
         ]
         self.stairs = Stairs(choice(rooms_no_player).get_random_inbound())
         self.player.level += 1
+        self.dds = self.default_dds
 
     def find_enemy(self) -> Optional[Enemy]:
         enemy_position = self.player.position + self.player.direction

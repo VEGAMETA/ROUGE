@@ -157,7 +157,7 @@ TREASURE_TEMPLATES = {
         subtype=TreasureType.COINS,
         name="Gold Coins",
         description="Shiny gold coins",
-        value=10,
+        value=1000,
     ),
     (ItemType.TREASURE, TreasureType.SILVER): partial(
         Item,
@@ -165,7 +165,7 @@ TREASURE_TEMPLATES = {
         subtype=TreasureType.SILVER,
         name="Silver Coins",
         description="Shiny silver coins",
-        value=5,
+        value=500,
     ),
     (ItemType.TREASURE, TreasureType.GEM): partial(
         Item,
@@ -173,7 +173,7 @@ TREASURE_TEMPLATES = {
         subtype=TreasureType.GEM,
         name="Gemstone",
         description="A sparkling gemstone",
-        value=30,
+        value=2500,
     ),
     (ItemType.TREASURE, TreasureType.RUBY): partial(
         Item,
@@ -181,7 +181,7 @@ TREASURE_TEMPLATES = {
         subtype=TreasureType.RUBY,
         name="Ruby",
         description="A precious ruby",
-        value=50,
+        value=5000,
     ),
     (ItemType.TREASURE, TreasureType.SAPPHIRE): partial(
         Item,
@@ -189,7 +189,7 @@ TREASURE_TEMPLATES = {
         subtype=TreasureType.SAPPHIRE,
         name="Sapphire",
         description="A brilliant sapphire",
-        value=60,
+        value=10000,
     ),
 }
 
@@ -254,5 +254,8 @@ SCROLL_TEMPLATES = {
 ITEM_TEMPLATES = {}
 ITEM_TEMPLATES.update(CONSUMABLE_TEMPLATES)
 ITEM_TEMPLATES.update(WEAPON_TEMPLATES)
-ITEM_TEMPLATES.update(TREASURE_TEMPLATES)
 ITEM_TEMPLATES.update(SCROLL_TEMPLATES)
+
+ENEMY_DROP = {}
+ENEMY_DROP.update(ITEM_TEMPLATES)
+ENEMY_DROP.update(TREASURE_TEMPLATES)

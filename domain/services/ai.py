@@ -17,12 +17,18 @@ class EnemyAI:
 
     @staticmethod
     def attack(enemy: "Enemy", context: "GameSession") -> EnemyAction:
-        CombatService.hit(enemy, context.player)
+        if CombatService.hit(enemy, context.player):
+            context.dds -= 0.04
         context.sounds.put(SoundType.HIT)
         return EnemyAction.ATTACK
 
     @staticmethod
     def move(enemy: "Enemy", context: "GameSession") -> EnemyAction:
+        if (context.player.position - enemy.position).length() <= enemy.hostility:
+            return EnemyAI.move_to_player(enemy, context) == EnemyAction.UNDEFINED
+
+    @staticmethod
+    def move_to_player(enemy: "Enemy", context: "GameSession") -> EnemyAction:
         if not enemy.path:
             path: list[tuple[int, int]] | None = astar(
                 *enemy.position,

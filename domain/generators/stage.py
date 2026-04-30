@@ -25,7 +25,7 @@ class StageFactory:
         StageFactory._create_room_graph(stage)
         StageFactory._create_doors(stage)
         StageFactory._create_corridors(stage)
-        # StageFactory._create_keys(stage)
+        StageFactory._create_keys(stage)
         return stage
 
     @staticmethod
