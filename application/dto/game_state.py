@@ -19,6 +19,7 @@ class GameStateDTO:
     doors: list[DoorDTO]
     keys: list[KeyDTO]
     stairs: StairsDTO
+    theme: int
     points: int = 0
 
 
@@ -36,5 +37,6 @@ class GameMapper:
             doors=[DoorMapper.to_dto(door) for door in context.doors],
             keys=[KeyMapper.to_dto(key) for key in context.keys],
             stairs=StairsMapper.to_dto(context.stairs),
+            theme=context.theme.value,
             points=context.points,
         )

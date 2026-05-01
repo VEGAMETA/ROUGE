@@ -1,7 +1,7 @@
 import time
 from dataclasses import dataclass
 from multiprocessing import Queue
-from random import random
+from random import choice, random
 from typing import Optional
 
 from domain.entities.door import Door
@@ -19,6 +19,7 @@ from domain.generators.item import ItemFactory
 from domain.generators.stage import StageFactory
 from domain.generators.tiles import TileFactory
 from domain.rules.progression import Level
+from domain.value_objects.enums import Theme3D
 from domain.value_objects.position import Position
 from infrastructure.math import Constant
 from infrastructure.vector import Size
@@ -38,6 +39,7 @@ class GameSession(Entity):
     stairs: Stairs
     process: bool = True
     selected_3d: bool = False
+    theme: Theme3D = Theme3D.THEME_3
 
     def __init__(self, size: Size, sounds: Queue = Queue()) -> None:
         self.size: Size = size
@@ -114,6 +116,7 @@ class GameSession(Entity):
         self.dds = self.default_dds + self.player.level / (
             len(Level) / (1 - self.default_dds)
         )
+        self.theme = choice(list(Theme3D))
 
     def find_enemy(self) -> Optional[Enemy]:
         enemy_position = self.player.position + self.player.direction

@@ -1,4 +1,5 @@
 from math import atan2, cos, fabs, sin
+from typing import Optional
 
 import numpy as np
 
@@ -8,7 +9,7 @@ from application.dto.game_state import GameStateDTO
 from application.dto.item import ItemDTO
 from application.dto.key import KeyDTO
 from application.dto.stairs import StairsDTO
-from domain.value_objects.enums import TileType
+from domain.value_objects.enums import Theme3D, TileType
 from infrastructure.math import Constant
 from infrastructure.vector import Size, Vector2
 from presentation.curses.render.render_map import CursesRenderData
@@ -70,8 +71,11 @@ class CursesRenderer3D(CursesRenderer):
         sprite_type: SpriteType = SpriteType.UNDEFINED,
         sample_x: float = 0,
         sample_y: float = 0,
+        sprite_theme: Optional[Theme3D] = None,
     ):
-        color = SpriteService.sample_sprite_color(sprite_type, sample_x, sample_y)
+        color = SpriteService.sample_sprite_color(
+            sprite_type, sample_x, sample_y, theme=sprite_theme
+        )
         if color is None:
             return
         self.add_data(x, y, CursesRenderData(self.get_shadow(distance), color))
@@ -126,6 +130,7 @@ class CursesRenderer3D(CursesRenderer):
         x: int,
         sample_x: float,
         wall_distance: float,
+        theme: Theme3D = Theme3D.THEME_3,
     ) -> None:
         start = self.map_size.height if x < self.map_size.width else 0
         ceiling = max(start, int(self.ceiling))
@@ -134,20 +139,20 @@ class CursesRenderer3D(CursesRenderer):
         smfb = self.ceiling / max(smf, 0.01)
         for y in range(ceiling, floor):
             a = y / max(smf, 0.01) - smfb if wall_distance < self.depth else 0
-            self.print_sprite_(x, y, wall_distance, SpriteType.WALL_3, sample_x, a)
+            self.print_sprite_(x, y, wall_distance, SpriteType.WALL, sample_x, a, theme)
         for y in range(start, ceiling):
             rowDistance = self.rowDistances_ceiling[y]
             f_x = pos_x + eye_x * rowDistance
             f_y = pos_y + eye_y * rowDistance
             self.print_sprite_(
-                x, y, rowDistance * 2.25, SpriteType.CEILING_3, f_x % 1, f_y % 1
+                x, y, rowDistance * 2.25, SpriteType.CEILING, f_x % 1, f_y % 1, theme
             )
         for y in range(floor, self.scr_size.height):
             rowDistance = self.rowDistances_floor[y]
             f_x = pos_x + eye_x * rowDistance
             f_y = pos_y + eye_y * rowDistance
             self.print_sprite_(
-                x, y, rowDistance * 1.85, SpriteType.FLOOR_3, f_x % 1, f_y % 1
+                x, y, rowDistance * 1.85, SpriteType.FLOOR, f_x % 1, f_y % 1, theme
             )
 
     def render_entities(
@@ -261,7 +266,16 @@ class CursesRenderer3D(CursesRenderer):
             self.ceiling = self.scr_size.height * (0.5 - 1 / max(wall_distance, 0.01))
             self.floor = self.scr_size.height - self.ceiling
             self.depth_buffer[x] = wall_distance
-            self.draw_column(pos.x, pos.y, eye.x, eye.y, x, sample_x, wall_distance)
+            self.draw_column(
+                pos.x,
+                pos.y,
+                eye.x,
+                eye.y,
+                x,
+                sample_x,
+                wall_distance,
+                Theme3D(game_state.theme),
+            )
         self.render_entities(game_state, pos, angle)
         self.old_angle = angle
         self.old_pos = [(game_state.player.x, game_state.player.y)]

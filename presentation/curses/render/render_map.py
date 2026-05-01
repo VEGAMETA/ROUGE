@@ -15,6 +15,7 @@ from domain.value_objects.enums import (
     ItemRarityType,
     ItemType,
     KeyType,
+    Theme3D,
     TileType,
 )
 

@@ -121,3 +121,9 @@ class SoundType(IntEnum):
     KILL: int = auto()
     LEVEL_UP: int = auto()
     DOOR: int = auto()
+
+
+class Theme3D(IntEnum):
+    THEME_1: int = auto()
+    THEME_2: int = auto()
+    THEME_3: int = auto()

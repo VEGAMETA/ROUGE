@@ -12,6 +12,7 @@ from domain.value_objects.enums import (
     ItemType,
     KeyType,
     StairsType,
+    Theme3D,
 )
 
 
@@ -48,13 +49,6 @@ class SpriteType(IntEnum):
     KEY_GREEN: int = auto()
     KEY_BLUE: int = auto()
     STAIRCASE: int = auto()
-
-
-class ThemeType(IntEnum):
-    UNDEFINED: int = auto()
-    THEME_1: int = auto()
-    THEME_2: int = auto()
-    THEME_3: int = auto()
 
 
 @dataclass
@@ -146,18 +140,18 @@ class SpriteMap:
         SpriteType.STAIRCASE: Path("./static/sprites/staircase.png"),
     }
 
-    THEME_MAP: dict[ThemeType, dict[SpriteType, SpriteType]] = {
-        ThemeType.THEME_1: {
+    THEME_MAP: dict[Theme3D, dict[SpriteType, SpriteType]] = {
+        Theme3D.THEME_1: {
             SpriteType.WALL: SpriteType.WALL_1,
             SpriteType.FLOOR: SpriteType.FLOOR_1,
             SpriteType.CEILING: SpriteType.CEILING_1,
         },
-        ThemeType.THEME_2: {
+        Theme3D.THEME_2: {
             SpriteType.WALL: SpriteType.WALL_2,
             SpriteType.FLOOR: SpriteType.FLOOR_2,
             SpriteType.CEILING: SpriteType.CEILING_2,
         },
-        ThemeType.THEME_3: {
+        Theme3D.THEME_3: {
             SpriteType.WALL: SpriteType.WALL_3,
             SpriteType.FLOOR: SpriteType.FLOOR_3,
             SpriteType.CEILING: SpriteType.CEILING_3,
@@ -216,7 +210,7 @@ class Sprites:
         u: float,
         v: float,
         default_color: int = None,
-        theme: Optional[ThemeType] = None,
+        theme: Optional[Theme3D] = None,
     ) -> Optional[int]:
         if theme:
             theme_type: Optional[dict[SpriteType, SpriteType]] = (
@@ -227,7 +221,7 @@ class Sprites:
             theme_sprite_type: Optional[SpriteType] = theme_type.get(sprite_type)
             if theme_sprite_type is None:
                 return default_color
-            sprite_type = theme_sprite_type[sprite_type]
+            sprite_type = theme_sprite_type
         u = min(1, max(0, u))
         v = min(1, max(0, v))
         sprite: Sprite = self.sprites.get(sprite_type)
