@@ -12,6 +12,7 @@ class InputAction(IntEnum):
     ROTATE_LEFT: int = auto()
     ROTATE_RIGHT: int = auto()
     PASS: int = auto()
+    DROP: int = auto()
     INTERACT: int = auto()
     INVENTORY: int = auto()
     MENU: int = auto()

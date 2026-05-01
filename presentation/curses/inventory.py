@@ -8,7 +8,9 @@ from domain.entities.weapon import Weapon
 from domain.rules.progression import MAX_LEVEL
 from domain.services.item import ItemService
 from domain.value_objects.enums import ConsumableType, ItemType, KeyType
+from presentation.curses.input_handler import CursesInputHandler
 from presentation.curses.widgets import Label, VerticalMenu
+from presentation.input_handler import InputAction
 from presentation.views.inventory import InventoryView
 
 
@@ -143,6 +145,51 @@ class CursesInventoryView(InventoryView):
             col += 6
 
     @staticmethod
+    def _draw_description(
+        win: curses.window,
+        context: GameSession,
+        active_col: int,
+        item_col_w: int,
+        selected_idx: list[int],
+        all_items: list[list[Optional[Item]]],
+        outer_w: int,
+    ) -> None:
+        items_in_col = all_items[active_col]
+        idx = selected_idx[active_col]
+        sel = (
+            items_in_col[idx] if items_in_col and 0 <= idx < len(items_in_col) else None
+        )
+        desc_line, stats_line = CursesInventoryView._item_info(sel, context)
+        desc_w = CursesInventoryView._NUM_ITEM_COLS * item_col_w
+        try:
+            win.refresh()
+            win.addstr(15, 3, desc_line[: desc_w - 2])
+            win.clrtoeol()
+            win.addstr(15, outer_w - 1, "│")
+            if stats_line:
+                win.addstr(16, 3, stats_line[: desc_w - 2])
+                win.clrtoeol()
+                win.addstr(16, outer_w - 1, "│")
+        except curses.error:
+            pass
+
+    @staticmethod
+    def redraw(
+        window: curses.window,
+        columns: list[VerticalMenu],
+        active_col: int,
+    ) -> None:
+        for i, col in enumerate(columns):
+            win = col.draw(window)
+            if i == active_col:
+                try:
+                    title_x = max(1, (col.w - len(col.title)) // 2)
+                    win.addstr(0, title_x, col.title, curses.A_BOLD | curses.A_REVERSE)
+                    win.refresh()
+                except curses.error:
+                    pass
+
+    @staticmethod
     def show(window: curses.window, context: GameSession) -> None:
         sh, sw = window.getmaxyx()
 
@@ -186,62 +233,44 @@ class CursesInventoryView(InventoryView):
         columns, all_items = CursesInventoryView._make_columns(
             context, start_x, start_y, item_col_w, col_h, selected_idx
         )
+        pad = curses.newwin(outer_h, outer_w, outer_y, outer_x)
+        pad.box()
+        pad.overlay(outer_win)
+        pad.overwrite(outer_win)
         outer_win.refresh()
-        outer_win.timeout(1000)
+        outer_win.keypad(True)
+        # outer_win.timeout(1000)
+        CursesInventoryView.redraw(outer_win, columns, active_col)
+        CursesInventoryView._draw_description(
+            outer_win, context, active_col, item_col_w, selected_idx, all_items, outer_w
+        )
         while True:
-            outer_win.box()
-            outer_win.refresh()
-
-            for i, col in enumerate(columns):
-                win = col.draw(outer_win)
-                if i == active_col:
-                    try:
-                        title_x = max(1, (col.w - len(col.title)) // 2)
-                        win.addstr(
-                            0, title_x, col.title, curses.A_BOLD | curses.A_REVERSE
-                        )
-                        win.refresh()
-                    except curses.error:
-                        pass
+            # outer_win.box()
+            # CursesInventoryView.redraw(outer_win, columns, active_col)
 
             CursesInventoryView._draw_stats(outer_win, context)
+            outer_win.refresh()
 
-            items_in_col = all_items[active_col]
-            idx = selected_idx[active_col]
-            sel = (
-                items_in_col[idx]
-                if items_in_col and 0 <= idx < len(items_in_col)
-                else None
-            )
-            desc_line, stats_line = CursesInventoryView._item_info(sel, context)
-            desc_w = CursesInventoryView._NUM_ITEM_COLS * item_col_w
-            try:
-                outer_win.addstr(15, 3, desc_line[: desc_w - 2])
-                if stats_line:
-                    outer_win.addstr(16, 3, stats_line[: desc_w - 2])
-            except curses.error:
-                pass
-
-            key = outer_win.getch()
-            outer_win.clear()
-
-            if key in (27, 9):
+            action = CursesInputHandler.get(window)
+            if action == InputAction.UNDEFINED:
+                continue
+            elif action in (InputAction.QUIT, InputAction.INVENTORY, InputAction.MENU):
                 break
-            elif key in (curses.KEY_UP, "w", ord("w"), ord("W")):
+            elif action == InputAction.MOVE_UP:
                 col = columns[active_col]
                 if col.children:
                     col.prev_widget()
                     selected_idx[active_col] = col.children.index(col.selected_widget)
-            elif key in (curses.KEY_DOWN, ord("s"), ord("S")):
+            elif action == InputAction.MOVE_DOWN:
                 col = columns[active_col]
                 if col.children:
                     col.next_widget()
                     selected_idx[active_col] = col.children.index(col.selected_widget)
-            elif key in (curses.KEY_LEFT, ord("a"), ord("A")):
+            elif action == InputAction.MOVE_LEFT:
                 active_col = (active_col - 1) % CursesInventoryView._NUM_ITEM_COLS
-            elif key in (curses.KEY_RIGHT, ord("d"), ord("D")):
+            elif action == InputAction.MOVE_RIGHT:
                 active_col = (active_col + 1) % CursesInventoryView._NUM_ITEM_COLS
-            elif key == ord("e"):
+            elif action == InputAction.INTERACT:
                 items = all_items[active_col]
                 idx = selected_idx[active_col]
                 if items and 0 <= idx and idx < len(items):
@@ -253,7 +282,7 @@ class CursesInventoryView(InventoryView):
                     columns, all_items = CursesInventoryView._make_columns(
                         context, start_x, start_y, item_col_w, col_h, selected_idx
                     )
-            elif key == ord("x"):
+            elif action == InputAction.DROP:
                 items = all_items[active_col]
                 idx = selected_idx[active_col]
                 if items and 0 <= idx < len(items):
@@ -271,5 +300,14 @@ class CursesInventoryView(InventoryView):
                             col_h,
                             selected_idx,
                         )
-            outer_win.refresh()
+            CursesInventoryView.redraw(outer_win, columns, active_col)
+            CursesInventoryView._draw_description(
+                outer_win,
+                context,
+                active_col,
+                item_col_w,
+                selected_idx,
+                all_items,
+                outer_w,
+            )
         window.touchwin()

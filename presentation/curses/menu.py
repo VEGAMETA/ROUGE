@@ -1,7 +1,9 @@
 import curses
 from typing import Optional
 
+from presentation.curses.input_handler import CursesInputHandler
 from presentation.curses.widgets import Button, VerticalMenu
+from presentation.input_handler import InputAction
 from presentation.views.menu import Menu, MenuAction
 
 _ACTIONS = [
@@ -26,21 +28,21 @@ class CursesMenu(Menu):
                 Button(text="Exit"),
             ]
         )
-        win = menu.draw(window)
+        menu.draw(window)
 
         result: Optional[MenuAction] = MenuAction.CONTINUE
         while True:
-            key = win.getch()
-            if key == 27:
+            key = CursesInputHandler.get(window)
+            if key == InputAction.MENU:
                 result = MenuAction.CONTINUE
                 break
-            elif key in (ord("w"), curses.KEY_UP):
+            elif key == InputAction.MOVE_UP:
                 menu.prev_widget()
-                win = menu.draw(window)
-            elif key in (ord("s"), curses.KEY_DOWN):
+                menu.draw(window)
+            elif key == InputAction.MOVE_DOWN:
                 menu.next_widget()
-                win = menu.draw(window)
-            elif key in (ord("e"), curses.KEY_ENTER, 10, 13):
+                menu.draw(window)
+            elif key == InputAction.INTERACT:
                 result = _ACTIONS[menu.children.index(menu.selected_widget)]
                 break
 

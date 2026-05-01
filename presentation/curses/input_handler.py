@@ -12,44 +12,39 @@ def unite_dicts(dict1: dict, dict2: dict) -> dict:
 
 class CursesKeymap:
     BASE_ACTIONS: dict[int, InputAction] = {
-        ord("q"): InputAction.QUIT,
         ord("h"): InputAction.USE_WEAPON,
         ord("j"): InputAction.USE_FOOD,
         ord("k"): InputAction.USE_ELIXIR,
-        ord("e"): InputAction.USE_SCROLL,
-        curses.KEY_ENTER: InputAction.INTERACT,
+        ord("l"): InputAction.USE_SCROLL,
+        ord("x"): InputAction.DROP,
+        ord("e"): InputAction.INTERACT,
+        10: InputAction.INTERACT,
         9: InputAction.INVENTORY,
         32: InputAction.PASS,
         27: InputAction.MENU,
     }
 
-    ACTIONS: dict[int, InputAction] = unite_dicts(
-        BASE_ACTIONS,
-        {
-            ord("w"): InputAction.MOVE_UP,
-            ord("s"): InputAction.MOVE_DOWN,
-            ord("a"): InputAction.MOVE_LEFT,
-            ord("d"): InputAction.MOVE_RIGHT,
-            curses.KEY_UP: InputAction.MOVE_UP,
-            curses.KEY_DOWN: InputAction.MOVE_DOWN,
-            curses.KEY_LEFT: InputAction.MOVE_LEFT,
-            curses.KEY_RIGHT: InputAction.MOVE_RIGHT,
-        },
-    )
+    MOVE_ACTIONS: dict[int, InputAction] = {
+        ord("w"): InputAction.MOVE_UP,
+        ord("s"): InputAction.MOVE_DOWN,
+        ord("a"): InputAction.MOVE_LEFT,
+        ord("d"): InputAction.MOVE_RIGHT,
+        curses.KEY_UP: InputAction.MOVE_UP,
+        curses.KEY_DOWN: InputAction.MOVE_DOWN,
+        curses.KEY_LEFT: InputAction.MOVE_LEFT,
+        curses.KEY_RIGHT: InputAction.MOVE_RIGHT,
+    }
 
-    ACTIONS_3D: dict[int, InputAction] = unite_dicts(
-        BASE_ACTIONS,
-        {
-            ord("w"): InputAction.MOVE_UP,
-            ord("s"): InputAction.MOVE_DOWN,
-            ord("a"): InputAction.ROTATE_LEFT,
-            ord("d"): InputAction.ROTATE_RIGHT,
-            curses.KEY_UP: InputAction.MOVE_UP,
-            curses.KEY_DOWN: InputAction.MOVE_DOWN,
-            curses.KEY_LEFT: InputAction.ROTATE_LEFT,
-            curses.KEY_RIGHT: InputAction.ROTATE_RIGHT,
-        },
-    )
+    ROTATE_ACTIONS: dict[int, InputAction] = {
+        ord("a"): InputAction.ROTATE_LEFT,
+        ord("d"): InputAction.ROTATE_RIGHT,
+        curses.KEY_LEFT: InputAction.ROTATE_LEFT,
+        curses.KEY_RIGHT: InputAction.ROTATE_RIGHT,
+    }
+
+    ACTIONS: dict[int, InputAction] = unite_dicts(BASE_ACTIONS, MOVE_ACTIONS)
+
+    ACTIONS_3D: dict[int, InputAction] = unite_dicts(ACTIONS, ROTATE_ACTIONS)
 
 
 class CursesInputHandler(InputHandler):
