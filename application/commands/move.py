@@ -39,16 +39,16 @@ class Move(Command):
                 continue
             if door.type not in map(lambda x: x.type, context.owned_keys):
                 return CommandResult.NO_ACTION
-            context.sounds.put(SoundType.DOOR)
+            context.sounds.put_nowait(SoundType.DOOR)
         if not MovementService.move(context.player, new_position, context):
             if CombatService.attack(context):
                 return CommandResult.SWAP_ACTION
             return CommandResult.NO_ACTION
-        context.sounds.put(SoundType.MOVE)
+        context.sounds.put_nowait(SoundType.MOVE)
         for item in context.items:
             if not item.is_owned and context.player.position == item.position:
                 if ItemService.pickup(item, context):
-                    context.sounds.put(SoundType.ITEM_PICK)
+                    context.sounds.put_nowait(SoundType.ITEM_PICK)
                 break
         for key in context.keys:
             if (
@@ -56,10 +56,10 @@ class Move(Command):
                 and context.player.position == key.position
             ):
                 if ItemService.pickup_key(key, context):
-                    context.sounds.put(SoundType.ITEM_PICK)
+                    context.sounds.put_nowait(SoundType.ITEM_PICK)
                 break
         if context.player.position == context.stairs.position:
-            context.sounds.put(SoundType.LEVEL_UP)
+            context.sounds.put_nowait(SoundType.LEVEL_UP)
             context.new_stage()
             GameSaveMapper.save(context)
         return CommandResult.OK

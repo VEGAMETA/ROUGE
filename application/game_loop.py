@@ -52,7 +52,7 @@ class GameLoop:
 
     def run(self) -> bool:
         CommandAssembler.assemble_commands()
-        self.game_session.sounds.put(SoundType.MUSIC)
+        self.game_session.sounds.put_nowait(SoundType.MUSIC)
         game_timer: float = time.monotonic()
         tick_timer: float = time.perf_counter()
         tick_t: float = 0
@@ -76,14 +76,14 @@ class GameLoop:
             for enemy in self.game_session.enemies:
                 EnemyAI.action(enemy, self.game_session)
             if self.game_session.player.health <= 0:
-                self.game_session.sounds.put(SoundType.DEATH)
+                self.game_session.sounds.put_nowait(SoundType.DEATH)
                 Leaderboard.append(
                     GameLoop.build_record(self.game_session, getpass.getuser())
                 )
                 self.game_session.process = False
             tick_t = time.perf_counter() - tick_timer
 
-        self.mixer.q.put(SoundType.STOP)
+        self.mixer.q.put_nowait(SoundType.STOP)
         self.mixer.join(0.1)
 
         elapsed = time.monotonic() - game_timer

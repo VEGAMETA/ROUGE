@@ -20,12 +20,12 @@ class EnemyAI:
     def action(enemy: "Enemy", context: "GameSession") -> EnemyAction:
         if enemy.type == EnemyType.MIMIC1:
             return EnemyAction.UNDEFINED
-        home_room = context.stage.rooms[enemy.home_room_index]
+        # home_room = context.stage.rooms[enemy.home_room_index]
         ai_cls: EnemyAI = EnemyAI.REGISTRY.get(enemy.type, EnemyAI)
         enemy.chasing = (
             context.player.position - enemy.position
         ).length() <= enemy.hostility
-        if not enemy.chasing or not home_room.is_inbound(context.player.position):
+        if not enemy.chasing:
             return ai_cls.idle(enemy, context)
         enemy.path.clear()
         return ai_cls.act(enemy, context)
@@ -60,7 +60,7 @@ class EnemyAI:
     @staticmethod
     def attack(enemy: "Enemy", context: "GameSession") -> EnemyAction:
         hit = CombatService.hit(enemy, context.player)
-        context.sounds.put(SoundType.HIT)
+        context.sounds.put_nowait(SoundType.HIT)
         if hit:
             context.statistics.hits_taken += 1
         return EnemyAction.ATTACK
@@ -100,7 +100,7 @@ class VampireAI(EnemyAI):
     @staticmethod
     def attack(enemy: "Enemy", context: "GameSession") -> EnemyAction:
         hit = CombatService.hit(enemy, context.player)
-        context.sounds.put(SoundType.HIT if hit else SoundType.SWING)
+        context.sounds.put_nowait(SoundType.HIT if hit else SoundType.SWING)
         if hit:
             context.statistics.hits_taken += 1
             context.player.max_health = max(
@@ -162,11 +162,11 @@ class OgreAI(EnemyAI):
             enemy.counter_queued = False
             damage = enemy.strength + enemy.dexterity * 0.5
             context.player.health = max(context.player.health - damage, 0)
-            context.sounds.put(SoundType.HIT)
+            context.sounds.put_nowait(SoundType.HIT)
             context.statistics.hits_taken += 1
         else:
             hit = CombatService.hit(enemy, context.player)
-            context.sounds.put(SoundType.HIT if hit else SoundType.SWING)
+            context.sounds.put_nowait(SoundType.HIT if hit else SoundType.SWING)
             if hit:
                 context.statistics.hits_taken += 1
                 enemy.resting = True
@@ -224,7 +224,7 @@ class SnakeMageAI(EnemyAI):
     @staticmethod
     def attack(enemy: "Enemy", context: "GameSession") -> EnemyAction:
         hit = CombatService.hit(enemy, context.player)
-        context.sounds.put(SoundType.HIT if hit else SoundType.SWING)
+        context.sounds.put_nowait(SoundType.HIT if hit else SoundType.SWING)
         if hit:
             context.statistics.hits_taken += 1
             if random() < SnakeMageAI.SLEEP_CHANCE:

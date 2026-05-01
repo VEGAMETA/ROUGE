@@ -29,6 +29,7 @@ class Mixer(Process):
         self.q = q
         self.sounds: dict[SoundType, WaveObject] = {}
         self.loop_objects: dict[WaveObject, PlayObject] = {}
+        self.playing: dict[WaveObject, PlayObject] = {}
         self.running: bool = True
 
     def load(self) -> None:
@@ -55,7 +56,7 @@ class Mixer(Process):
         while self.running:
             try:
                 self._play_loop()
-                time.sleep(0.05)
+                time.sleep(0.001)
                 effect = self.q.get_nowait()
             except Empty:
                 continue
@@ -67,6 +68,12 @@ class Mixer(Process):
             sound = self.sounds.get(effect)
             if not sound:
                 continue
+
+            playing = self.playing.get(sound)
+            if playing and playing.is_playing():
+                playing.stop()
             playing = sound.play()
+            self.playing[sound] = playing
+
             if effect == SoundType.MUSIC:
                 self.loop_objects[sound] = playing

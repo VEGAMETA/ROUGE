@@ -33,10 +33,10 @@ class CombatService:
             return False
         if defender.type == EnemyType.VAMPIRE and defender.times_hit == 0:
             defender.times_hit += 1
-            context.sounds.put(SoundType.SWING)
+            context.sounds.put_nowait(SoundType.SWING)
             return True
         attack = CombatService.hit(context.player, defender)
-        context.sounds.put(SoundType.HIT if attack else SoundType.SWING)
+        context.sounds.put_nowait(SoundType.HIT if attack else SoundType.SWING)
         if defender.health <= 0:
             context.statistics.enemies_defeated += 1
             context.points += int(
@@ -54,9 +54,9 @@ class CombatService:
                 mimic.home_room_index = defender.home_room_index
                 context.enemies.add(mimic)
                 return False
-            context.sounds.put(SoundType.KILL)
+            context.sounds.put_nowait(SoundType.KILL)
             context.dds += 0.07
-            if random() < 0.4:
+            if random() < context.dds:
                 context.items.append(
                     ItemFactory.create_random(
                         defender.position, context.player.level, ENEMY_DROP

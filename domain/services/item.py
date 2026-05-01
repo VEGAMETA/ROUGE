@@ -102,7 +102,7 @@ class ItemService:
             context.statistics.scrolls_read += 1
         elif item.type == ItemType.WEAPON:
             context.player.weapon = item
-        context.sounds.put(SoundType.ITEM_USE)
+        context.sounds.put_nowait(SoundType.ITEM_USE)
         return True
 
     @staticmethod

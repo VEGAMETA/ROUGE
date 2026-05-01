@@ -39,4 +39,4 @@ Debian:
 sudo apt install libasound2-dev
 ```
 
-##### There is no simple solution for WSL audio driver
+There is no simple solution for WSL audio driver
