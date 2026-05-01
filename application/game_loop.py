@@ -1,7 +1,7 @@
 import getpass
 import time
 from datetime import datetime
-from multiprocessing import SimpleQueue
+from multiprocessing import Queue
 
 from application.commands.assembler import CommandAssembler
 from application.commands.command import CommandResult, CommandService
@@ -27,7 +27,7 @@ class GameLoop:
         if selected_3d:
             self.size /= 3
         self.stage: int = 0
-        self.game_session: GameSession = GameSession(self.size, SimpleQueue())
+        self.game_session: GameSession = GameSession(self.size, Queue())
         self.game_session.selected_3d = selected_3d
         self.game_session.new_stage()
         self.mixer: Mixer = Mixer(self.game_session.sounds)

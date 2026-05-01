@@ -1,5 +1,5 @@
 import time
-from multiprocessing import Process, SimpleQueue
+from multiprocessing import Process, Queue
 from pathlib import Path
 from queue import Empty
 
@@ -24,7 +24,7 @@ FILES: dict[SoundType, Path] = {
 
 
 class Mixer(Process):
-    def __init__(self, q: SimpleQueue) -> None:
+    def __init__(self, q: Queue) -> None:
         super().__init__(daemon=True)
         self.q = q
         self.sounds: dict[SoundType, WaveObject] = {}
@@ -55,12 +55,12 @@ class Mixer(Process):
         while self.running:
             try:
                 self._play_loop()
-                time.sleep(0.001)
-                effect = self.q.get()
+                time.sleep(0.05)
+                effect = self.q.get_nowait()
             except Empty:
                 continue
             if not effect:
-                break
+                continue
             if effect == SoundType.STOP:
                 self.stop()
                 break

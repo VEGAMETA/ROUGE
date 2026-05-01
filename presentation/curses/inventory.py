@@ -130,19 +130,19 @@ class CursesInventoryView(InventoryView):
         win.addstr(row + 5, col, f"DEXTERITY {context.player.dexterity:8d}")
         win.addstr(row + 7, col, f"POINTS    {context.points:8d}")
         win.addstr(row + 9, col, f"TIME      {hh:02d}:{mm:02d}:{ss:02d}")
-        win.addstr(row + 11, col, f"KEYS   {len(owned_types):9d}/3")
+        win.addstr(row + 11, col, "KEYS")
         slots = [
             (KeyType.RED, CursesInventoryView._KEY_RED_PAIR),
             (KeyType.GREEN, CursesInventoryView._KEY_GREEN_PAIR),
             (KeyType.BLUE, CursesInventoryView._KEY_BLUE_PAIR),
         ]
-        col += 2
+        col += 7
         for kt, pair in slots:
             if kt in owned_types:
-                win.addstr(row + 13, col, "⚿", curses.color_pair(pair))
+                win.addstr(row + 11, col, "⚿", curses.color_pair(pair))
             else:
-                win.addstr(row + 13, col, " ")
-            col += 6
+                win.addstr(row + 11, col, " ")
+            col += 5
 
     @staticmethod
     def _draw_description(

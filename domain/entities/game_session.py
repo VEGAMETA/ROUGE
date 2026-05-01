@@ -1,6 +1,6 @@
 import time
 from dataclasses import dataclass
-from multiprocessing import SimpleQueue
+from multiprocessing import Queue
 from random import random
 from typing import Optional
 
@@ -39,7 +39,7 @@ class GameSession(Entity):
     process: bool = True
     selected_3d: bool = False
 
-    def __init__(self, size: Size, sounds: SimpleQueue = SimpleQueue()) -> None:
+    def __init__(self, size: Size, sounds: Queue = Queue()) -> None:
         self.size: Size = size
         self.player: Player = Player(
             health=100,
@@ -51,7 +51,7 @@ class GameSession(Entity):
             rotation=Constant.PI_BY_MINUS_2,
         )
         self.cached_obstacle_map: list[list[bool]] = []
-        self.sounds: SimpleQueue = sounds
+        self.sounds: Queue = sounds
         self.start_time: float = time.monotonic()
         self.points: int = 0
         self.statistics: Statistics = Statistics()
