@@ -37,8 +37,8 @@ class ItemType(IntEnum):
 
 class TreasureType(IntEnum):
     UNDEFINED: int = auto()
-    COINS: int = auto()
     SILVER: int = auto()
+    GOLD: int = auto()
     GEM: int = auto()
     RUBY: int = auto()
     SAPPHIRE: int = auto()
@@ -47,23 +47,20 @@ class TreasureType(IntEnum):
 class ConsumableType(IntEnum):
     UNDEFINED: int = auto()
     HEALTH: int = auto()
+    MAX_HEALTH: int = auto()
     DEXTERITY: int = auto()
     STRENGTH: int = auto()
-    MAX_HEALTH: int = auto()
-    MAX_DEXTERITY: int = auto()
-    MAX_STRENGTH: int = auto()
     FOOD: int = auto()
 
 
 class WeaponType(IntEnum):
     UNDEFINED: int = auto()
-    SWORD: int = auto()
-    AXE: int = auto()
-    BOW: int = auto()
-    STAFF: int = auto()
     DAGGER: int = auto()
     MACE: int = auto()
+    SWORD: int = auto()
     SPEAR: int = auto()
+    AXE: int = auto()
+    STAFF: int = auto()
     TWO_HANDED_SWORD: int = auto()
 
 

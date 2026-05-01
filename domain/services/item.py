@@ -80,6 +80,7 @@ class ItemService:
         drop_pos = choice(positions)
         item.position = drop_pos
         item.is_owned = False
+        item.value = 0
         context.items.append(item)
 
     @staticmethod
