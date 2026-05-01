@@ -262,6 +262,7 @@ class CursesInventoryView(InventoryView):
                         if item is context.player.weapon:
                             context.player.weapon = None
                         context.player.inventory.remove_item(item)
+                        ItemService.drop(item, context)
                         columns, all_items = CursesInventoryView._make_columns(
                             context,
                             start_x,

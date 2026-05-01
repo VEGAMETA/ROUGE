@@ -112,6 +112,7 @@ class StairsType(IntEnum):
 
 
 class SoundType(IntEnum):
+    STOP: int = auto()
     MUSIC: int = auto()
     UI: int = auto()
     MOVE: int = auto()

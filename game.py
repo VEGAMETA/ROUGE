@@ -9,11 +9,14 @@ from config.options import DefaultWindow
 
 def main() -> None:
     locale.setlocale(locale.LC_ALL, "")
-    try:
-        while not GameLoop(DefaultWindow, selected_3d=True).run():
-            pass
-    except KeyboardInterrupt:
-        pass
+    while True:
+        try:
+            loop = GameLoop(DefaultWindow, selected_3d=True)
+            if loop.run():
+                break
+            del loop
+        except KeyboardInterrupt:
+            break
 
 
 if __name__ == "__main__":

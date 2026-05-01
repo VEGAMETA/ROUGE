@@ -1,8 +1,11 @@
+from random import choice
+
 from domain.entities.consumables import Consumable
 from domain.entities.game_session import GameSession
 from domain.entities.item import Item
 from domain.entities.key import Key
 from domain.value_objects.enums import ConsumableType, ItemType, SoundType
+from domain.value_objects.position import Position
 
 _PER_TYPE_LIMIT = 9
 
@@ -61,6 +64,23 @@ class ItemService:
         item.is_owned = True
         context.player.inventory.add_item(item)
         return True
+
+    @staticmethod
+    def drop(item: Item, context: GameSession) -> bool:
+        positions: list[Position] = []
+        for x in range(context.player.position.x - 1, context.player.position.x + 2):
+            for y in range(
+                context.player.position.y - 1, context.player.position.y + 2
+            ):
+                if context.cached_obstacle_map[y][x]:
+                    continue
+                if x == context.player.position.x and y == context.player.position.y:
+                    continue
+                positions.append(Position(x, y))
+        drop_pos = choice(positions)
+        item.position = drop_pos
+        item.is_owned = False
+        context.items.append(item)
 
     @staticmethod
     def use(item: Item, context: GameSession) -> bool:

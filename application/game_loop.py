@@ -94,14 +94,17 @@ class GameLoop:
                 self.game_session.process = False
             tick_t = time.perf_counter() - tick_timer
 
+        self.mixer.q.put(SoundType.STOP)
         self.mixer.join(0.1)
+
         elapsed = time.monotonic() - game_timer
         if self.game_session.player.health <= 0 and self.stage < len(Level):
             self.window.draw(GameMapper.to_dto(self.game_session), tick_t)
             self.window.game_over(
                 elapsed, self.game_session.statistics, self.game_session.points
             )
-        elif int(self.game_session.player.level) > len(Level):
+            return False
+        if int(self.game_session.player.level) > len(Level):
             Leaderboard.append(
                 GameLoop.build_record(self.game_session, getpass.getuser())
             )
@@ -109,5 +112,4 @@ class GameLoop:
             self.window.victory(
                 elapsed, self.game_session.statistics, self.game_session.points
             )
-            return True
-        return False
+        return True

@@ -3,14 +3,13 @@
 import time
 from multiprocessing import Process, SimpleQueue
 from pathlib import Path
-from threading import Thread
-from typing import Dict
 
-from simpleaudio import WaveObject
+from simpleaudio import PlayObject, WaveObject, stop_all
 
 from domain.value_objects.enums import SoundType
 
-FILES: Dict[SoundType, Path] = {
+FILES: dict[SoundType, Path] = {
+    SoundType.STOP: Path("./static/audio/sfx/death.wav"),
     SoundType.MUSIC: Path("./static/audio/music/dungeon-ambience.wav"),
     SoundType.MOVE: Path("./static/audio/sfx/move.wav"),
     SoundType.SWING: Path("./static/audio/sfx/swing.wav"),
@@ -26,42 +25,49 @@ FILES: Dict[SoundType, Path] = {
 
 
 class Mixer(Process):
-    def __init__(self, q: SimpleQueue):
+    def __init__(self, q: SimpleQueue) -> None:
         super().__init__(daemon=True)
         self.q = q
-        self.sounds: Dict[SoundType, WaveObject] = {}
+        self.sounds: dict[SoundType, WaveObject] = {}
+        self.loop_objects: dict[WaveObject, PlayObject] = {}
+        self.running: bool = True
 
-        self.running = True
-        self.loop_music = True
-
-    def load(self):
+    def load(self) -> None:
         for k, path in FILES.items():
             self.sounds[k] = WaveObject.from_wave_file(path.as_posix())
 
-    def _play_loop(self, sound: WaveObject):
-        while self.loop_music and self.running:
-            play_obj = sound.play()
-            play_obj.wait_done()
+    def _play_loop(self):
+        for sound, playing in self.loop_objects.items():
+            if playing.is_playing():
+                continue
+            self.loop_objects[sound] = sound.play()
 
-    def run(self):
+    def stop(self) -> None:
+        self.running = False
+        for playing in self.loop_objects.values():
+            if not playing.is_playing():
+                continue
+            playing.stop()
+        stop_all()
+
+    def run(self) -> None:
         self.load()
 
         while self.running:
             try:
                 time.sleep(0.001)
                 effect = self.q.get()
-            except:
+                self._play_loop()
+            except Exception:
                 continue
-
-            if effect is None:
+            if not effect:
                 break
-
+            if effect == SoundType.STOP:
+                self.stop()
+                break
             sound = self.sounds.get(effect)
             if not sound:
                 continue
-
+            playing = sound.play()
             if effect == SoundType.MUSIC:
-                Thread(target=self._play_loop, args=(sound,)).start()
-
-            else:
-                sound.play()
+                self.loop_objects[sound] = playing
