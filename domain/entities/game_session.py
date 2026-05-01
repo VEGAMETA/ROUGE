@@ -111,7 +111,9 @@ class GameSession(Entity):
         if int(self.player.level) > len(Level):
             self.process = False
             return
-        self.dds = self.default_dds
+        self.dds = self.default_dds + self.player.level / (
+            len(Level) / (1 - self.default_dds)
+        )
 
     def find_enemy(self) -> Optional[Enemy]:
         enemy_position = self.player.position + self.player.direction

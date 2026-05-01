@@ -1,5 +1,5 @@
 from collections import deque
-from random import choice, randint, sample
+from random import choice, randint, shuffle
 from typing import Optional
 
 from domain.entities.corridor import Corridor
@@ -50,21 +50,35 @@ class StageFactory:
 
     @staticmethod
     def _create_room_graph(stage: Stage) -> None:
-        neighbors = build_grid_graph(int(stage.MAX_ROOMS**0.5))
-
-        graph: list[set[int]] = [set() for _ in range(stage.MAX_ROOMS)]
-
+        n = int(stage.MAX_ROOMS**0.5)
+        all_neighbors = build_grid_graph(n)
+        graph: list[set[int]] = [set(neighbors) for neighbors in all_neighbors]
+        edges: list[tuple[int, int]] = []
         for room in range(stage.MAX_ROOMS):
-            if len(neighbors[room]) == 0:
+            for neighbor in all_neighbors[room]:
+                if neighbor > room:
+                    edges.append((room, neighbor))
+        shuffle(edges)
+        for a, b in edges:
+            graph[a].discard(b)
+            graph[b].discard(a)
+            if StageFactory._is_connected(graph, stage.MAX_ROOMS):
                 continue
-            random_neighbor_count: int = 1  # randint(1, len(neighbors[room]))
-            chosen_neighbors: list[int] = sample(neighbors[room], random_neighbor_count)
-            for neighbor in chosen_neighbors:
-                graph[room].add(neighbor)
-                graph[neighbor].add(room)
-                neighbors[neighbor].pop(neighbors[neighbor].index(room))
-
+            graph[a].add(b)
+            graph[b].add(a)
         stage.graph = graph
+
+    @staticmethod
+    def _is_connected(graph: list[set[int]], n: int) -> bool:
+        visited: set[int] = {0}
+        queue: deque[int] = deque([0])
+        while queue:
+            node = queue.popleft()
+            for neighbor in graph[node]:
+                if neighbor not in visited:
+                    visited.add(neighbor)
+                    queue.append(neighbor)
+        return len(visited) == n
 
     @staticmethod
     def _create_corridors(stage: Stage) -> None:
@@ -107,8 +121,6 @@ class StageFactory:
 
         stage.corridors.append(Corridor(path=path))
 
-    # def _create_stairs(stage: Stage) -> None:
-
     @staticmethod
     def _create_doors(stage: Stage) -> None:
         for idx, room in enumerate(stage.rooms):
@@ -132,18 +144,6 @@ class StageFactory:
 
     @staticmethod
     def _create_keys(stage: Stage) -> None:
-        """
-        Lock a random subset of cross-room doors and spawn keys for them,
-        guaranteeing every room (and every key) is reachable from start_room.
-
-        Strategy (BFS over the room graph):
-        - Maintain a set of 'accessible' rooms, seeded with start_room.
-        - Each time we discover an edge accessible→unvisited, we flip a coin:
-            • heads  → lock that door pair, place a key in a random accessible room.
-            • tails  → leave open, mark room accessible immediately.
-        - Because the key always lands in an already-accessible room, the player
-            can always collect it before they need to open the door.
-        """
         if not stage.rooms or stage.start_room is None:
             return
 

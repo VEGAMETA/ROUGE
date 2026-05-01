@@ -1,0 +1,107 @@
+{
+  "health": 187,
+  "max_health": 187,
+  "dexterity": 14,
+  "strength": 14,
+  "level": 5,
+  "points": 625,
+  "time": 238.56200000000536,
+  "items": [
+    {
+      "type": 2,
+      "subtype": 7,
+      "name": "Draught of Power",
+      "description": "Permanently increases strength by 12",
+      "rarity": 0,
+      "value": 18
+    },
+    {
+      "type": 2,
+      "subtype": 8,
+      "name": "Food Ration",
+      "description": "Restores 10 HP",
+      "rarity": 0,
+      "value": 3
+    },
+    {
+      "type": 3,
+      "subtype": 9,
+      "name": "Greatsword",
+      "description": "A massive sword for powerful strikes",
+      "rarity": 2,
+      "value": 80
+    },
+    {
+      "type": 2,
+      "subtype": 7,
+      "name": "Draught of Power",
+      "description": "Permanently increases strength by 12",
+      "rarity": 0,
+      "value": 18
+    },
+    {
+      "type": 5,
+      "subtype": 5,
+      "name": "Scroll of Vitality",
+      "description": "Permanently increases max HP by 15",
+      "rarity": 0,
+      "value": 18
+    },
+    {
+      "type": 3,
+      "subtype": 9,
+      "name": "Greatsword",
+      "description": "A massive sword for powerful strikes",
+      "rarity": 2,
+      "value": 80
+    },
+    {
+      "type": 3,
+      "subtype": 2,
+      "name": "Iron Sword",
+      "description": "A sturdy iron sword",
+      "rarity": 0,
+      "value": 50
+    },
+    {
+      "type": 2,
+      "subtype": 6,
+      "name": "Draught of Agility",
+      "description": "Permanently increases dexterity by 12",
+      "rarity": 0,
+      "value": 18
+    },
+    {
+      "type": 5,
+      "subtype": 5,
+      "name": "Scroll of Vitality",
+      "description": "Permanently increases max HP by 15",
+      "rarity": 0,
+      "value": 18
+    },
+    {
+      "type": 3,
+      "subtype": 5,
+      "name": "Magic Staff",
+      "description": "Channels arcane power",
+      "rarity": 0,
+      "value": 40
+    },
+    {
+      "type": 5,
+      "subtype": 5,
+      "name": "Scroll of Vitality",
+      "description": "Permanently increases max HP by 15",
+      "rarity": 0,
+      "value": 18
+    },
+    {
+      "type": 3,
+      "subtype": 2,
+      "name": "Iron Sword",
+      "description": "A sturdy iron sword",
+      "rarity": 5,
+      "value": 50
+    }
+  ]
+}
