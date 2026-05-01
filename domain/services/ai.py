@@ -22,14 +22,12 @@ class EnemyAI:
             return EnemyAction.UNDEFINED
         home_room = context.stage.rooms[enemy.home_room_index]
         ai_cls = EnemyAI.REGISTRY.get(enemy.type, EnemyAI)
-        dx = abs(enemy.position.x - context.player.position.x)
-        dy = abs(enemy.position.y - context.player.position.y)
-        if max(dx, dy) > enemy.hostility:
-            enemy.chasing = False
+        hostile = (context.player.position - enemy.position).length() <= enemy.hostility
+        enemy.chasing = hostile
+        if not hostile:
             return ai_cls.idle(enemy, context)
         if not enemy.chasing and not home_room.is_inbound(context.player.position):
             return ai_cls.idle(enemy, context)
-        enemy.chasing = True
         return ai_cls.act(enemy, context)
 
     @staticmethod
