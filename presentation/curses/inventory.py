@@ -266,7 +266,11 @@ class CursesInventoryView(InventoryView):
                 active_col = (active_col - 1) % CursesInventoryView._NUM_ITEM_COLS
             elif action == InputAction.MOVE_RIGHT:
                 active_col = (active_col + 1) % CursesInventoryView._NUM_ITEM_COLS
-            elif action == InputAction.INTERACT:
+            elif action in (
+                InputAction.INTERACT,
+                InputAction.USE_SCROLL,
+                InputAction.PASS,
+            ):
                 items = all_items[active_col]
                 idx = selected_idx[active_col]
                 if items and 0 <= idx and idx < len(items):
