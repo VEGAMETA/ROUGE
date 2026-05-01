@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from math import sqrt
 from typing import Any, Generator
 
 
@@ -63,7 +64,7 @@ class Vector2:
         yield self.y
 
     def length(self) -> float:
-        return (self.x * self.x + self.y * self.y) ** 0.5
+        return sqrt(self.x * self.x + self.y * self.y)
 
 
 @dataclass

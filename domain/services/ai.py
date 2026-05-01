@@ -21,21 +21,22 @@ class EnemyAI:
         if enemy.type == EnemyType.MIMIC1:
             return EnemyAction.UNDEFINED
         home_room = context.stage.rooms[enemy.home_room_index]
-        ai_cls = EnemyAI.REGISTRY.get(enemy.type, EnemyAI)
-        hostile = (context.player.position - enemy.position).length() <= enemy.hostility
-        enemy.chasing = hostile
-        if not hostile:
+        ai_cls: EnemyAI = EnemyAI.REGISTRY.get(enemy.type, EnemyAI)
+        enemy.chasing = (
+            context.player.position - enemy.position
+        ).length() <= enemy.hostility
+        if not enemy.chasing or not home_room.is_inbound(context.player.position):
             return ai_cls.idle(enemy, context)
-        if not enemy.chasing and not home_room.is_inbound(context.player.position):
-            return ai_cls.idle(enemy, context)
+        enemy.path.clear()
         return ai_cls.act(enemy, context)
 
     @staticmethod
     def act(enemy: "Enemy", context: "GameSession") -> EnemyAction:
+        ai_cls = EnemyAI.REGISTRY.get(enemy.type, EnemyAI)
         if context.player.position.is_adjacent(enemy.position):
             enemy.path.clear()
-            return EnemyAI.attack(enemy, context)
-        return EnemyAI.move(enemy, context)
+            return ai_cls.attack(enemy, context)
+        return ai_cls.move(enemy, context)
 
     @staticmethod
     def idle(enemy: "Enemy", context: "GameSession") -> EnemyAction:
@@ -89,15 +90,12 @@ class ZombieAI(EnemyAI):
     pass
 
 
+class MimicAI(EnemyAI):
+    pass
+
+
 class VampireAI(EnemyAI):
     DRAIN: int = 2
-
-    @staticmethod
-    def act(enemy: "Enemy", context: "GameSession") -> EnemyAction:
-        if context.player.position.is_adjacent(enemy.position):
-            enemy.path.clear()
-            return VampireAI.attack(enemy, context)
-        return EnemyAI.move(enemy, context)
 
     @staticmethod
     def attack(enemy: "Enemy", context: "GameSession") -> EnemyAction:
@@ -121,18 +119,12 @@ class GhostAI(EnemyAI):
     def act(enemy: "Enemy", context: "GameSession") -> EnemyAction:
         if context.player.position.is_adjacent(enemy.position):
             enemy.invisible = False
-            enemy.path.clear()
-            return EnemyAI.attack(enemy, context)
-        return EnemyAI.move(enemy, context)
+        EnemyAI.act(enemy, context)
 
     @staticmethod
     def idle(enemy: "Enemy", context: "GameSession") -> EnemyAction:
         if not enemy.invisible and random() < GhostAI.INVIS_CHANCE:
             enemy.invisible = True
-        return GhostAI.move(enemy, context)
-
-    @staticmethod
-    def move(enemy: "Enemy", context: "GameSession") -> EnemyAction:
         if enemy.home_room_index < 0 or enemy.home_room_index >= len(
             context.stage.rooms
         ):
@@ -156,10 +148,7 @@ class OgreAI(EnemyAI):
         if enemy.resting:
             enemy.resting = False
             return EnemyAction.UNDEFINED
-        if context.player.position.is_adjacent(enemy.position):
-            enemy.path.clear()
-            return OgreAI.attack(enemy, context)
-        return OgreAI.move(enemy, context)
+        EnemyAI.act(enemy, context)
 
     @staticmethod
     def idle(enemy: "Enemy", context: "GameSession") -> EnemyAction:
@@ -186,8 +175,7 @@ class OgreAI(EnemyAI):
     @staticmethod
     def move(enemy: "Enemy", context: "GameSession") -> EnemyAction:
         EnemyAI.move(enemy, context)
-        EnemyAI.move(enemy, context)
-        return EnemyAction.UNDEFINED
+        return EnemyAI.move(enemy, context)
 
     @staticmethod
     def step(enemy: "Enemy", context: "GameSession") -> None:
@@ -213,28 +201,7 @@ class SnakeMageAI(EnemyAI):
     DIAGONAL_DIRECTIONS: list[tuple[int, int]] = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
 
     @staticmethod
-    def act(enemy: "Enemy", context: "GameSession") -> EnemyAction:
-        if context.player.position.is_adjacent(enemy.position):
-            enemy.path.clear()
-            return SnakeMageAI.attack(enemy, context)
-        return SnakeMageAI.move(enemy, context)
-
-    @staticmethod
     def idle(enemy: "Enemy", context: "GameSession") -> EnemyAction:
-        return SnakeMageAI.move(enemy, context)
-
-    @staticmethod
-    def attack(enemy: "Enemy", context: "GameSession") -> EnemyAction:
-        hit = CombatService.hit(enemy, context.player)
-        context.sounds.put(SoundType.HIT if hit else SoundType.SWING)
-        if hit:
-            context.statistics.hits_taken += 1
-            if random() < SnakeMageAI.SLEEP_CHANCE:
-                context.player.sleep_turns = 1
-        return EnemyAction.ATTACK
-
-    @staticmethod
-    def move(enemy: "Enemy", context: "GameSession") -> EnemyAction:
         if enemy.home_room_index < 0 or enemy.home_room_index >= len(
             context.stage.rooms
         ):
@@ -254,6 +221,16 @@ class SnakeMageAI(EnemyAI):
             enemy.path.clear()
         return EnemyAction.MOVE
 
+    @staticmethod
+    def attack(enemy: "Enemy", context: "GameSession") -> EnemyAction:
+        hit = CombatService.hit(enemy, context.player)
+        context.sounds.put(SoundType.HIT if hit else SoundType.SWING)
+        if hit:
+            context.statistics.hits_taken += 1
+            if random() < SnakeMageAI.SLEEP_CHANCE:
+                context.player.sleep_turns = 1
+        return EnemyAction.ATTACK
+
 
 EnemyAI.REGISTRY = {
     EnemyType.ZOMBIE: ZombieAI,
@@ -261,4 +238,5 @@ EnemyAI.REGISTRY = {
     EnemyType.GHOST: GhostAI,
     EnemyType.OGRE: OgreAI,
     EnemyType.SNAKE_MAGE: SnakeMageAI,
+    EnemyType.MIMIC2: MimicAI,
 }

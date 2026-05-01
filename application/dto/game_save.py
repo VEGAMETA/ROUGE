@@ -97,6 +97,10 @@ class GameSaveMapper:
         )
 
     @staticmethod
+    def delete() -> bool:
+        return Path(SAVE_FILE).unlink(True)
+
+    @staticmethod
     def file_exists() -> bool:
         return Path(SAVE_FILE).exists()
 

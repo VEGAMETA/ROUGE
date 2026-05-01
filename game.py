@@ -11,7 +11,7 @@ def main() -> None:
     locale.setlocale(locale.LC_ALL, "")
     while True:
         try:
-            loop = GameLoop(DefaultWindow, selected_3d=True)
+            loop = GameLoop(DefaultWindow, selected_3d=False)
             if loop.run():
                 break
             del loop

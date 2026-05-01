@@ -34,6 +34,17 @@ CONSUMABLE_TEMPLATES = {
         strength=0,
         value=1000,
     ),
+    (ItemType.CONSUMABLE, ConsumableType.MAX_HEALTH): partial(
+        Consumable,
+        subtype=ConsumableType.MAX_HEALTH,
+        name="Healing Potion",
+        description="Temporarily increases max HP by 50 HP",
+        health=50,
+        max_health=0,
+        dexterity=0,
+        strength=0,
+        value=5000,
+    ),
     (ItemType.CONSUMABLE, ConsumableType.STRENGTH): partial(
         Consumable,
         subtype=ConsumableType.STRENGTH,

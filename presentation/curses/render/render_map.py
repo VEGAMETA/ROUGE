@@ -1,7 +1,6 @@
 from curses import (
     COLOR_BLACK,
     COLOR_BLUE,
-    COLOR_CYAN,
     COLOR_GREEN,
     COLOR_MAGENTA,
     COLOR_RED,
@@ -32,7 +31,7 @@ class CursesRenderMap:
     STAIRS_RENDER_DATA = CursesRenderData("\u25bc")
 
     TILE_RENDER_MAP = {
-        TileType.UNDEFINED: CursesRenderData("\u263c"),  # \u263c
+        TileType.UNDEFINED: CursesRenderData("\u263c"),
         TileType.VOID: CursesRenderData("\u0020"),
         TileType.CORRIDOR: CursesRenderData("\u2591"),
         TileType.FLOOR: CursesRenderData("\u00b7"),
@@ -47,7 +46,7 @@ class CursesRenderMap:
         EnemyType.GHOST: CursesRenderData("g", COLOR_WHITE),
         EnemyType.OGRE: CursesRenderData("o", COLOR_YELLOW),
         EnemyType.SNAKE_MAGE: CursesRenderData("s", COLOR_WHITE),
-        EnemyType.MIMIC1: CursesRenderData("ŧ", COLOR_WHITE),
+        EnemyType.MIMIC1: CursesRenderData("ʈ", COLOR_WHITE),
         EnemyType.MIMIC2: CursesRenderData("m", COLOR_WHITE),
     }
 
@@ -56,7 +55,7 @@ class CursesRenderMap:
         ItemType.CONSUMABLE: CursesRenderData("c"),
         ItemType.WEAPON: CursesRenderData("w"),
         ItemType.TREASURE: CursesRenderData("t"),
-        ItemType.SCROLL: CursesRenderData("s", COLOR_CYAN),
+        ItemType.SCROLL: CursesRenderData("s", COLOR_WHITE, COLOR_YELLOW),
     }
 
     KEY_RENDER_MAP = {

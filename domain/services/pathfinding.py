@@ -5,22 +5,16 @@ DIRS = [(-1, -1), (-1, 0), (-1, 1), (0, -1), (0, 1), (1, -1), (1, 0), (1, 1)]
 
 
 def chebyshev_distance(dx: int, dy: int) -> int:
-    """Октайльное расстояние (max) - быстрее чем sqrt"""
     return max(abs(dx), abs(dy))
 
 
 def octile_distance(dx: int, dy: int) -> int:
-    """Более точное октаильное расстояние для 8 направлений"""
     return max(abs(dx), abs(dy)) * 10 + (min(abs(dx), abs(dy)) * 4)
-    # 10 и 4 вместо 1 и 0.414 для целочисленной арифметики
 
 
 def astar(
     start_x: int, start_y: int, end_x: int, end_y: int, obstacles: list[list[bool]]
 ) -> Optional[list[tuple[int, int]]]:
-    # if obstacles[start_y][start_x] or obstacles[end_y][end_x]:
-    #     return None
-
     height, width = len(obstacles), len(obstacles[0])
     total_cells = width * height
     g_score = [100_000_000] * total_cells
@@ -73,7 +67,7 @@ def astar(
                 continue
 
             if dx != 0 and dy != 0:
-                move_cost = 14  # sqrt(2) * 10 ≈ 14
+                move_cost = 14
             else:
                 move_cost = 10
 
@@ -82,7 +76,6 @@ def astar(
             if new_g < g_score[neighbor_idx]:
                 g_score[neighbor_idx] = new_g
                 parent[neighbor_idx] = current_idx
-                # Октайльная эвристика (точная для 8 направлений)
                 h = octile_distance(nx - end_x, ny - end_y)
                 f = new_g + h
                 heapq.heappush(open_heap, (f, new_g, neighbor_idx))

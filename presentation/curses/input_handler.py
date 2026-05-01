@@ -13,11 +13,17 @@ def unite_dicts(dict1: dict, dict2: dict) -> dict:
 class CursesKeymap:
     BASE_ACTIONS: dict[int, InputAction] = {
         ord("h"): InputAction.USE_WEAPON,
+        ord("H"): InputAction.USE_WEAPON,
         ord("j"): InputAction.USE_FOOD,
+        ord("J"): InputAction.USE_FOOD,
         ord("k"): InputAction.USE_ELIXIR,
+        ord("K"): InputAction.USE_ELIXIR,
         ord("l"): InputAction.USE_SCROLL,
+        ord("L"): InputAction.USE_SCROLL,
         ord("x"): InputAction.DROP,
+        ord("X"): InputAction.DROP,
         ord("e"): InputAction.INTERACT,
+        ord("E"): InputAction.INTERACT,
         10: InputAction.INTERACT,
         9: InputAction.INVENTORY,
         32: InputAction.PASS,
@@ -29,6 +35,10 @@ class CursesKeymap:
         ord("s"): InputAction.MOVE_DOWN,
         ord("a"): InputAction.MOVE_LEFT,
         ord("d"): InputAction.MOVE_RIGHT,
+        ord("W"): InputAction.MOVE_UP,
+        ord("S"): InputAction.MOVE_DOWN,
+        ord("A"): InputAction.MOVE_LEFT,
+        ord("D"): InputAction.MOVE_RIGHT,
         curses.KEY_UP: InputAction.MOVE_UP,
         curses.KEY_DOWN: InputAction.MOVE_DOWN,
         curses.KEY_LEFT: InputAction.MOVE_LEFT,
@@ -38,6 +48,8 @@ class CursesKeymap:
     ROTATE_ACTIONS: dict[int, InputAction] = {
         ord("a"): InputAction.ROTATE_LEFT,
         ord("d"): InputAction.ROTATE_RIGHT,
+        ord("A"): InputAction.ROTATE_LEFT,
+        ord("D"): InputAction.ROTATE_RIGHT,
         curses.KEY_LEFT: InputAction.ROTATE_LEFT,
         curses.KEY_RIGHT: InputAction.ROTATE_RIGHT,
     }

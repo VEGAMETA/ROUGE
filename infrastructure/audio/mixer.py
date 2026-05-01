@@ -1,8 +1,7 @@
-# audio_process.py
-
 import time
 from multiprocessing import Process, SimpleQueue
 from pathlib import Path
+from queue import Empty
 
 from simpleaudio import PlayObject, WaveObject, stop_all
 
@@ -55,10 +54,10 @@ class Mixer(Process):
 
         while self.running:
             try:
+                self._play_loop()
                 time.sleep(0.001)
                 effect = self.q.get()
-                self._play_loop()
-            except Exception:
+            except Empty:
                 continue
             if not effect:
                 break

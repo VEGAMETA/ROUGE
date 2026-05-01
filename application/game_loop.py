@@ -1,4 +1,3 @@
-# TODO: Autosave, fog of war, death/win screen
 import getpass
 import time
 from datetime import datetime
@@ -61,30 +60,20 @@ class GameLoop:
             CommandService.execute(InputAction.MENU, self.game_session, self.window)
         while self.game_session.process:
             tick_timer = time.perf_counter()
-            if self.game_session.player.sleep_turns > 0:
-                self.game_session.player.sleep_turns -= 1
-                for enemy in self.game_session.enemies:
-                    EnemyAI.action(enemy, self.game_session)
-                Visibility.update(self.game_session)
-                if self.game_session.player.health <= 0:
-                    self.game_session.sounds.put(SoundType.DEATH)
-                    Leaderboard.append(
-                        GameLoop.build_record(self.game_session, getpass.getuser())
-                    )
-                    self.game_session.process = False
-                tick_t = time.perf_counter() - tick_timer
-                continue
             Visibility.update(self.game_session)
             game_state: GameStateDTO = GameMapper.to_dto(self.game_session)
-            self.window.draw(game_state, tick_t)  # 0.004 s
+            self.window.draw(game_state, tick_t)
             action: InputAction = self.window.action(self.game_session.selected_3d)
+            if self.game_session.player.sleep_turns > 0:
+                self.game_session.player.sleep_turns -= 1
+                action = InputAction.PASS
             result: CommandResult = CommandService.execute(
                 action, self.game_session, self.window
             )
             if result == CommandResult.NO_ACTION:
                 tick_t = time.perf_counter() - tick_timer
                 continue
-            for enemy in self.game_session.enemies:  # 0.00-0.01 s
+            for enemy in self.game_session.enemies:
                 EnemyAI.action(enemy, self.game_session)
             if self.game_session.player.health <= 0:
                 self.game_session.sounds.put(SoundType.DEATH)
@@ -103,6 +92,8 @@ class GameLoop:
             self.window.game_over(
                 elapsed, self.game_session.statistics, self.game_session.points
             )
+            self.game_session.player.inventory.clear()
+            GameSaveMapper.delete()
             return False
         if int(self.game_session.player.level) > len(Level):
             Leaderboard.append(
@@ -112,4 +103,5 @@ class GameLoop:
             self.window.victory(
                 elapsed, self.game_session.statistics, self.game_session.points
             )
+            GameSaveMapper.delete()
         return True

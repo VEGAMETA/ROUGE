@@ -121,7 +121,7 @@ class CursesInventoryView(InventoryView):
         lv: int = int(context.player.level)
         row: int = 2
         col: int = 83
-        lvl = f"{lv}/{MAX_LEVEL}"  #
+        lvl = f"{lv}/{MAX_LEVEL}"
         hp = f"{int(context.player.health)}/{int(context.player.max_health)}"
         owned_types = {k.type for k in context.owned_keys}
         win.addstr(row, col, "LEVEL" + (13 - len(lvl)) * " " + lvl)
@@ -229,25 +229,21 @@ class CursesInventoryView(InventoryView):
         active_col = 0
         selected_idx = [0, 0, 0, 0]
         outer_win = curses.newwin(outer_h, outer_w, outer_y, outer_x)
-
         columns, all_items = CursesInventoryView._make_columns(
             context, start_x, start_y, item_col_w, col_h, selected_idx
         )
+
         pad = curses.newwin(outer_h, outer_w, outer_y, outer_x)
         pad.box()
         pad.overlay(outer_win)
         pad.overwrite(outer_win)
         outer_win.refresh()
-        outer_win.keypad(True)
-        # outer_win.timeout(1000)
+
         CursesInventoryView.redraw(outer_win, columns, active_col)
         CursesInventoryView._draw_description(
             outer_win, context, active_col, item_col_w, selected_idx, all_items, outer_w
         )
         while True:
-            # outer_win.box()
-            # CursesInventoryView.redraw(outer_win, columns, active_col)
-
             CursesInventoryView._draw_stats(outer_win, context)
             outer_win.refresh()
 

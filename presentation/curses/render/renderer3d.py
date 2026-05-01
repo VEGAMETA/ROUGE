@@ -55,12 +55,12 @@ class CursesRenderer3D(CursesRenderer):
     def get_shadow(self, surface_distance: float) -> str:
         ratio = self.depth - surface_distance
         if ratio <= 3.5:
-            return "\u0020"  # \u0020
+            return "\u0020"
         elif ratio < 7:
-            return "\u2591"  # ░ \u2591
+            return "\u2591"
         elif ratio < 10.5:
-            return "\u2592"  # ▒ \u2592
-        return "\u2588"  # █ \u2588
+            return "\u2592"
+        return "\u2588"
 
     def print_sprite_(
         self,

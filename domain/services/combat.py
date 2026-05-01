@@ -51,6 +51,7 @@ class CombatService:
                 mimic = EnemyFactory.create(
                     defender.type.MIMIC2, defender.position, context.player.level
                 )
+                mimic.home_room_index = defender.home_room_index
                 context.enemies.add(mimic)
                 return False
             context.sounds.put(SoundType.KILL)

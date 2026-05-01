@@ -55,8 +55,8 @@ class GameSession(Entity):
         self.start_time: float = time.monotonic()
         self.points: int = 0
         self.statistics: Statistics = Statistics()
-        self.default_dds: float = 0.3
-        self.dds: float = 0.3  # Dynamic Difficalty System
+        self.default_dds: float = 0.4
+        self.dds: float = self.default_dds
         self.items = []
         self.doors = []
         self.keys = []
@@ -129,14 +129,10 @@ class GameSession(Entity):
         for tile in self.tiles:
             if tile.type not in OBSTACLES:
                 self.cached_obstacle_map[tile.position.y][tile.position.x] = False
-
         return [row[:] for row in self.cached_obstacle_map]
 
     def get_obstacle_map(self) -> list[list[bool]]:
-        # return self.cached_obstacle_map
         obstacle_map = self.get_cached_obstacle_map()
-
         for enemy in self.enemies:
             obstacle_map[enemy.position.y][enemy.position.x] = True
-
         return obstacle_map

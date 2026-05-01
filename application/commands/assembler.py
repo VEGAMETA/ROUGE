@@ -18,6 +18,8 @@ class CommandAssembler:
     @staticmethod
     def assemble_commands():
         CommandService.register(InputAction.UNDEFINED, lambda: Idle())
+        CommandService.register(InputAction.INTERACT, lambda: Idle())
+        CommandService.register(InputAction.DROP, lambda: Idle())
         CommandService.register(InputAction.PASS, lambda: Idle(True))
         CommandService.register(InputAction.QUIT, lambda: Quit())
         CommandService.register(InputAction.MOVE_UP, lambda: Move(Direction.UP))

@@ -56,6 +56,7 @@ class ItemService:
             item.count = 1
             item.is_owned = True
             context.player.inventory.add_item(item)
+            context.points += item.value
             return True
 
         if ItemService._count_type(inv, item) >= _PER_TYPE_LIMIT:
@@ -113,10 +114,10 @@ class ItemService:
                 context.player.health = min(
                     context.player.health + item.health, context.player.max_health
                 )
-            case ConsumableType.STRENGTH | ConsumableType.MAX_STRENGTH:
+            case ConsumableType.STRENGTH:
                 context.player.strength += item.strength
                 context.player.temp_strength += temporarily * item.strength
-            case ConsumableType.DEXTERITY | ConsumableType.MAX_DEXTERITY:
+            case ConsumableType.DEXTERITY:
                 context.player.dexterity += item.dexterity
                 context.player.temp_dexterity += temporarily * item.dexterity
             case ConsumableType.MAX_HEALTH:

@@ -7,7 +7,7 @@ ENEMY_TEMPLATES = {
     EnemyType.ZOMBIE: partial(
         Enemy,
         type=EnemyType.ZOMBIE,
-        hostility=7,
+        hostility=10,
         health=30,
         max_health=30,
         dexterity=3,
@@ -16,7 +16,7 @@ ENEMY_TEMPLATES = {
     EnemyType.VAMPIRE: partial(
         Enemy,
         type=EnemyType.VAMPIRE,
-        hostility=10,
+        hostility=15,
         health=30,
         max_health=30,
         dexterity=10,
@@ -25,7 +25,7 @@ ENEMY_TEMPLATES = {
     EnemyType.GHOST: partial(
         Enemy,
         type=EnemyType.GHOST,
-        hostility=5,
+        hostility=7,
         health=10,
         max_health=10,
         dexterity=10,
@@ -34,7 +34,7 @@ ENEMY_TEMPLATES = {
     EnemyType.OGRE: partial(
         Enemy,
         type=EnemyType.OGRE,
-        hostility=7,
+        hostility=10,
         health=40,
         max_health=40,
         dexterity=3,
@@ -43,7 +43,7 @@ ENEMY_TEMPLATES = {
     EnemyType.SNAKE_MAGE: partial(
         Enemy,
         type=EnemyType.SNAKE_MAGE,
-        hostility=10,
+        hostility=15,
         health=40,
         max_health=40,
         dexterity=15,
@@ -61,7 +61,7 @@ ENEMY_TEMPLATES = {
     EnemyType.MIMIC2: partial(
         Enemy,
         type=EnemyType.MIMIC2,
-        hostility=5,
+        hostility=7,
         health=30,
         max_health=30,
         dexterity=10,

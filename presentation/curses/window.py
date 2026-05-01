@@ -24,9 +24,6 @@ class CursesWindow(Window):
             CursesInventoryView,
             CursesLeaderboardView,
         )
-        # import os
-
-        # os.environ["ESCDELAY"] = "1"
         self.window: curses.window = curses.wrapper(self._get_curses_window)
         self.renderer.window = self.window
         self.window.clear()
@@ -42,7 +39,6 @@ class CursesWindow(Window):
         curses.noecho()
         if hasattr(curses, "set_escdelay"):
             curses.set_escdelay(1)
-        # curses.raw()
 
     def get_size(self) -> tuple[int, int]:
         return self.window.getmaxyx()[::-1]

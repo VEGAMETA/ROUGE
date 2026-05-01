@@ -22,3 +22,6 @@ class Backpack(Entity):
         if len(self.items) < index + 1:
             return
         self.items.pop(index)
+
+    def clear(self) -> None:
+        self.items.clear()

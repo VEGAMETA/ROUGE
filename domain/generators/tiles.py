@@ -22,7 +22,6 @@ class TileFactory:
                             or y
                             in (room.position.y, room.position.y + room.size.height)
                             else TileType.FLOOR,
-                            # TODO: Make invisible, unexplored
                         )
                     )
             for door in room.doors:

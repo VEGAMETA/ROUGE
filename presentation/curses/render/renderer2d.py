@@ -4,7 +4,7 @@ from random import random
 from application.dto.game_state import GameStateDTO
 from config.settings import Visuals
 from domain.rules.progression import Level
-from domain.value_objects.enums import TileType
+from domain.value_objects.enums import ItemType, TileType
 from presentation.curses.render.render_map import CursesRenderData, CursesRenderMap
 from presentation.curses.render.renderer import CursesRenderer
 
@@ -19,6 +19,7 @@ class CursesRenderer2D(CursesRenderer):
         strength = game_state.player.strength
         dexterity = game_state.player.dexterity
         curses.init_pair(255, curses.COLOR_BLACK, curses.COLOR_BLACK)
+
         self.window.addstr(
             0,
             10,
@@ -71,7 +72,9 @@ class CursesRenderer2D(CursesRenderer):
             toprint[t] = CursesRenderData(
                 CursesRenderMap.ITEM_RENDER_MAP[item.type].character,
                 CursesRenderMap.ITEM_RENDER_MAP[item.type].color1,
-                CursesRenderMap.RARITY_MAP[item.rarity],
+                CursesRenderMap.RARITY_MAP[item.rarity]
+                if item.type == ItemType.WEAPON
+                else CursesRenderMap.ITEM_RENDER_MAP[item.type].color2,
             )
             self.old_pos.append(hash(t))
 
@@ -97,8 +100,9 @@ class CursesRenderer2D(CursesRenderer):
         toprint.pop((max_width, max_height), None)
         for t, data in toprint.items():
             self.add_data(t[0], t[1], data)
-        # self.hud(game_state)
         self.fps(tick_time)
+        self.window.clrtoeol()
+        self.hud(game_state)
 
     def fps(self, tick_time: float) -> None:
         self.window.addstr(0, 0, f"{1 / max(tick_time, 0.0001):4.0f} fps")
